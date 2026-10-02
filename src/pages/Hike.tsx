@@ -1,9 +1,9 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
-import { PhotoRail } from '../components/PhotoRail'
 import { formatTime } from '../lib/format'
 import { effortFor, formatPace } from '../lib/effort'
 import { getTrail } from '../data/trails'
+import { heroPhoto } from '../data/photos'
 import { useAppStore } from '../store/useAppStore'
 
 export function Hike() {
@@ -24,30 +24,28 @@ export function Hike() {
   const stopped = Math.max(0, run.timeSec - moving)
   const maxSplit = Math.max(...effort.splits.map((s) => s.sec), 1)
   const maxVert = Math.max(...effort.vertical.map((v) => v.sec), 1)
+  const photo = heroPhoto(trail.id)
 
   return (
     <div className="page">
-      <section style={{ position: 'relative', height: '46dvh', minHeight: 320 }}>
-        <TrailMap
-          trails={[]}
-          route={trail.path}
-          mood="day"
-          pitch={48}
-          fit
-          fitPadding={{ top: 28, bottom: 48, left: 36, right: 36 }}
-          interactive
-        />
-      </section>
-      <div className="container page-pad" style={{ marginTop: -28, position: 'relative' }}>
-        <PhotoRail trailId={trail.id} />
-        <p className="survey" style={{ marginTop: 16 }}>
-          {trail.region}
-          {run.weather ? ` · ${run.weather.temp}° ${run.weather.sky.toLowerCase()} · wind ${run.weather.wind} km/h` : ''}
-          {run.conditions.length ? ` · ${run.conditions.join(', ').toLowerCase()}` : ''}
-        </p>
-        <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 6 }}>{trail.name}</h1>
-        <p className="display num" style={{ fontSize: 'clamp(3rem, 14vw, 4.2rem)', fontWeight: 800, lineHeight: 0.95, marginTop: 8 }}>
-          {formatTime(run.timeSec)}
+      <div style={{ position: 'relative', height: 280 }}>
+        {photo && <img src={photo.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.05), rgba(11,23,22,0.78))' }} />
+        <div style={{ position: 'absolute', left: 20, right: 20, bottom: 56 }}>
+          <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>{trail.region}</p>
+          <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 4 }}>{trail.name}</h1>
+          <p className="display num" style={{ color: 'var(--rock-flour)', fontSize: 'clamp(2.6rem, 12vw, 3.6rem)', fontWeight: 800, lineHeight: 1, marginTop: 6 }}>
+            {formatTime(run.timeSec)}
+          </p>
+        </div>
+      </div>
+      <div style={{ margin: '-40px 16px 0', position: 'relative', height: 200, borderRadius: 20, overflow: 'hidden', boxShadow: '0 16px 40px rgba(11,23,22,0.18)' }}>
+        <TrailMap trails={[]} route={trail.path} mood="day" pitch={48} fit fitPadding={{ top: 20, bottom: 20, left: 20, right: 20 }} interactive />
+      </div>
+      <div className="container page-pad" style={{ marginTop: 16 }}>
+        <p className="survey">
+          {run.weather ? `${run.weather.temp}° ${run.weather.sky.toLowerCase()} · wind ${run.weather.wind} km/h · ` : ''}
+          {run.conditions.join(', ').toLowerCase()}
         </p>
         <p className="survey num" style={{ marginTop: 8 }}>
           moving {formatTime(moving)}

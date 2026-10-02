@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { TrailMap } from '../components/TrailMap'
-import { Split } from '../components/Split'
+import { formatSplit } from '../components/Split'
 import { HoldButton } from '../components/HoldButton'
 import { ElevationProfile } from '../components/ElevationProfile'
 import { getTrail, trails } from '../data/trails'
 import type { ConditionTag } from '../data/seed'
 import { formatTime } from '../lib/format'
+import { formatPace } from '../lib/effort'
 import { useDusk } from '../lib/useMood'
 import { bestTime, useAppStore } from '../store/useAppStore'
 
@@ -68,8 +69,6 @@ export function Record() {
     const ghostTimeAtYou = youProgress * targetSec
     return trailSec - ghostTimeAtYou
   }, [trailSec, youProgress, targetSec])
-  const kmDone = (youProgress * trail.distKm).toFixed(1)
-
   if (finishing && recording) {
     return (
       <div className="page" style={{ padding: '24px 20px calc(24px + env(safe-area-inset-bottom))', minHeight: '100dvh' }}>
@@ -165,12 +164,15 @@ export function Record() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           {recording ? (
             <>
-              <Split seconds={split} />
-              <p style={{ marginTop: 10, fontSize: 'var(--type-md)', color: 'var(--rock-flour)', fontWeight: 600 }}>
-                {split <= 0 ? 'ahead of' : 'behind'} {activeChase?.label ?? (pb ? 'your best' : 'typical pace')}
+              <p className="display num" style={{ fontSize: 'clamp(2.4rem, 10vw, 3.2rem)', fontWeight: 800, color: 'var(--rock-flour)', lineHeight: 1 }}>
+                {(youProgress * trail.distKm).toFixed(1)} km
+              </p>
+              <p style={{ marginTop: 8, fontWeight: 700, color: 'var(--rock-flour)' }}>
+                {Math.round(youProgress * trail.gainM)} m climbed · {Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit
               </p>
               <p className="survey num" style={{ marginTop: 6 }}>
-                {formatTime(trailSec)} · km {kmDone} / {trail.distKm.toFixed(1)} · target {formatTime(targetSec)}
+                {formatTime(trailSec)} · {formatPace(trailSec / Math.max(0.1, youProgress * trail.distKm))}/km
+                {activeChase ? ` · ${formatSplit(split)} vs ${activeChase.label}` : ''}
               </p>
               <p className="survey num" style={{ marginTop: 4 }}>
                 On the line · {(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · {Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit

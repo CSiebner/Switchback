@@ -24,6 +24,7 @@ export function CrewFeed() {
   const toggleKudo = useAppStore((s) => s.toggleKudo)
   const addComment = useAppStore((s) => s.addComment)
   const [drafts, setDrafts] = useState<Record<string, string>>({})
+  const [openId, setOpenId] = useState<string | null>(null)
   const items = useMemo(() => [...feed].sort((a, b) => b.timestamp - a.timestamp), [feed])
 
   return (
@@ -88,25 +89,32 @@ export function CrewFeed() {
                 <strong style={{ color: 'var(--ink)' }}>{getHiker(c.userId)?.name}</strong> {c.text}
               </p>
             ))}
-            <form
-              style={{ display: 'flex', gap: 8, marginTop: 10 }}
-              onSubmit={(e) => {
-                e.preventDefault()
-                const text = (drafts[item.id] ?? '').trim()
-                if (!text) return
-                addComment(item.id, text)
-                setDrafts((d) => ({ ...d, [item.id]: '' }))
-              }}
-            >
-              <input
-                value={drafts[item.id] ?? ''}
-                onChange={(e) => setDrafts((d) => ({ ...d, [item.id]: e.target.value }))}
-                placeholder="Comment"
-                aria-label="Comment"
-                style={{ flex: 1, padding: '10px 12px', borderRadius: 999, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
-              />
-              <button className="chip" type="submit">Send</button>
-            </form>
+            {openId === item.id ? (
+              <form
+                style={{ display: 'flex', gap: 8, marginTop: 10 }}
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const text = (drafts[item.id] ?? '').trim()
+                  if (!text) return
+                  addComment(item.id, text)
+                  setDrafts((d) => ({ ...d, [item.id]: '' }))
+                  setOpenId(null)
+                }}
+              >
+                <input
+                  value={drafts[item.id] ?? ''}
+                  onChange={(e) => setDrafts((d) => ({ ...d, [item.id]: e.target.value }))}
+                  placeholder="Say something about the hike"
+                  aria-label="Comment"
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: 999, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
+                />
+                <button className="chip active" type="submit">Send</button>
+              </form>
+            ) : (
+              <button type="button" className="chip" style={{ marginTop: 10 }} onClick={() => setOpenId(item.id)}>
+                Comment
+              </button>
+            )}
           </motion.article>
         )
       })}
