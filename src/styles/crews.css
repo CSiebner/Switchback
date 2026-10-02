@@ -1,0 +1,247 @@
+.cr-head {
+  padding-top: 8px;
+}
+
+.cr-h1 {
+  font-size: var(--type-xl);
+  font-weight: 800;
+  line-height: 0.95;
+  margin-top: 6px;
+}
+
+.cr-section {
+  margin-top: 34px;
+}
+
+.cr-section > .survey.head {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.cr-hero {
+  margin-top: 20px;
+  padding: 18px 18px 6px;
+}
+
+.cr-hero-name {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.cr-big-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.cr-big {
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 96;
+  font-weight: 800;
+  font-size: clamp(3rem, 14vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.cr-bar {
+  height: 6px;
+  margin-top: 14px;
+  border-radius: var(--r-pill);
+  background: var(--contour-light);
+  overflow: hidden;
+}
+
+.cr-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--larch);
+}
+
+.cr-members {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding-left: 6px;
+}
+
+.cr-disc {
+  width: 26px;
+  height: 26px;
+  margin-left: -6px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: white;
+  background: var(--glacier);
+  border: 2px solid var(--rock-flour);
+  box-sizing: content-box;
+}
+
+.cr-disc.me {
+  background: var(--larch);
+  color: var(--spruce-950);
+}
+
+.cr-disc.more {
+  background: transparent;
+  color: var(--scree-dark);
+  border-color: transparent;
+  width: auto;
+  padding-left: 12px;
+  margin-left: 0;
+  font-size: var(--type-xs);
+  font-weight: 600;
+}
+
+.cr-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  column-gap: 14px;
+  align-items: center;
+  min-height: 64px;
+  padding: 12px 0;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+
+button.cr-row {
+  appearance: none;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cr-hero .cr-row {
+  margin-top: 16px;
+  padding-bottom: 14px;
+}
+
+.cr-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cr-name {
+  font-weight: 800;
+  font-size: var(--type-md);
+  letter-spacing: -0.01em;
+}
+
+.cr-name.pb {
+  color: var(--larch);
+}
+
+.cr-body {
+  font-size: var(--type-sm);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.cr-text .survey.ell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cr-time {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cr-time b {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--type-md);
+  letter-spacing: -0.02em;
+}
+
+.cr-time .sp {
+  font-size: var(--type-xs);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.cr-time .sp.fast {
+  color: var(--larch);
+}
+
+.cr-time .sp.slow {
+  color: var(--glacier);
+}
+
+.cr-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: var(--type-sm);
+  font-weight: 800;
+  color: white;
+  background: var(--glacier);
+}
+
+.cr-initials.me {
+  background: var(--larch);
+  color: var(--spruce-950);
+}
+
+.cr-glyph {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--glacier-deep);
+}
+
+.cr-kudo {
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+  color: var(--scree-dark);
+}
+
+.cr-kudo svg {
+  width: 12px;
+  height: 12px;
+}
+
+.cr-chip {
+  min-height: 44px;
+  padding: 9px 18px;
+  font-weight: 700;
+}
+
+.cr-chip.active {
+  background: var(--glacier);
+  border-color: var(--glacier);
+  color: white;
+}
+
+.cr-join {
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 14px;
+}
+
+.page.cr-page {
+  padding-bottom: calc(var(--dock-h) + 40px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
