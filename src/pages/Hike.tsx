@@ -96,7 +96,7 @@ function EffortBadge({ name, timeSec, mine }: { name: string; timeSec: number; m
       ? `Your fastest of the ${mine.length} times you've hiked ${name}.`
       : `Your ${ordinal(place)} best of the ${mine.length} times you've hiked ${name}.`
   return (
-    <p style={{ margin: '16px 0 0', padding: '11px 14px', borderRadius: 14, background: 'rgba(217,119,6,0.12)', border: '1px solid rgba(217,119,6,0.45)', fontWeight: 700, fontSize: 14, lineHeight: 1.35 }}>
+    <p style={{ margin: '18px 0 0', paddingLeft: 12, borderLeft: '3px solid var(--larch)', fontWeight: 700, lineHeight: 1.4 }}>
       {text}
     </p>
   )

@@ -106,11 +106,13 @@ export function Home() {
         return (
           <section className="container page-pad" style={{ marginTop: 8 }}>
             <p className="survey">Your crew is going</p>
-            <Link to={`/trail/${outingTrail.id}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>
-              <p style={{ fontWeight: 800 }}>{outingTrail.name}</p>
-              <p className="survey num" style={{ marginTop: 4 }}>
-                {outing.when} · {outing.pace} · {outing.meet} · {getHiker(outing.driver ?? '')?.name} driving
-              </p>
+            <Link to={`/trail/${outingTrail.id}`} className="hairline" style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center', padding: '16px 0' }}>
+              <RouteGlyph coords={outingTrail.path} size={44} stroke="#0f201e" strokeWidth={2} />
+              <span>
+                <span style={{ fontWeight: 800, display: 'block' }}>{outingTrail.name}</span>
+                <span className="survey" style={{ display: 'block', marginTop: 4 }}>{outing.when} · {outing.pace}</span>
+                <span className="survey" style={{ display: 'block' }}>{outing.meet} · {getHiker(outing.driver ?? '')?.name} driving</span>
+              </span>
             </Link>
           </section>
         )

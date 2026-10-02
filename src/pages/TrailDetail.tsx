@@ -51,18 +51,7 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   else if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
   if (!text) return null
   return (
-    <p
-      style={{
-        margin: '22px 0 0',
-        padding: '11px 14px',
-        borderRadius: 14,
-        background: 'rgba(217,119,6,0.12)',
-        border: '1px solid rgba(217,119,6,0.45)',
-        fontWeight: 700,
-        fontSize: 14,
-        lineHeight: 1.35,
-      }}
-    >
+    <p style={{ margin: '20px 0 0', paddingLeft: 12, borderLeft: '3px solid var(--larch)', fontWeight: 700, lineHeight: 1.4 }}>
       {text}
     </p>
   )
@@ -162,11 +151,11 @@ export function TrailDetail() {
           <p className="tr-summary">{trail.summary}</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 28 }}>
             <div>
-              <p className="display" style={{ fontSize: '1.45rem', fontWeight: 800 }}>{spokenMinutes(trail.typicalMin)}</p>
+              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{spokenMinutes(trail.typicalMin)}</p>
               <p className="survey" style={{ marginTop: 6 }}>estimated to finish</p>
             </div>
             <div>
-              <p className="display" style={{ fontSize: '1.45rem', fontWeight: 800 }}>
+              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
                 {(() => {
                   const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
                   if (!times.length) return '—'

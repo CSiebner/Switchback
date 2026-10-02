@@ -32,17 +32,12 @@ export function WeatherWeek({ lat, lng, compact = false, band = false }: { lat: 
   const dirt = todayPrecip < 1 ? 'dirt likely dry' : 'expect mud'
   return (
     <section className={band ? 'tr-weather' : undefined} style={band ? undefined : { marginTop: 40 }}>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
-        <p className="display" style={{ fontSize: '3rem', fontWeight: 800, lineHeight: 0.9, color: band ? 'var(--rock-flour)' : undefined }}>
-          {Math.round(forecast.temp)}°
-        </p>
-        <div style={{ textAlign: 'right' }}>
-          <p style={{ fontWeight: 700 }}>{skyLabel(forecast.code)}</p>
-          <p className="survey num" style={{ marginTop: 4 }}>
-            wind {Math.round(forecast.wind)} km/h · {dirt}
-          </p>
-        </div>
-      </div>
+      <p className="display" style={{ fontSize: '2rem', fontWeight: 800, lineHeight: 1, color: band ? 'var(--rock-flour)' : undefined }}>
+        {Math.round(forecast.temp)}° {skyLabel(forecast.code)}
+      </p>
+      <p className="survey num" style={{ marginTop: 6 }}>
+        wind {Math.round(forecast.wind)} km/h · {dirt}
+      </p>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 4, marginTop: 18 }}>
         {forecast.days.map((d) => {
           const day = DAYS[new Date(d.date + 'T12:00:00').getDay()]
