@@ -7,6 +7,8 @@ import { TrailDirt } from '../components/TrailDirt'
 import { TrailElevation } from '../components/TrailElevation'
 import { PhotoRail } from '../components/PhotoRail'
 import { WeatherWeek } from '../components/WeatherWeek'
+import { PackAdvice } from '../components/PackAdvice'
+import { expectedMin } from '../lib/bodyPlan'
 import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
@@ -20,7 +22,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
 
 function spokenMinutes(min: number) {
   const rounded = Math.max(1, Math.round(min))
-  if (rounded < 60) return `${rounded} min`
+  if (rounded < 90) return `${rounded} min`
   const hours = Math.floor(rounded / 60)
   const rest = rounded % 60
   return rest ? `${hours} hr ${rest} min` : `${hours} hr`
@@ -101,6 +103,8 @@ export function TrailDetail() {
   const trail = getTrail(id)
   const navigate = useNavigate()
   const runs = useAppStore((s) => s.runs)
+  const weightKg = useAppStore((s) => s.weightKg)
+  const heightCm = useAppStore((s) => s.heightCm)
   const setChase = useAppStore((s) => s.setChase)
   const savedTrailIds = useAppStore((s) => s.savedTrailIds)
   const reviews = useAppStore((s) => s.reviews)
@@ -175,10 +179,22 @@ export function TrailDetail() {
       <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginTop: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 16px', marginTop: 28 }}>
             <div>
-              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{spokenMinutes(trail.typicalMin)}</p>
-              <p className="survey" style={{ marginTop: 6 }}>estimated to finish</p>
+              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
+                {spokenMinutes(expectedMin(trail, runs, weightKg ?? 70, heightCm ?? 175))}
+              </p>
+              <p className="survey" style={{ marginTop: 6 }}>your expected time</p>
+            </div>
+            <div>
+              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
+                {(() => {
+                  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
+                  if (!times.length) return '—'
+                  return spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)
+                })()}
+              </p>
+              <p className="survey" style={{ marginTop: 6 }}>hikers' average</p>
             </div>
             <div>
               <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{Math.round(trail.gainM)} m</p>
@@ -188,15 +204,6 @@ export function TrailDetail() {
               <LineStars reviews={reviews.filter((r) => r.trailId === trail.id)} />
             </div>
           </div>
-          {(() => {
-            const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
-            if (!times.length) return null
-            return (
-              <p className="survey num" style={{ marginTop: 14 }}>
-                hikers average {spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)} · {times.length} hikes
-              </p>
-            )
-          })()}
           {hasRun && (
             <>
               <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
@@ -218,6 +225,13 @@ export function TrailDetail() {
             })()}
           />
           <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} band />
+          <PackAdvice
+            trail={trail}
+            runs={runs}
+            weightKg={weightKg ?? 70}
+            heightCm={heightCm}
+            saved={heightCm !== undefined || weightKg !== undefined}
+          />
           {hasRun && <TrailStory trailId={trail.id} />}
         </motion.div>
 

@@ -2,7 +2,8 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouteGlyph } from './RouteGlyph'
 import { heroPhoto } from '../data/photos'
-import { formatTime, relativeTime } from '../lib/format'
+import { formatTime, formatDuration, relativeTime } from '../lib/format'
+import { expectedMin } from '../lib/bodyPlan'
 import { useAppStore } from '../store/useAppStore'
 import { lineStats, type Line } from './ExploreModel'
 
@@ -23,7 +24,13 @@ function survey(l: Line): string {
 export function ExploreSelected({ line }: { line: Line }) {
   const navigate = useNavigate()
   const setChase = useAppStore((s) => s.setChase)
+  const runs = useAppStore((s) => s.runs)
+  const weightKg = useAppStore((s) => s.weightKg)
+  const heightCm = useAppStore((s) => s.heightCm)
   const { trail, pb, holds, above, fresh } = line
+  const yours = expectedMin(trail, runs, weightKg ?? 70, heightCm ?? 175)
+  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
+  const average = times.length ? times.reduce((sum, t) => sum + t, 0) / times.length / 60 : null
   const big = pb ?? trail.typicalMin * 60
   const pct = fresh ? Math.round(Math.min(1, fresh.conf) * 100) : 0
 
@@ -58,7 +65,11 @@ export function ExploreSelected({ line }: { line: Line }) {
           <p className="survey">{pb === undefined ? 'New to you' : 'A line you know'}</p>
           <p className="display ex-name">{trail.name}</p>
           <p className="survey num">
-            {trail.region} · {trail.difficulty} · {lineStats(trail)} · about {formatTime(trail.typicalMin * 60)}
+            {trail.region} · {trail.difficulty} · {lineStats(trail)}
+          </p>
+          <p className="survey num ex-pace">
+            your time {formatDuration(yours)}
+            {average !== null ? ` · average ${formatDuration(average)}` : ''}
           </p>
         </div>
       </div>

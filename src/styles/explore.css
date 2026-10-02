@@ -261,6 +261,12 @@
   text-overflow: ellipsis;
 }
 
+.ex-head-text .survey.ex-pace {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
 .ex-big-wrap {
   margin-top: 12px;
 }
