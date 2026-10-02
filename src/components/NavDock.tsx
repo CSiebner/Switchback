@@ -32,7 +32,7 @@ const Icon = {
 export function NavDock() {
   const { pathname } = useLocation()
   const runs = useAppStore((s) => s.runs)
-  const hidden = pathname.startsWith('/record') || pathname.startsWith('/result') || pathname.startsWith('/hike')
+  const hidden = pathname.startsWith('/record') || pathname.startsWith('/result')
   const lastTrailId = runs.filter((r) => r.userId === 'you').sort((a, b) => b.timestamp - a.timestamp)[0]?.trailId
 
   return (

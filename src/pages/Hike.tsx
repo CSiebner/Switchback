@@ -1,13 +1,15 @@
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
 import { formatTime } from '../lib/format'
 import { caloriesFor, effortFor, formatPace } from '../lib/effort'
 import { getTrail } from '../data/trails'
 import { heroPhoto } from '../data/photos'
 import { useAppStore } from '../store/useAppStore'
+import { TrailBoard } from '../components/TrailBoard'
 
 export function Hike() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const runs = useAppStore((s) => s.runs)
   const run = runs.find((r) => r.id === id)
   if (!run) return <Navigate to="/" replace />
@@ -31,6 +33,7 @@ export function Hike() {
       <div style={{ position: 'relative', height: 280 }}>
         {photo && <img src={photo.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.05), rgba(11,23,22,0.78))' }} />
+        <button className="btn btn-ghost" style={{ position: 'absolute', top: 12, left: 16 }} aria-label="Back" onClick={() => navigate(-1)}>←</button>
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 56 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>{trail.region}</p>
           <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 4 }}>{trail.name}</h1>
@@ -80,6 +83,7 @@ export function Hike() {
           <Bar key={v.fromM} label={`${v.fromM}`} width={v.sec / maxVert} value={formatTime(v.sec)} />
         ))}
 
+        <TrailBoard trailId={trail.id} />
         <div className="btn-row" style={{ marginTop: 22 }}>
           <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>The line</Link>
           <Link to={`/record?trail=${trail.id}`} className="btn btn-larch" style={{ flex: 1 }}>Go again</Link>

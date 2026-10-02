@@ -12,6 +12,7 @@ import { getTrail, trails } from '../data/trails'
 import { heroPhoto } from '../data/photos'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 import { StatMark } from '../components/StatMark'
+import { Standings, yourStandings } from '../components/Standings'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -26,6 +27,42 @@ function CountUp({ value }: { value: number }) {
     <motion.span className="yo-big num" aria-label={value.toLocaleString('en-US')}>
       {text}
     </motion.span>
+  )
+}
+
+function spokenCut(sec: number) {
+  const minutes = Math.max(1, Math.round(sec / 60))
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest ? `${hours} hr ${rest} min` : `${hours} hr`
+}
+
+function Accomplishments({ lines }: { lines: YouLine[] }) {
+  const held = lines.filter((l) => l.rank === 1)
+  const cuts = lines
+    .filter((l) => l.runCount > 1 && l.pb < l.firstSec)
+    .sort((a, b) => b.firstSec - b.pb - (a.firstSec - a.pb))
+  const best = cuts[0]
+  const notes = [
+    held.length
+      ? `You hold ${held.map((l) => l.trail.name).join(' and ')}.`
+      : 'No line is yours yet. The closest chase is on the board below.',
+    best ? `You've cut ${spokenCut(best.firstSec - best.pb)} off your first time on ${best.trail.name}.` : null,
+    cuts.length > 1 ? `${cuts.length} lines are faster than your first time on them.` : null,
+  ].filter(Boolean) as string[]
+
+  return (
+    <section className="yo-section" style={{ marginTop: 28 }}>
+      <h2 className="chapter">What you've done</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
+        {notes.map((note) => (
+          <p key={note} style={{ margin: 0, padding: '2px 0 2px 12px', borderLeft: '3px solid var(--larch)', fontWeight: 700, lineHeight: 1.4 }}>
+            {note}
+          </p>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -103,8 +140,10 @@ export function You() {
           {lines.length > 0 && <YouStrip lines={lines.map((l) => ({ trail: l.trail, held: l.rank === 1 }))} />}
         </motion.div>
 
-        <YouYear runs={mine} />
+        <Accomplishments lines={lines} />
+        <Standings title="Where you stand" rows={yourStandings(runs)} />
         <YouLines lines={lines} />
+        <YouYear runs={mine} />
 
         {chase && chaseTrail && chaseRuns.length >= 2 && <YouChart trail={chaseTrail} runs={chaseRuns} chase={chase} />}
 

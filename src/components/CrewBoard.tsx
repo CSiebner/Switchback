@@ -22,7 +22,7 @@ interface Entry {
 function crewBests(runs: { userId: string; trailId: string; timeSec: number; timestamp: number }[], members: string[], since: number) {
   const best = new Map<string, Entry>()
   for (const r of runs) {
-    if (r.userId === CURRENT_USER_ID || !members.includes(r.userId) || r.timestamp < since) continue
+    if (!members.includes(r.userId) || r.timestamp < since) continue
     const key = `${r.userId}:${r.trailId}`
     const cur = best.get(key)
     if (!cur || r.timeSec < cur.timeSec) best.set(key, { key, userId: r.userId, trailId: r.trailId, timeSec: r.timeSec, timestamp: r.timestamp })
@@ -53,9 +53,10 @@ export function CrewBoard({ crew }: { crew: Crew }) {
       {rows.map((e, i) => {
         const trail = getTrail(e.trailId)
         if (!trail) return null
-        const name = getHiker(e.userId)?.name ?? 'Hiker'
+        const isMe = e.userId === CURRENT_USER_ID
+        const name = isMe ? 'You' : (getHiker(e.userId)?.name ?? 'Hiker')
         const mine = bestTime(runs, CURRENT_USER_ID, e.trailId)
-        const diff = mine !== undefined ? e.timeSec - mine : undefined
+        const diff = !isMe && mine !== undefined ? e.timeSec - mine : undefined
         const faster = diff !== undefined && diff < 0
         const inner = (
           <>
@@ -71,7 +72,9 @@ export function CrewBoard({ crew }: { crew: Crew }) {
             </span>
             <span className="cr-time">
               <b className="num">{formatTime(e.timeSec)}</b>
-              {diff !== undefined ? (
+              {isMe ? (
+                <span className="survey">your time</span>
+              ) : diff !== undefined ? (
                 <span className={`sp ${faster ? 'fast' : 'slow'}`}>{formatSplit(diff)}</span>
               ) : (
                 <span className="survey">not yet run</span>
@@ -91,13 +94,13 @@ export function CrewBoard({ crew }: { crew: Crew }) {
                 className="hairline cr-row"
                 onClick={() => {
                   setChase({ trailId: e.trailId, userId: e.userId, timeSec: e.timeSec, label: name })
-                  navigate(`/record?trail=${e.trailId}`)
+                  navigate(`/record?trail=${e.trailId}&against=1`)
                 }}
               >
                 {inner}
               </button>
             ) : (
-              <Link to={`/trail/${e.trailId}`} className="hairline cr-row">
+              <Link to={`/trail/${e.trailId}`} className={`hairline cr-row ${isMe ? 'me' : ''}`} style={isMe ? { background: 'rgba(10,138,130,0.08)' } : undefined}>
                 {inner}
               </Link>
             )}

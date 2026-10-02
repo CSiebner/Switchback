@@ -10,6 +10,7 @@ import { formatDuration, formatTime, relativeTime } from '../lib/format'
 import { effortFor, formatPace } from '../lib/effort'
 import { useAppStore } from '../store/useAppStore'
 import { Fact, StatMark } from '../components/StatMark'
+import { Standings, yourStandings } from '../components/Standings'
 
 export function Home() {
   const runs = useAppStore((s) => s.runs)
@@ -36,6 +37,7 @@ export function Home() {
   const lastPace = last && lastTrail ? formatPace(effortFor(lastTrail, last.timeSec).paceSecPerKm) : undefined
   const photo = lastTrail ? heroPhoto(lastTrail.id) : undefined
 
+  const board = useMemo(() => yourStandings(runs), [runs])
   const fresh = trails.find((t) => !runs.some((r) => r.userId === 'you' && r.trailId === t.id))
   const freshPhoto = fresh ? heroPhoto(fresh.id) : undefined
 
@@ -181,6 +183,9 @@ export function Home() {
         )}
       </section>
 
+      <section className="container page-pad" style={{ marginTop: 8 }}>
+        <Standings title="Where you stand" rows={board} />
+      </section>
     </div>
   )
 }

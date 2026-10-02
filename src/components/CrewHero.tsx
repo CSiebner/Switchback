@@ -47,22 +47,44 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
           </div>
 
           {outing && outingTrail && (
-            <div className="hairline cr-row">
-              <Link to={`/trail/${outingTrail.id}`} className="cr-glyph" aria-label={outingTrail.name}>
+            <div className="hairline" style={{ marginTop: 16, paddingTop: 16 }}>
+              <Link to={`/trail/${outingTrail.id}`} style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center' }}>
                 <RouteGlyph coords={outingTrail.path} size={44} strokeWidth={2} />
-              </Link>
-              <div className="cr-text">
-                <span className="cr-name">{outingTrail.name}</span>
-                <span className="survey">{outing.when} · {outing.pace ?? 'steady'} · {goingCount} going</span>
-                <span className="survey">
-                  {outing.meet ?? 'Meet TBD'}
-                  {outing.driver ? ` · ${getHiker(outing.driver)?.name ?? 'someone'} driving` : ''}
-                  {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - goingCount)} seats left` : ''}
+                <span>
+                  <span className="cr-name">{outingTrail.name}</span>
+                  <span className="survey" style={{ display: 'block', marginTop: 2 }}>{goingCount} going</span>
                 </span>
-                <span className="survey">{outing.going.map((id) => getHiker(id)?.name ?? 'Hiker').join(', ')}</span>
+              </Link>
+              <div className="plan-list">
+                <div className="plan-row">
+                  <span className="plan-k">When</span>
+                  <p className="plan-v">{outing.when}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Pace</span>
+                  <p className="plan-v">{outing.pace ?? 'steady'}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Meet</span>
+                  <p className="plan-v">{outing.meet ?? 'Meet TBD'}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Driving</span>
+                  <p className="plan-v">{outing.driver ? (getHiker(outing.driver)?.name ?? 'Open') : 'Open'}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Going</span>
+                  <p className="plan-v">
+                    {outing.going.map((id) => getHiker(id)?.name ?? 'Hiker').join(', ')}
+                    {outing.seats !== undefined
+                      ? ` · ${Math.max(0, outing.seats - goingCount)} ${outing.seats - goingCount === 1 ? 'seat' : 'seats'} left`
+                      : ''}
+                  </p>
+                </div>
               </div>
               <button
                 className={`chip cr-chip ${going ? 'active' : ''}`}
+                style={{ marginTop: 14 }}
                 aria-pressed={going}
                 onClick={() => setOutingGoing(crew.id, !going)}
               >
