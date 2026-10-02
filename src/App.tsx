@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { NavDock } from './components/NavDock'
@@ -42,12 +43,16 @@ function AnimatedRoutes() {
 
 function Gate() {
   const onboarded = useAppStore((s) => s.onboarded)
+  const [phase, setPhase] = useState<'about' | 'profile'>('about')
+  if (!onboarded) {
+    if (phase === 'about') return <About onBegin={() => setPhase('profile')} />
+    return <Onboarding onBack={() => setPhase('about')} />
+  }
   return (
     <>
       <BrandBar />
       <AnimatedRoutes />
       <NavDock />
-      {!onboarded && <Onboarding />}
     </>
   )
 }

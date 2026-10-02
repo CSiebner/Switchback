@@ -9,10 +9,10 @@ const ha = getTrail('ha-ling')
 const photo = heroPhoto('ha-ling')
 const crew = heroPhoto('bow-valley')
 
-/** The idea, in three pictures. */
-export function About() {
+/** The idea, in three pictures. `onBegin` is the first-open path into profile setup. */
+export function About({ onBegin }: { onBegin?: () => void }) {
   return (
-    <div className="page">
+    <div className="page" style={onBegin ? { paddingTop: 0, paddingBottom: 32 } : undefined}>
       <section style={{ position: 'relative', height: 360 }}>
         {photo && <img src={photo.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.25), rgba(11,23,22,0.82))' }} />
@@ -52,9 +52,15 @@ export function About() {
         <p className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28, lineHeight: 1.15 }}>
           A record you can hand to the people you go with.
         </p>
-        <Link to="/" className="btn btn-larch" style={{ width: '100%', marginTop: 18 }}>
-          Walk the valley
-        </Link>
+        {onBegin ? (
+          <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={onBegin}>
+            Set up your logbook
+          </button>
+        ) : (
+          <Link to="/" className="btn btn-larch" style={{ width: '100%', marginTop: 18 }}>
+            Walk the valley
+          </Link>
+        )}
       </div>
     </div>
   )

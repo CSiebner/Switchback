@@ -8,7 +8,7 @@ const AGES = ['18-29', '30-39', '40-49', '50+'] as const
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'] as const
 
 /** One sitting: the lines you know, how you hike, and a crew. */
-export function Onboarding() {
+export function Onboarding({ onBack }: { onBack?: () => void }) {
   const finish = useAppStore((s) => s.finishOnboarding)
   const setAge = useAppStore((s) => s.setAgeBracket)
   const setLevel = useAppStore((s) => s.setExperience)
@@ -29,7 +29,14 @@ export function Onboarding() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'var(--rock-flour)', overflowY: 'auto', padding: 'calc(24px + env(safe-area-inset-top)) 20px 32px' }}>
       <div className="container">
-        <Mark />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Mark />
+          {step === 0 && onBack && (
+            <button type="button" className="survey" style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={onBack}>
+              Back
+            </button>
+          )}
+        </div>
         {step === 0 && (
           <>
             <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 28, lineHeight: 0.95 }}>
