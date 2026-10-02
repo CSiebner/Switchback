@@ -50,8 +50,9 @@ export function Home() {
   const youSec = yourBest ?? ghostSec * 1.05
   const race = useMemo(() => {
     const slower = Math.max(ghostSec, youSec)
-    const start = performance.now()
+    let start: number | undefined
     return (now: number) => {
+      start ??= now
       const t = ((now - start) / 6000) % 1
       return {
         ghost: Math.min(1, (t * slower) / ghostSec),
@@ -149,7 +150,10 @@ export function Home() {
         <section className="container page-pad" style={{ marginTop: 12 }}>
           <p className="survey">Rivals within reach</p>
           <div style={{ marginTop: 8 }}>
-            {rivals.slice(0, 3).map(({ trail, ahead, gap: g }) => (
+            {rivals
+              .filter((r) => !(chase && r.trail.id === chase.trailId && r.ahead.userId === chase.userId))
+              .slice(0, 3)
+              .map(({ trail, ahead, gap: g }) => (
               <div
                 key={trail.id}
                 className="hairline"

@@ -44,3 +44,9 @@ export function difficultyColor(d: string): string {
   if (d === 'Moderate') return '#c4841d'
   return '#c23b3b'
 }
+
+/** Coarse duration for typical times: "47 min", "1h30", "3h30". */
+export function formatDuration(min: number): string {
+  if (min < 60) return `${Math.round(min)} min`
+  return `${Math.floor(min / 60)}h${String(Math.round(min % 60)).padStart(2, '0')}`
+}

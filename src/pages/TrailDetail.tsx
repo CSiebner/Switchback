@@ -9,7 +9,7 @@ import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
 import { getTrail } from '../data/trails'
-import { formatGain, formatKm, formatTime } from '../lib/format'
+import { formatDuration, formatGain, formatKm, formatTime } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -90,7 +90,7 @@ export function TrailDetail() {
           mood="day"
           pitch={55}
           fit
-          fitPadding={{ top: 90, bottom: 110, left: 36, right: 36 }}
+          fitPadding={{ top: 72, bottom: 40, left: 44, right: 44 }}
           interactive={false}
         />
         <button className="btn btn-ghost tr-chrome back" aria-label="Back" onClick={() => navigate(-1)}>
@@ -110,7 +110,7 @@ export function TrailDetail() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="survey num">
             {trail.region} · {trail.difficulty} · {formatKm(trail.distKm)} · {formatGain(trail.gainM)} ↑ · typical{' '}
-            {formatTime(trail.typicalMin * 60)}
+            {formatDuration(trail.typicalMin)}
           </p>
           <h1 className="display tr-h1">{trail.name}</h1>
           <p className="tr-summary">{trail.summary}</p>

@@ -60,8 +60,8 @@ function ensureTerrain(map: Map, mood: MapMood) {
         type: 'hillshade',
         source: TERRAIN_SOURCE,
         paint: {
-          'hillshade-exaggeration': mood === 'dusk' ? 0.55 : 0.32,
-          'hillshade-shadow-color': mood === 'dusk' ? '#030a09' : '#4e6c66',
+          'hillshade-exaggeration': mood === 'dusk' ? 0.6 : 0.48,
+          'hillshade-shadow-color': mood === 'dusk' ? '#030a09' : '#3f5a55',
           'hillshade-highlight-color': mood === 'dusk' ? '#1f4a45' : '#ffffff',
           'hillshade-accent-color': mood === 'dusk' ? '#0b1716' : '#8da8a2',
         },
@@ -163,14 +163,14 @@ function ensureRouteLayers(map: Map, mood: MapMood) {
     type: 'line',
     source: SRC_ROUTE,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': dusk ? '#06110f' : '#0f201e', 'line-width': 7, 'line-opacity': dusk ? 0.9 : 0.75 },
+    paint: { 'line-color': dusk ? '#06110f' : '#f3f8f6', 'line-width': 7.5, 'line-opacity': dusk ? 0.9 : 0.85 },
   })
   add({
     id: 'sb-route',
     type: 'line',
     source: SRC_ROUTE,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': dusk ? '#2a5d58' : '#9fc3be', 'line-width': 3.5 },
+    paint: { 'line-color': dusk ? '#2a5d58' : '#0a8a82', 'line-width': 3.5, 'line-opacity': dusk ? 1 : 0.62 },
   })
   add({
     id: 'sb-route-glow',
@@ -358,14 +358,17 @@ export function TrailMap({
       applyMood(map, mood)
       ;['sb-route-casing', 'sb-route', 'sb-route-done', 'sb-you', 'sb-ghost'].forEach((id) => {
         if (!map.getLayer(id)) return
-        if (id === 'sb-route-casing') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#06110f' : '#0f201e')
-        if (id === 'sb-route') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2a5d58' : '#9fc3be')
+        if (id === 'sb-route-casing') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#06110f' : '#f3f8f6')
+        if (id === 'sb-route') {
+          map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2a5d58' : '#0a8a82')
+          map.setPaintProperty(id, 'line-opacity', mood === 'dusk' ? 1 : 0.62)
+        }
         if (id === 'sb-route-done') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2fd4c4' : '#0a8a82')
         if (id === 'sb-you') map.setPaintProperty(id, 'circle-color', mood === 'dusk' ? '#2fd4c4' : '#0a8a82')
       })
       if (map.getLayer('hillshade')) {
-        map.setPaintProperty('hillshade', 'hillshade-exaggeration', mood === 'dusk' ? 0.55 : 0.32)
-        map.setPaintProperty('hillshade', 'hillshade-shadow-color', mood === 'dusk' ? '#030a09' : '#4e6c66')
+        map.setPaintProperty('hillshade', 'hillshade-exaggeration', mood === 'dusk' ? 0.6 : 0.48)
+        map.setPaintProperty('hillshade', 'hillshade-shadow-color', mood === 'dusk' ? '#030a09' : '#3f5a55')
         map.setPaintProperty('hillshade', 'hillshade-highlight-color', mood === 'dusk' ? '#1f4a45' : '#ffffff')
         map.setPaintProperty('hillshade', 'hillshade-accent-color', mood === 'dusk' ? '#0b1716' : '#8da8a2')
       }
@@ -446,7 +449,7 @@ export function TrailMap({
           padding: fitPadding ?? { top: 80, bottom: 220, left: 40, right: 40 },
           pitch,
           duration: 900,
-          maxZoom: 14.2,
+          maxZoom: 15,
         })
       }
 

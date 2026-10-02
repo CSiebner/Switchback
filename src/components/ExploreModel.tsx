@@ -1,6 +1,6 @@
 import type { ConditionReport, Run, Trail } from '../data/seed'
 import { getHiker } from '../data/seed'
-import { conditionConfidence, formatGain, formatKm, formatTime } from '../lib/format'
+import { conditionConfidence, formatDuration, formatGain, formatKm, formatTime } from '../lib/format'
 import { bestTime, leaderboard } from '../store/useAppStore'
 
 export interface Rival {
@@ -86,10 +86,7 @@ export function sortLines(lines: Line[]): Line[] {
   })
 }
 
-export function formatTypical(min: number): string {
-  if (min < 60) return `${min} min`
-  return `${Math.floor(min / 60)}h${String(Math.round(min % 60)).padStart(2, '0')}`
-}
+export const formatTypical = formatDuration
 
 export function lineStats(t: Trail): string {
   return `${formatKm(t.distKm)} · ${formatGain(t.gainM)} ↑`
