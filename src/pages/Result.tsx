@@ -13,7 +13,8 @@ import { leaderboard, useAppStore } from '../store/useAppStore'
 type Stage = 'replay' | 'split' | 'rank' | 'poster'
 
 export function Result() {
-  const result = useAppStore((s) => s.lastResult)
+  // Snapshot on mount: clearing the store result mid-navigation must not yank this screen away.
+  const [result] = useState(() => useAppStore.getState().lastResult)
   const runs = useAppStore((s) => s.runs)
   const crews = useAppStore((s) => s.crews)
   const joinedCrewIds = useAppStore((s) => s.joinedCrewIds)
@@ -105,7 +106,7 @@ export function Result() {
                     <Ladder board={board} youIdx={youIdx} rankBefore={result.rankBefore} />
                     {passed.length > 0 && (
                       <p style={{ marginTop: 12, fontWeight: 700, color: 'var(--larch-hi)' }}>
-                        You passed {passed.join(', ')}.
+                        You passed {passed.length > 1 ? `${passed.slice(0, -1).join(', ')} and ${passed[passed.length - 1]}` : passed[0]}
                       </p>
                     )}
                   </motion.div>

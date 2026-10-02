@@ -51,11 +51,15 @@ export function Record() {
   }, [recording?.paused, recording?.trailId, tickRecording])
 
   const elapsedSec = (recording?.elapsedMs ?? 0) / 1000
-  // Prototype pacing: you move at the typical pace, ghost moves at target pace.
   // Demo accelerator: 1 real second = 60 trail seconds so the HUD comes alive in a demo.
   const demoScale = 60
-  const trailSec = elapsedSec * demoScale
-  const youProgress = Math.min(0.995, trailSec / (trail.typicalMin * 60 * 0.97))
+  // The saved demo time is 3% under target, so "you" are paced to finish exactly then.
+  const demoTimeSec = Math.max(60, Math.round(targetSec * 0.97))
+  // Hold at the summit once the demo run arrives (keeps the split honest if the user lingers).
+  const trailSec = Math.min(elapsedSec * demoScale, demoTimeSec)
+  // Narrative pacing: start a touch behind the ghost, reel it in, pass late in the climb.
+  const x = Math.min(1, trailSec / demoTimeSec)
+  const youProgress = Math.min(0.995, x - 0.035 * Math.sin(Math.PI * x))
   const ghostProgress = Math.min(0.995, trailSec / targetSec)
 
   const split = useMemo(() => {
@@ -63,8 +67,6 @@ export function Record() {
     const ghostTimeAtYou = youProgress * targetSec
     return trailSec - ghostTimeAtYou
   }, [trailSec, youProgress, targetSec])
-
-  const demoTimeSec = Math.max(60, Math.round(targetSec * 0.97))
   const kmDone = (youProgress * trail.distKm).toFixed(1)
 
   if (finishing && recording) {

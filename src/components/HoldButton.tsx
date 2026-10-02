@@ -14,17 +14,30 @@ interface Props {
 export function HoldButton({ label, holdMs = 900, onComplete, onTap, color = '#f5b544', icon }: Props) {
   const [progress, setProgress] = useState(0)
   const raf = useRef<number | null>(null)
+  const timer = useRef<number | null>(null)
   const start = useRef<number | null>(null)
+  const downAt = useRef<number | null>(null)
   const done = useRef(false)
 
   const stop = (fire: boolean) => {
     if (raf.current) cancelAnimationFrame(raf.current)
+    if (timer.current) clearTimeout(timer.current)
     raf.current = null
+    timer.current = null
     const wasHolding = start.current !== null
     start.current = null
+    downAt.current = null
     if (!fire && wasHolding && !done.current && progress < 0.15) onTap?.()
     done.current = false
     setProgress(0)
+  }
+
+  const complete = () => {
+    if (done.current || start.current === null) return
+    done.current = true
+    setProgress(1)
+    onComplete()
+    stop(true)
   }
 
   const tick = (ts: number) => {
@@ -32,12 +45,18 @@ export function HoldButton({ label, holdMs = 900, onComplete, onTap, color = '#f
     const p = Math.min(1, (ts - start.current) / holdMs)
     setProgress(p)
     if (p >= 1) {
-      done.current = true
-      onComplete()
-      stop(true)
+      complete()
       return
     }
     raf.current = requestAnimationFrame(tick)
+  }
+
+  const begin = (eventTs: number) => {
+    downAt.current = eventTs
+    start.current = performance.now()
+    raf.current = requestAnimationFrame(tick)
+    // Timer guarantees completion even when rAF is throttled or starved.
+    timer.current = window.setTimeout(complete, holdMs + 30)
   }
 
   useEffect(() => () => stop(true), [])
@@ -50,10 +69,13 @@ export function HoldButton({ label, holdMs = 900, onComplete, onTap, color = '#f
       className="hold-btn"
       onPointerDown={(e) => {
         ;(e.target as Element).setPointerCapture?.(e.pointerId)
-        start.current = performance.now()
-        raf.current = requestAnimationFrame(tick)
+        begin(e.timeStamp)
       }}
-      onPointerUp={() => stop(false)}
+      onPointerUp={(e) => {
+        // Trust the event clock: a long press counts even if the main thread was busy.
+        if (downAt.current !== null && e.timeStamp - downAt.current >= holdMs) complete()
+        else stop(false)
+      }}
       onPointerCancel={() => stop(true)}
       onPointerLeave={() => stop(true)}
       aria-label={label}

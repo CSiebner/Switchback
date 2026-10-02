@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
@@ -11,35 +11,9 @@ import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 export function Home() {
   const runs = useAppStore((s) => s.runs)
-  const chase = useAppStore((s) => s.chase)
+  const pinnedChase = useAppStore((s) => s.chase)
   const feed = useAppStore((s) => s.feed)
   const setChase = useAppStore((s) => s.setChase)
-
-  const chaseTrail = chase ? getTrail(chase.trailId) : undefined
-  const yourBest = chase ? bestTime(runs, 'you', chase.trailId) : undefined
-  const gap = yourBest !== undefined && chase ? yourBest - chase.timeSec : undefined
-
-  // Ghost race preview loop: 6s cycle
-  const [t, setT] = useState(0)
-  useEffect(() => {
-    let raf = 0
-    const start = performance.now()
-    const loop = (now: number) => {
-      const p = ((now - start) / 6000) % 1
-      setT(p)
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [])
-
-  const ghostSec = chase?.timeSec ?? 1
-  const youSec = yourBest ?? ghostSec * 1.05
-  const slower = Math.max(ghostSec, youSec)
-  const ghostProgress = Math.min(1, (t * slower) / ghostSec)
-  const youProgress = Math.min(1, (t * slower) / youSec)
-
-  const yourTrails = trails.filter((tr) => runs.some((r) => r.userId === 'you' && r.trailId === tr.id))
 
   const rivals = trails
     .map((tr) => {
@@ -54,6 +28,40 @@ export function Home() {
     .filter(Boolean)
     .sort((a, b) => a!.gap - b!.gap) as { trail: (typeof trails)[0]; ahead: { userId: string; timeSec: number }; gap: number }[]
 
+  // No pinned ghost? The board promotes whoever is closest ahead of you, so there is always a next move.
+  const nextRival = rivals[0]
+  const chase =
+    pinnedChase ??
+    (nextRival
+      ? {
+          trailId: nextRival.trail.id,
+          userId: nextRival.ahead.userId,
+          timeSec: nextRival.ahead.timeSec,
+          label: getHiker(nextRival.ahead.userId)?.name ?? 'Rival',
+        }
+      : undefined)
+
+  const chaseTrail = chase ? getTrail(chase.trailId) : undefined
+  const yourBest = chase ? bestTime(runs, 'you', chase.trailId) : undefined
+  const gap = yourBest !== undefined && chase ? yourBest - chase.timeSec : undefined
+
+  // Ghost race preview: 6s loop driven imperatively inside TrailMap (no per-frame React state)
+  const ghostSec = chase?.timeSec ?? 1
+  const youSec = yourBest ?? ghostSec * 1.05
+  const race = useMemo(() => {
+    const slower = Math.max(ghostSec, youSec)
+    const start = performance.now()
+    return (now: number) => {
+      const t = ((now - start) / 6000) % 1
+      return {
+        ghost: Math.min(1, (t * slower) / ghostSec),
+        you: Math.min(1, (t * slower) / youSec),
+      }
+    }
+  }, [ghostSec, youSec])
+
+  const yourTrails = trails.filter((tr) => runs.some((r) => r.userId === 'you' && r.trailId === tr.id))
+
   return (
     <div className="page">
       <section style={{ position: 'relative', height: '68dvh', minHeight: 480, overflow: 'hidden' }}>
@@ -61,8 +69,7 @@ export function Home() {
           <TrailMap
             trails={[]}
             route={chaseTrail.path}
-            youProgress={youProgress}
-            ghostProgress={ghostProgress}
+            animate={race}
             mood="day"
             pitch={55}
             fit
@@ -112,12 +119,15 @@ export function Home() {
                 {gap <= 0 ? 'ahead of' : 'behind'} {chase.label} · {chaseTrail.name}
               </p>
               <p className="survey num" style={{ marginTop: 6 }}>
-                your {formatTime(yourBest!)} · their {formatTime(chase.timeSec)} · {chaseTrail.distKm.toFixed(1)} km · {Math.round(chaseTrail.gainM)} m ↑
+                {pinnedChase ? 'chasing' : 'next up'} · your {formatTime(yourBest!)} · their {formatTime(chase.timeSec)} · {chaseTrail.distKm.toFixed(1)} km · {Math.round(chaseTrail.gainM)} m ↑
               </p>
               <Link
                 to={`/record?trail=${chase.trailId}`}
                 className="btn btn-larch"
                 style={{ marginTop: 18, width: '100%', padding: '20px' , fontSize: 'var(--type-lg)' }}
+                onClick={() => {
+                  if (!pinnedChase) setChase(chase)
+                }}
               >
                 Run the ghost
               </Link>

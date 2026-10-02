@@ -14,6 +14,12 @@ interface Props {
   route?: LngLat[]
   youProgress?: number
   ghostProgress?: number
+  /**
+   * Imperative animation driver. When provided, TrailMap runs its own rAF loop and
+   * writes you/ghost progress straight to the map sources, bypassing React state
+   * (60fps setState starves React Router's startTransition navigations).
+   */
+  animate?: (nowMs: number) => { you?: number; ghost?: number }
   mood?: MapMood
   pitch?: number
   follow?: boolean
@@ -232,6 +238,50 @@ function ensureRouteLayers(map: Map, mood: MapMood) {
   })
 }
 
+function drawProgress(
+  map: Map,
+  route: LngLat[],
+  cum: number[],
+  youProgress: number | undefined,
+  ghostProgress: number | undefined,
+  followPitch: number | undefined,
+) {
+  if (youProgress !== undefined) {
+    const you = pointAlong(route, cum, youProgress)
+    upsert(map, SRC_YOU, pointFeature(you))
+    upsert(map, SRC_DONE, lineFeature(slicePath(route, cum, 0, youProgress)))
+
+    if (followPitch !== undefined) {
+      const ahead = pointAlong(route, cum, Math.min(1, youProgress + 0.03))
+      map.easeTo({
+        center: you,
+        bearing: bearingBetween(you, ahead),
+        pitch: followPitch,
+        zoom: Math.max(map.getZoom(), 14),
+        duration: 450,
+        easing: (t) => t,
+      })
+    }
+  } else {
+    upsert(map, SRC_YOU, empty)
+    upsert(map, SRC_DONE, empty)
+  }
+
+  if (ghostProgress !== undefined) {
+    const ghost = pointAlong(route, cum, ghostProgress)
+    upsert(map, SRC_GHOST, pointFeature(ghost))
+    const tailLen = 0.06
+    upsert(map, SRC_GHOST_TAIL, lineFeature(slicePath(route, cum, Math.max(0, ghostProgress - tailLen), ghostProgress)))
+    if (youProgress !== undefined) {
+      upsert(map, SRC_GAP, lineFeature(slicePath(route, cum, youProgress, ghostProgress)))
+    }
+  } else {
+    upsert(map, SRC_GHOST, empty)
+    upsert(map, SRC_GHOST_TAIL, empty)
+    upsert(map, SRC_GAP, empty)
+  }
+}
+
 export function TrailMap({
   trails,
   selectedId,
@@ -239,6 +289,7 @@ export function TrailMap({
   route,
   youProgress,
   ghostProgress,
+  animate,
   mood = 'day',
   pitch = 0,
   follow = false,
@@ -253,6 +304,8 @@ export function TrailMap({
   const markersRef = useRef<Marker[]>([])
   const readyRef = useRef(false)
   const lastFitRef = useRef<string>('')
+  const animateRef = useRef(animate)
+  animateRef.current = animate
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
@@ -370,45 +423,29 @@ export function TrailMap({
         })
       }
 
-      if (youProgress !== undefined) {
-        const you = pointAlong(route, cum, youProgress)
-        upsert(map, SRC_YOU, pointFeature(you))
-        upsert(map, SRC_DONE, lineFeature(slicePath(route, cum, 0, youProgress)))
-
-        if (follow) {
-          const ahead = pointAlong(route, cum, Math.min(1, youProgress + 0.03))
-          map.easeTo({
-            center: you,
-            bearing: bearingBetween(you, ahead),
-            pitch,
-            zoom: Math.max(map.getZoom(), 14),
-            duration: 450,
-            easing: (t) => t,
-          })
-        }
-      } else {
-        upsert(map, SRC_YOU, empty)
-        upsert(map, SRC_DONE, empty)
-      }
-
-      if (ghostProgress !== undefined) {
-        const ghost = pointAlong(route, cum, ghostProgress)
-        upsert(map, SRC_GHOST, pointFeature(ghost))
-        const tailLen = 0.06
-        upsert(map, SRC_GHOST_TAIL, lineFeature(slicePath(route, cum, Math.max(0, ghostProgress - tailLen), ghostProgress)))
-        if (youProgress !== undefined) {
-          upsert(map, SRC_GAP, lineFeature(slicePath(route, cum, youProgress, ghostProgress)))
-        }
-      } else {
-        upsert(map, SRC_GHOST, empty)
-        upsert(map, SRC_GHOST_TAIL, empty)
-        upsert(map, SRC_GAP, empty)
-      }
+      if (animateRef.current) return
+      drawProgress(map, route, cum, youProgress, ghostProgress, follow ? pitch : undefined)
     }
 
     if (readyRef.current) draw()
     else map.once('sb-ready' as never, draw)
   }, [route, youProgress, ghostProgress, follow, fit, pitch, mood, fitPadding])
+
+  // Imperative animation loop (no React state per frame)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !animate || !route || route.length < 2) return
+    const cum = cumulativeDistances(route)
+    let raf = 0
+    const loop = (now: number) => {
+      raf = requestAnimationFrame(loop)
+      if (!readyRef.current) return
+      const { you, ghost } = animateRef.current!(now)
+      drawProgress(map, route, cum, you, ghost, follow ? pitch : undefined)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [animate, route, follow, pitch])
 
   return (
     <div className={className ?? 'map-wrap'}>
