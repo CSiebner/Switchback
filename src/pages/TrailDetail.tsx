@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ElevationProfile } from '../components/ElevationProfile'
 import { TrailMap } from '../components/TrailMap'
-import { CURRENT_USER_ID, getHiker, getTrail, hikers } from '../data/seed'
+import { CURRENT_USER_ID, getHiker, hikers } from '../data/seed'
+import { getTrail } from '../data/trails'
 import {
   conditionConfidence,
   formatGain,
@@ -89,11 +90,11 @@ export function TrailDetail() {
     <div className="page" style={{ paddingBottom: calcDock() }}>
       <div style={{ position: 'relative', height: 280 }}>
         <TrailMap
-          trails={[trail]}
-          selectedId={trail.id}
-          focus={trail.center}
-          zoom={12.2}
+          trails={[]}
           route={trail.path}
+          mood="day"
+          pitch={50}
+          fitPadding={{ top: 60, bottom: 80, left: 30, right: 30 }}
           interactive
         />
         <button

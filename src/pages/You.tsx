@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getTrail, trails } from '../data/seed'
+import { getTrail, trails } from '../data/trails'
 import { formatGain, formatKm, formatTime } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 

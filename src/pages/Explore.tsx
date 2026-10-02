@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TrailMap } from '../components/TrailMap'
 import { RouteSketch } from '../components/RouteSketch'
-import { trails, type Difficulty } from '../data/seed'
+import { type Difficulty } from '../data/seed'
+import { trails } from '../data/trails'
 import { formatGain, formatKm, formatTime, relativeTime, conditionConfidence } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
@@ -45,9 +46,16 @@ export function Explore() {
           trails={filtered}
           selectedId={selected?.id}
           onSelect={(id) => setSelectedId(id)}
-          focus={selected?.center}
-          zoom={selected ? 11.5 : 9.2}
           route={selected?.path}
+          mood="day"
+          pitch={40}
+          fitPadding={{ top: 140, bottom: 320, left: 40, right: 40 }}
+          pinClass={(t) => {
+            const board = leaderboard(runs, t.id)
+            if (board[0]?.userId === 'you') return 'pb'
+            if (bestTime(runs, 'you', t.id) !== undefined) return 'done'
+            return ''
+          }}
         />
 
         <div

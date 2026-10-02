@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getHiker, getTrail } from '../data/seed'
+import { getHiker } from '../data/seed'
+import { getTrail } from '../data/trails'
 import { relativeTime } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
 
