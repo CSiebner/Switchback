@@ -105,6 +105,36 @@ export function projectToBox(
   }))
 }
 
+/** Closest point on the line to a GPS fix. `t` is progress 0–1. `offM` is metres away from the line. */
+export function snapToPath(coords: LngLat[], point: LngLat): { t: number; offM: number } {
+  if (coords.length < 2) return { t: 0, offM: Infinity }
+  const origin = coords[0]
+  const mLat = 111320
+  const mLng = 111320 * Math.cos((origin[1] * Math.PI) / 180)
+  const xy = (p: LngLat): [number, number] => [(p[0] - origin[0]) * mLng, (p[1] - origin[1]) * mLat]
+  const cum = cumulativeDistances(coords)
+  const total = cum[cum.length - 1] || 1
+  const q = xy(point)
+  let best = Infinity
+  let bestAlong = 0
+  for (let i = 1; i < coords.length; i++) {
+    const a = xy(coords[i - 1])
+    const b = xy(coords[i])
+    const abx = b[0] - a[0]
+    const aby = b[1] - a[1]
+    const len2 = abx * abx + aby * aby || 1
+    const f = Math.max(0, Math.min(1, ((q[0] - a[0]) * abx + (q[1] - a[1]) * aby) / len2))
+    const dx = a[0] + abx * f - q[0]
+    const dy = a[1] + aby * f - q[1]
+    const dist = Math.hypot(dx, dy)
+    if (dist < best) {
+      best = dist
+      bestAlong = cum[i - 1] + (cum[i] - cum[i - 1]) * f
+    }
+  }
+  return { t: Math.max(0, Math.min(1, bestAlong / total)), offM: best }
+}
+
 export function smoothPath(points: { x: number; y: number }[]): string {
   if (points.length < 2) return ''
   if (points.length === 2) return `M${points[0].x},${points[0].y} L${points[1].x},${points[1].y}`

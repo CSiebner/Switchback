@@ -9,6 +9,7 @@ import { getTrail, trails } from '../data/trails'
 import type { ConditionTag } from '../data/seed'
 import { formatTime } from '../lib/format'
 import { formatPace } from '../lib/effort'
+import { snapToPath } from '../lib/geo'
 import { useDusk } from '../lib/useMood'
 import { bestTime, useAppStore } from '../store/useAppStore'
 
@@ -39,12 +40,15 @@ export function Record() {
 
   const [finishing, setFinishing] = useState(false)
   const [tags, setTags] = useState<ConditionTag[]>(['Dry'])
+  const [gps, setGps] = useState<{ t: number; offM: number } | null>(null)
 
   useDusk(true)
 
-  const activeChase = recording?.chase ?? (chase?.trailId === trail.id ? chase : undefined)
+  const optedIn = params.get('against') === '1'
+  const activeChase = recording?.chase ?? (optedIn && chase?.trailId === trail.id ? chase : undefined)
   const pb = bestTime(runs, 'you', trail.id)
   const targetSec = activeChase?.timeSec ?? pb ?? trail.typicalMin * 60
+  const usingGps = gps !== null && gps.offM < 400
 
   useEffect(() => {
     if (!recording || recording.paused) return
@@ -52,17 +56,30 @@ export function Record() {
     return () => clearInterval(id)
   }, [recording?.paused, recording?.trailId, tickRecording])
 
+  useEffect(() => {
+    if (!recording || recording.paused || !navigator.geolocation) return
+    const id = navigator.geolocation.watchPosition(
+      (pos) => {
+        const snap = snapToPath(trail.path, [pos.coords.longitude, pos.coords.latitude])
+        setGps(snap.offM < 800 ? snap : null)
+      },
+      () => setGps(null),
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 8000 },
+    )
+    return () => navigator.geolocation.clearWatch(id)
+  }, [recording?.paused, recording?.trailId, trail.path])
+
   const elapsedSec = (recording?.elapsedMs ?? 0) / 1000
   // Demo accelerator: 1 real second = 60 trail seconds so the HUD comes alive in a demo.
   const demoScale = 60
   // The saved demo time is 3% under target, so "you" are paced to finish exactly then.
   const demoTimeSec = Math.max(60, Math.round(targetSec * 0.97))
   // Hold at the summit once the demo run arrives (keeps the split honest if the user lingers).
-  const trailSec = Math.min(elapsedSec * demoScale, demoTimeSec)
-  // Narrative pacing: start a touch behind the ghost, reel it in, pass late in the climb.
+  const trailSec = usingGps ? elapsedSec : Math.min(elapsedSec * demoScale, demoTimeSec)
+  // Narrative pacing when GPS is quiet: start a touch behind, reel it in.
   const x = Math.min(1, trailSec / demoTimeSec)
-  const youProgress = Math.min(0.995, x - 0.035 * Math.sin(Math.PI * x))
-  const ghostProgress = Math.min(0.995, trailSec / targetSec)
+  const youProgress = usingGps ? Math.min(0.995, gps!.t) : Math.min(0.995, x - 0.035 * Math.sin(Math.PI * x))
+  const ghostProgress = Math.min(0.995, (usingGps ? elapsedSec : trailSec) / targetSec)
 
   const split = useMemo(() => {
     // Positive = behind. Time it would take ghost to reach your current position vs your elapsed.
@@ -110,7 +127,7 @@ export function Record() {
             className="btn btn-larch"
             style={{ width: '100%', marginTop: 28, padding: '20px' }}
             onClick={() => {
-              const adjustSec = demoTimeSec - Math.round(elapsedSec)
+              const adjustSec = usingGps ? 0 : demoTimeSec - Math.round(elapsedSec)
               const result = finishRecording({ conditions: tags, adjustSec })
               setFinishing(false)
               if (result) navigate('/result')
@@ -175,14 +192,17 @@ export function Record() {
                 {activeChase ? ` · ${formatSplit(split)} vs ${activeChase.label}` : ''}
               </p>
               <p className="survey num" style={{ marginTop: 4 }}>
-                On the line · {(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · {Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit
+                {usingGps && gps && gps.offM > 35
+                  ? `Off the line · ${Math.round(gps.offM)} m`
+                  : `On the line · ${(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · ${Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit`}
+                {usingGps ? ' · GPS' : ''}
                 {packed.includes(trail.id) ? ' · line packed on this phone' : ''}
               </p>
             </>
           ) : (
             <>
               <p className="survey">
-                {activeChase ? `Against ${activeChase.label}'s time` : pb ? 'Against your best' : 'First time on this line'}
+                {activeChase ? `Against ${activeChase.label}'s time` : pb ? 'Against your best' : 'A typical time for this line'}
               </p>
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 8, lineHeight: 0.95, color: 'var(--rock-flour)' }}>
                 {formatTime(targetSec)}
@@ -190,6 +210,7 @@ export function Record() {
               <p className="survey num" style={{ marginTop: 10 }}>
                 {trail.distKm.toFixed(1)} km · {Math.round(trail.gainM)} m ↑ · {trail.region}
               </p>
+              <p className="survey" style={{ marginTop: 8 }}>Teal is you. Gold is the time you are measuring against.</p>
             </>
           )}
         </motion.div>
@@ -214,7 +235,7 @@ export function Record() {
                   <button
                     className="btn btn-larch"
                     style={{ padding: '22px 44px', fontSize: 'var(--type-lg)' }}
-                    onClick={() => startRecording(trail.id, activeChase)}
+                    onClick={() => startRecording(trail.id, optedIn ? activeChase : undefined)}
                   >
                     Start the hike
                   </button>

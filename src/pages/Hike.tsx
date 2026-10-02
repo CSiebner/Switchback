@@ -74,9 +74,10 @@ export function Hike() {
           <Bar key={v.fromM} label={`${v.fromM}`} width={v.sec / maxVert} value={formatTime(v.sec)} />
         ))}
 
-        <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ width: '100%', marginTop: 22 }}>
-          The line
-        </Link>
+        <div className="btn-row" style={{ marginTop: 22 }}>
+          <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>The line</Link>
+          <Link to={`/record?trail=${trail.id}`} className="btn btn-larch" style={{ flex: 1 }}>Go again</Link>
+        </div>
       </div>
     </div>
   )

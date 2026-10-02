@@ -81,6 +81,8 @@ export interface Crew {
     meet?: string
     pace?: 'easy' | 'steady' | 'pushing'
     driver?: string
+    seats?: number
+    whenIso?: string
   }
 }
 

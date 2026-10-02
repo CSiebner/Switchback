@@ -39,6 +39,7 @@ export function TrailDetail() {
   const runs = useAppStore((s) => s.runs)
   const setChase = useAppStore((s) => s.setChase)
   const savedTrailIds = useAppStore((s) => s.savedTrailIds)
+  const reviews = useAppStore((s) => s.reviews)
   const toggleSaveTrail = useAppStore((s) => s.toggleSaveTrail)
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function TrailDetail() {
   const useTheirTime = () => {
     if (!above) return
     setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: nameOf(above.userId) })
-    navigate(`/record?trail=${trail.id}`)
+    navigate(`/record?trail=${trail.id}&against=1`)
   }
   const photo = heroPhoto(trail.id)
 
@@ -111,6 +112,12 @@ export function TrailDetail() {
           <p className="tr-summary">{trail.summary}</p>
           <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
           <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
+          {(() => {
+            const list = reviews.filter((r) => r.trailId === trail.id)
+            if (!list.length) return null
+            const avg = list.reduce((sum, r) => sum + r.rating, 0) / list.length
+            return <p className="survey num" style={{ marginTop: 6 }}>{avg.toFixed(1)} average · {list.length} {list.length === 1 ? 'review' : 'reviews'}</p>
+          })()}
           <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
           <TrailStory trailId={trail.id} />
         </motion.div>

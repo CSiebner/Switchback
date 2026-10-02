@@ -23,6 +23,8 @@ export function Explore() {
   const runs = useAppStore((s) => s.runs)
   const conditions = useAppStore((s) => s.conditions)
   const [filter, setFilter] = useState<ExploreFilter>('All')
+  const [region, setRegion] = useState('All areas')
+  const [climb, setClimb] = useState<'Any climb' | 'Under 400 m' | '400–700 m' | 'Over 700 m'>('Any climb')
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<string | undefined>()
   const [snap, setSnap] = useState<Snap>('peek')
@@ -31,13 +33,17 @@ export function Explore() {
   const lines = useMemo(() => {
     const q = query.trim().toLowerCase()
     return sortLines(
-      all.filter(
-        (l) =>
-          matchesFilter(l, filter) &&
-          (!q || `${l.trail.name} ${l.trail.region}`.toLowerCase().includes(q)),
-      ),
+      all.filter((l) => {
+        if (!matchesFilter(l, filter)) return false
+        if (region !== 'All areas' && l.trail.region !== region) return false
+        const gain = l.trail.gainM
+        if (climb === 'Under 400 m' && gain >= 400) return false
+        if (climb === '400–700 m' && (gain < 400 || gain > 700)) return false
+        if (climb === 'Over 700 m' && gain <= 700) return false
+        return !q || `${l.trail.name} ${l.trail.region}`.toLowerCase().includes(q)
+      }),
     )
-  }, [all, filter, query])
+  }, [all, filter, query, region, climb])
 
   const filteredTrails = useMemo(() => lines.map((l) => l.trail), [lines])
   const routes = useMemo(() => filteredTrails.map((t) => ({ id: t.id, coords: t.path })), [filteredTrails])
@@ -90,7 +96,7 @@ export function Explore() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search Bow Valley lines"
+            placeholder="Search by name"
             aria-label="Search lines"
             enterKeyHint="search"
           />
@@ -107,6 +113,14 @@ export function Explore() {
             >
               {f}
             </button>
+          ))}
+        </div>
+        <div className="ex-chips" aria-label="Area and climb">
+          {['All areas', ...new Set(trails.map((t) => t.region))].map((r) => (
+            <button key={r} type="button" className={`chip ${region === r ? 'active on' : ''}`} onClick={() => setRegion(r)}>{r}</button>
+          ))}
+          {(['Any climb', 'Under 400 m', '400–700 m', 'Over 700 m'] as const).map((c) => (
+            <button key={c} type="button" className={`chip ${climb === c ? 'active on' : ''}`} onClick={() => setClimb(c)}>{c}</button>
           ))}
         </div>
       </div>
