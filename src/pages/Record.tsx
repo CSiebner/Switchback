@@ -173,7 +173,7 @@ export function Record() {
           ← {trail.name}
         </Link>
         <span className="survey" style={{ color: 'var(--scree)' }}>
-          {recording ? (recording.paused ? 'Paused' : 'Live') : 'Ready'}
+          {recording ? (recording.paused ? 'Paused' : usingGps ? 'GPS' : 'Replay') : 'Ready'}
         </span>
       </div>
 
@@ -211,6 +211,7 @@ export function Record() {
                 {trail.distKm.toFixed(1)} km · {Math.round(trail.gainM)} m ↑ · {trail.region}
               </p>
               <p className="survey" style={{ marginTop: 8 }}>Teal is you. Gold is the time you are measuring against.</p>
+              <p className="survey" style={{ marginTop: 4 }}>This replays the line. On the trail it follows your GPS.</p>
             </>
           )}
         </motion.div>

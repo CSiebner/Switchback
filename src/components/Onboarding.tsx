@@ -13,7 +13,9 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
   const setAge = useAppStore((s) => s.setAgeBracket)
   const setLevel = useAppStore((s) => s.setExperience)
   const createCrew = useAppStore((s) => s.createCrew)
+  const setDisplayName = useAppStore((s) => s.setDisplayName)
   const [step, setStep] = useState(0)
+  const [name, setName] = useState('')
   const [known, setKnown] = useState<string[]>(['ha-ling', 'tunnel-mountain'])
   const [age, setAgeLocal] = useState<(typeof AGES)[number]>('30-39')
   const [level, setLevelLocal] = useState<(typeof LEVELS)[number]>('Intermediate')
@@ -22,6 +24,7 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
   const done = () => {
     setAge(age)
     setLevel(level)
+    if (name.trim()) setDisplayName(name)
     if (crewName.trim().length > 1) createCrew(crewName.trim(), 'Bow Valley', ['liam', 'maya'])
     finish(known)
   }
@@ -40,8 +43,18 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
         {step === 0 && (
           <>
             <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 28, lineHeight: 0.95 }}>
-              Which lines do you already know?
+              What should we call you?
             </h1>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="First name"
+              aria-label="First name"
+              style={{ width: '100%', marginTop: 16, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
+            />
+            <h2 className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28 }}>
+              Which lines do you already know?
+            </h2>
             <div style={{ marginTop: 18 }}>
               {trails.map((t) => {
                 const on = known.includes(t.id)

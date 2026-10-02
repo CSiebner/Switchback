@@ -56,10 +56,12 @@ interface AppState {
   lastResult?: LastResult
   ageBracket: '18-29' | '30-39' | '40-49' | '50+'
   experience: 'Beginner' | 'Intermediate' | 'Advanced'
+  displayName: string
 
   setChase: (chase?: ChaseTarget) => void
   setAgeBracket: (age: AppState['ageBracket']) => void
   setExperience: (level: AppState['experience']) => void
+  setDisplayName: (name: string) => void
   toggleSaveTrail: (trailId: string) => void
   joinCrew: (crewId: string) => void
   toggleKudo: (feedId: string) => void
@@ -104,12 +106,15 @@ export const useAppStore = create<AppState>()(
       },
       ageBracket: '30-39',
       experience: 'Intermediate',
+      displayName: '',
 
       setChase: (chase) => set({ chase }),
 
       setAgeBracket: (ageBracket) => set({ ageBracket }),
 
       setExperience: (experience) => set({ experience }),
+
+      setDisplayName: (displayName) => set({ displayName: displayName.trim() }),
 
       toggleSaveTrail: (trailId) =>
         set((s) => ({
@@ -408,6 +413,7 @@ export const useAppStore = create<AppState>()(
         chase: s.chase,
         ageBracket: s.ageBracket,
         experience: s.experience,
+        displayName: s.displayName,
       }),
     },
   ),

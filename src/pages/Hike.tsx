@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
 import { formatTime } from '../lib/format'
-import { effortFor, formatPace } from '../lib/effort'
+import { caloriesFor, effortFor, formatPace } from '../lib/effort'
 import { getTrail } from '../data/trails'
 import { heroPhoto } from '../data/photos'
 import { useAppStore } from '../store/useAppStore'
@@ -56,6 +56,10 @@ export function Hike() {
           <Stat v={`${trail.distKm.toFixed(1)} km`} l="distance" />
           <Stat v={`${Math.round(trail.gainM)} m`} l="gain" />
           <Stat v={effort.ascentPaceSec ? `${formatPace(effort.ascentPaceSec)}` : '—'} l="per 100 m up" />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 16 }}>
+          <Stat v={effort.steps.toLocaleString()} l="steps" />
+          <Stat v={caloriesFor(moving, effort.ascentM).toLocaleString()} l="kcal" />
         </div>
 
         <EffortBadge name={trail.name} timeSec={run.timeSec} mine={mine.map((r) => r.timeSec)} />

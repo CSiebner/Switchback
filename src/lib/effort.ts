@@ -117,6 +117,11 @@ export function effortFor(trail: Pick<Trail, 'distKm' | 'elevation'>, timeSec: n
   }
 }
 
+/** Rough hiking energy: time on the move, plus the cost of the climb. */
+export function caloriesFor(timeSec: number, ascentM: number, kg = 70): number {
+  return Math.round((timeSec / 3600) * kg * 6 + ascentM * 0.14)
+}
+
 export function formatPace(sec: number): string {
   const s = Math.max(0, Math.round(sec))
   const m = Math.floor(s / 60)

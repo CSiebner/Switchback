@@ -9,10 +9,20 @@ export function YouSettings() {
   const experience = useAppStore((s) => s.experience)
   const setAgeBracket = useAppStore((s) => s.setAgeBracket)
   const setExperience = useAppStore((s) => s.setExperience)
+  const displayName = useAppStore((s) => s.displayName)
+  const setDisplayName = useAppStore((s) => s.setDisplayName)
 
   return (
     <section className="yo-section">
-      <span className="survey head">Fair rankings use</span>
+      <span className="survey head">Your name</span>
+      <input
+        value={displayName}
+        onChange={(e) => setDisplayName(e.target.value)}
+        placeholder="First name"
+        aria-label="First name"
+        style={{ width: '100%', marginTop: 10, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
+      />
+      <span className="survey head" style={{ marginTop: 28 }}>Fair rankings use</span>
       <span className="survey yo-seg-label" style={{ marginTop: 0 }}>Age bracket</span>
       <div className="segmented yo-seg">
         {AGES.map((a) => (

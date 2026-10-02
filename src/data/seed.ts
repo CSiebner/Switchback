@@ -119,7 +119,7 @@ export const trails: Trail[] = [
     difficulty: 'Hard',
     distKm: 6.4,
     gainM: 726,
-    typicalMin: 180,
+    typicalMin: 75,
     center: [-114.785, 50.887],
     path: [
       [-114.792, 50.879], [-114.79, 50.881], [-114.788, 50.883], [-114.786, 50.885],
@@ -136,7 +136,7 @@ export const trails: Trail[] = [
     difficulty: 'Hard',
     distKm: 7.2,
     gainM: 810,
-    typicalMin: 210,
+    typicalMin: 65,
     center: [-115.398, 51.064],
     path: [
       [-115.405, 51.055], [-115.403, 51.057], [-115.401, 51.059], [-115.4, 51.061],
@@ -153,7 +153,7 @@ export const trails: Trail[] = [
     difficulty: 'Easy',
     distKm: 4.2,
     gainM: 220,
-    typicalMin: 90,
+    typicalMin: 50,
     center: [-115.268, 51.083],
     path: [
       [-115.275, 51.078], [-115.273, 51.079], [-115.271, 51.08], [-115.269, 51.082],
@@ -169,7 +169,7 @@ export const trails: Trail[] = [
     difficulty: 'Easy',
     distKm: 4.8,
     gainM: 300,
-    typicalMin: 100,
+    typicalMin: 65,
     center: [-115.168, 51.045],
     path: [
       [-115.175, 51.04], [-115.173, 51.041], [-115.171, 51.043], [-115.169, 51.044],
@@ -185,7 +185,7 @@ export const trails: Trail[] = [
     difficulty: 'Moderate',
     distKm: 4.3,
     gainM: 260,
-    typicalMin: 95,
+    typicalMin: 50,
     center: [-115.55, 51.183],
     path: [
       [-115.557, 51.178], [-115.555, 51.179], [-115.553, 51.181], [-115.551, 51.182],
@@ -201,7 +201,7 @@ export const trails: Trail[] = [
     difficulty: 'Moderate',
     distKm: 11.7,
     gainM: 600,
-    typicalMin: 240,
+    typicalMin: 140,
     center: [-115.84, 51.246],
     path: [
       [-115.855, 51.238], [-115.85, 51.24], [-115.846, 51.242], [-115.843, 51.244],

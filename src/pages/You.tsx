@@ -34,6 +34,7 @@ export function You() {
   const experience = useAppStore((s) => s.experience)
   const chase = useAppStore((s) => s.chase)
   const joinedCrewIds = useAppStore((s) => s.joinedCrewIds)
+  const displayName = useAppStore((s) => s.displayName)
 
   const mine = useMemo(() => runs.filter((r) => r.userId === CURRENT_USER_ID), [runs])
 
@@ -81,7 +82,7 @@ export function You() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.1), rgba(11,23,22,0.78))' }} />
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 20 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-            Logbook · {ageBracket} · {experience} · {joinedCrewIds.length} crew
+            {displayName || 'Logbook'} · {ageBracket} · {experience} · {joinedCrewIds.length} crew
           </p>
           <div className="yo-big-row" style={{ color: 'var(--rock-flour)', marginTop: 8 }}>
             <CountUp value={totalGain} />
