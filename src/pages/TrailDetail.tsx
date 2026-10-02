@@ -5,6 +5,7 @@ import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
 import { TrailBoard } from '../components/TrailBoard'
 import { TrailDirt } from '../components/TrailDirt'
 import { TrailElevation } from '../components/TrailElevation'
+import { PhotoRail } from '../components/PhotoRail'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
@@ -119,6 +120,12 @@ export function TrailDetail() {
           <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
         </motion.div>
 
+        <section style={{ marginTop: 22 }}>
+          <p className="survey">On this line</p>
+          <div style={{ marginTop: 10 }}>
+            <PhotoRail trailId={trail.id} tall />
+          </div>
+        </section>
         <TrailElevation trail={trail} />
         <TrailBoard trailId={trail.id} />
         <TrailDirt trailId={trail.id} />

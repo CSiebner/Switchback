@@ -6,6 +6,7 @@ import { RouteGlyph } from '../components/RouteGlyph'
 import { getTrail } from '../data/trails'
 import { getHiker } from '../data/seed'
 import { formatTime } from '../lib/format'
+import { effortFor, formatPace } from '../lib/effort'
 import { projectToBox, smoothPath } from '../lib/geo'
 import { useDusk } from '../lib/useMood'
 import { leaderboard, useAppStore } from '../store/useAppStore'
@@ -85,6 +86,8 @@ export function Result() {
                 <p style={{ marginTop: 14, fontSize: 'var(--type-lg)', fontWeight: 700, color: 'var(--rock-flour)' }}>
                   {splitSec <= 0 ? 'ahead of' : 'behind'} {refLabel}
                 </p>
+                {stage === 'poster' && <EffortLine distKm={trail.distKm} elevation={trail.elevation} timeSec={result.timeSec} />}
+
                 {result.isPb && (
                   <motion.p
                     initial={{ opacity: 0, x: -8 }}
@@ -163,6 +166,27 @@ export function Result() {
           )}
         </AnimatePresence>
       </div>
+    </div>
+  )
+}
+
+function EffortLine({ distKm, elevation, timeSec }: { distKm: number; elevation: number[]; timeSec: number }) {
+  const e = effortFor({ distKm, elevation }, timeSec)
+  const cells = [
+    { v: formatPace(e.paceSecPerKm), l: '/km' },
+    { v: formatPace(e.gapSecPerKm), l: 'grade pace' },
+    { v: e.ascentPaceSec ? formatPace(e.ascentPaceSec) : '—', l: '/100m up' },
+    { v: e.descentPaceSec ? formatPace(e.descentPaceSec) : '—', l: '/100m down' },
+    { v: e.steps.toLocaleString(), l: 'steps' },
+  ]
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px 8px', marginTop: 16 }}>
+      {cells.map((c) => (
+        <div key={c.l}>
+          <p className="num" style={{ fontWeight: 800, fontSize: 13, color: 'var(--rock-flour)' }}>{c.v}</p>
+          <p className="survey" style={{ marginTop: 2 }}>{c.l}</p>
+        </div>
+      ))}
     </div>
   )
 }

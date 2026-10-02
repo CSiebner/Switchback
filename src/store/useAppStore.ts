@@ -71,6 +71,7 @@ interface AppState {
   finishRecording: (opts?: { conditions?: ConditionTag[]; note?: string; adjustSec?: number }) => LastResult | undefined
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
+  createOuting: (crewId: string, trailId: string, when: string) => void
 }
 
 function uid(prefix: string) {
@@ -301,6 +302,26 @@ export const useAppStore = create<AppState>()(
       },
 
       clearResult: () => set({ lastResult: undefined }),
+
+      createOuting: (crewId, trailId, when) =>
+        set((s) => ({
+          crews: s.crews.map((c) =>
+            c.id === crewId ? { ...c, outing: { trailId, when, going: [CURRENT_USER_ID] } } : c,
+          ),
+          feed: [
+            {
+              id: uid('f'),
+              type: 'outing' as const,
+              userId: CURRENT_USER_ID,
+              trailId,
+              crewId,
+              text: `Who's in? ${when}.`,
+              timestamp: Date.now(),
+              kudos: [],
+            },
+            ...s.feed,
+          ],
+        })),
 
       logManualRun: (trailId, timeSec, conditions) => {
         const run: Run = {

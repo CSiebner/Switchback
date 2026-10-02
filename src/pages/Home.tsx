@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
 import { RouteGlyph } from '../components/RouteGlyph'
+import { Mark } from '../components/Mark'
+import { PhotoRail } from '../components/PhotoRail'
 import { formatSplit } from '../components/Split'
 import { getHiker } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
@@ -92,7 +94,7 @@ export function Home() {
         />
 
         <div style={{ position: 'absolute', top: 'calc(18px + env(safe-area-inset-top))', left: 20, right: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <RouteGlyph coords={chaseTrail?.path ?? trails[0].path} size={34} stroke="#0f201e" strokeWidth={2.4} animate={false} />
+          <Mark />
           <span className="survey">Bow Valley · {trails.length} lines</span>
         </div>
 
@@ -145,6 +147,15 @@ export function Home() {
           )}
         </motion.div>
       </section>
+
+      {chaseTrail && (
+        <section className="container page-pad" style={{ marginTop: 8 }}>
+          <p className="survey">The dirt · {chaseTrail.name}</p>
+          <div style={{ marginTop: 10 }}>
+            <PhotoRail trailId={chaseTrail.id} />
+          </div>
+        </section>
+      )}
 
       {rivals.length > 0 && (
         <section className="container page-pad" style={{ marginTop: 12 }}>
