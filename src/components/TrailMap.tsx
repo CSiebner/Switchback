@@ -12,6 +12,8 @@ interface Props {
   selectedId?: string
   onSelect?: (id: string) => void
   route?: LngLat[]
+  /** Faint context lines for every trail in view (Explore). */
+  routes?: { id: string; coords: LngLat[] }[]
   youProgress?: number
   ghostProgress?: number
   /**
@@ -32,6 +34,7 @@ interface Props {
 
 const TERRAIN_SOURCE = 'terrarium-dem'
 const SRC_ROUTE = 'route'
+const SRC_ALL = 'routes-all'
 const SRC_DONE = 'route-done'
 const SRC_GAP = 'route-gap'
 const SRC_YOU = 'you'
@@ -134,6 +137,7 @@ function upsert(map: Map, id: string, data: Feature | FeatureCollection) {
 
 function ensureRouteLayers(map: Map, mood: MapMood) {
   if (!map.getSource(SRC_ROUTE)) {
+    upsert(map, SRC_ALL, empty)
     upsert(map, SRC_ROUTE, empty)
     upsert(map, SRC_DONE, empty)
     upsert(map, SRC_GAP, empty)
@@ -147,6 +151,13 @@ function ensureRouteLayers(map: Map, mood: MapMood) {
     if (!map.getLayer(layer.id)) map.addLayer(layer)
   }
 
+  add({
+    id: 'sb-routes-all',
+    type: 'line',
+    source: SRC_ALL,
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: { 'line-color': dusk ? '#2a5d58' : '#0a8a82', 'line-width': 2.5, 'line-opacity': dusk ? 0.5 : 0.45 },
+  })
   add({
     id: 'sb-route-casing',
     type: 'line',
@@ -287,6 +298,7 @@ export function TrailMap({
   selectedId,
   onSelect,
   route,
+  routes,
   youProgress,
   ghostProgress,
   animate,
@@ -389,6 +401,21 @@ export function TrailMap({
     })
   }, [trails, selectedId, onSelect, pinClass])
 
+  // Context lines for all trails
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const draw = () => {
+      ensureRouteLayers(map, mood)
+      upsert(map, SRC_ALL, {
+        type: 'FeatureCollection',
+        features: (routes ?? []).map((r) => ({ ...lineFeature(r.coords), properties: { id: r.id } })),
+      })
+    }
+    if (readyRef.current) draw()
+    else map.once('sb-ready' as never, draw)
+  }, [routes, mood])
+
   // Route, progress, ghost
   useEffect(() => {
     const map = mapRef.current
@@ -450,6 +477,9 @@ export function TrailMap({
   return (
     <div className={className ?? 'map-wrap'}>
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      <span className={`map-attrib ${mood}`} aria-label="Map attribution">
+        © OpenStreetMap · OpenFreeMap · terrain Mapzen/AWS
+      </span>
     </div>
   )
 }
