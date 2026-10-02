@@ -8,6 +8,7 @@ import { TrailElevation } from '../components/TrailElevation'
 import { PhotoRail } from '../components/PhotoRail'
 import { WeatherWeek } from '../components/WeatherWeek'
 import { PackAdvice } from '../components/PackAdvice'
+import { LineStars, lineRatingLabel } from '../components/LineStars'
 import { expectedMin } from '../lib/bodyPlan'
 import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
@@ -59,27 +60,14 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   )
 }
 
-function LineStars({ reviews }: { reviews: { rating: number }[] }) {
+function LineRating({ reviews }: { reviews: { rating: number }[] }) {
   const avg = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
-  const filled = Math.round(avg)
   return (
     <div>
-      <p style={{ display: 'flex', gap: 2, margin: 0, minHeight: '1.2em' }} aria-label={reviews.length ? `${avg.toFixed(1)} out of 5` : 'No ratings yet'}>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <svg key={i} width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-            <path
-              d="M12 3.2 14.7 9l6.3.6-4.8 4.1 1.5 6.1L12 16.8 6.3 19.8 7.8 13.7 3 9.6 9.3 9z"
-              fill={i <= filled ? 'var(--larch)' : 'none'}
-              stroke="var(--larch)"
-              strokeWidth="1.4"
-              strokeLinejoin="round"
-            />
-          </svg>
-        ))}
+      <p style={{ margin: 0, minHeight: '1.2em' }} aria-label={reviews.length ? `${avg.toFixed(1)} line rating` : 'No line rating yet'}>
+        <LineStars value={avg} />
       </p>
-      <p className="survey" style={{ marginTop: 6 }}>
-        {reviews.length ? `${avg.toFixed(1)} · ${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}` : 'no ratings yet'}
-      </p>
+      <p className="survey" style={{ marginTop: 6 }}>{lineRatingLabel(avg, reviews.length)}</p>
     </div>
   )
 }
@@ -201,7 +189,7 @@ export function TrailDetail() {
               <p className="survey" style={{ marginTop: 6 }}>elevation gain</p>
             </div>
             <div>
-              <LineStars reviews={reviews.filter((r) => r.trailId === trail.id)} />
+              <LineRating reviews={reviews.filter((r) => r.trailId === trail.id)} />
             </div>
           </div>
           {hasRun && (
@@ -238,11 +226,9 @@ export function TrailDetail() {
         <TrailDirt trailId={trail.id} />
         <TrailReviews trailId={trail.id} />
 
-        <section style={{ marginTop: 36 }}>
-          <p className="survey">More of this line</p>
-          <div style={{ marginTop: 10 }}>
-            <PhotoRail trailId={trail.id} />
-          </div>
+        <section className="tr-band photos">
+          <p className="survey head">More of this line</p>
+          <PhotoRail trailId={trail.id} />
         </section>
         <TrailElevation trail={trail} />
         <TrailBoard trailId={trail.id} />

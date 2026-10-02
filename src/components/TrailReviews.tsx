@@ -3,18 +3,9 @@ import { motion } from 'framer-motion'
 import { getHiker } from '../data/seed'
 import { relativeTime } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
+import { LineStar, LineStars, lineRatingLabel } from './LineStars'
 
 const EASE = [0.22, 1, 0.36, 1] as const
-
-function Ticks({ value }: { value: number }) {
-  return (
-    <span className="tr-ticks" aria-label={`${value} of 5`}>
-      {[1, 2, 3, 4, 5].map((n) => (
-        <i key={n} className={`tr-tick ${n <= value ? 'on' : ''}`} />
-      ))}
-    </span>
-  )
-}
 
 export function TrailReviews({ trailId }: { trailId: string }) {
   const reviews = useAppStore((s) => s.reviews)
@@ -35,12 +26,16 @@ export function TrailReviews({ trailId }: { trailId: string }) {
   }
 
   return (
-    <section className="tr-section">
-      <span className="survey head">
-        What people wrote · {list.length ? avg.toFixed(1) : '—'} · {list.length}
-      </span>
+    <section className="tr-band line">
+      <span className="survey head">Line rating</span>
+      <p style={{ margin: '0 0 4px' }} aria-label={list.length ? `${avg.toFixed(1)} line rating from ${list.length}` : 'No line rating yet'}>
+        <LineStars value={avg} size={22} />
+      </p>
+      <p className="survey" style={{ marginBottom: 4 }}>
+        {list.length ? `${avg.toFixed(1)} from ${list.length} ${list.length === 1 ? 'hiker' : 'hikers'}` : lineRatingLabel(avg, list.length)}
+      </p>
       <div>
-        {list.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No reviews yet</p>}
+        {list.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No line rating yet</p>}
         {list.map((r, i) => (
           <motion.div
             key={r.id}
@@ -56,7 +51,9 @@ export function TrailReviews({ trailId }: { trailId: string }) {
                 {' · '}
                 {relativeTime(r.timestamp)}
               </span>
-              <Ticks value={r.rating} />
+              <span aria-label={`${r.rating} line rating`}>
+                <LineStars value={r.rating} size={14} />
+              </span>
             </div>
             {r.text && <p style={{ marginTop: 6, fontSize: 'var(--type-md)', lineHeight: 1.45 }}>{r.text}</p>}
           </motion.div>
@@ -65,14 +62,14 @@ export function TrailReviews({ trailId }: { trailId: string }) {
 
       <div className="hairline" style={{ paddingTop: 16 }}>
         {!open ? (
-          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Write a review</button>
+          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Rate this line</button>
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-            <span className="survey">Your line · tap to rate</span>
-            <div className="tr-pick">
+            <span className="survey">Your line rating</span>
+            <div className="tr-pick" role="group" aria-label="Line rating">
               {[1, 2, 3, 4, 5].map((n) => (
-                <button key={n} aria-label={`${n} of 5`} onClick={() => setRating(n)}>
-                  <i className={`tr-tick ${n <= rating ? 'on' : ''}`} />
+                <button key={n} type="button" aria-label={`${n} line rating`} aria-pressed={n === rating} onClick={() => setRating(n)}>
+                  <LineStar on={n <= rating} size={26} />
                 </button>
               ))}
             </div>
