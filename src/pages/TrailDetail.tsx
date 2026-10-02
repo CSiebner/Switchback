@@ -26,32 +26,37 @@ function plainDuration(sec: number) {
   return rest ? `${hours} hr ${rest} min` : `${hours} hr`
 }
 
-function TrailBadges({ name, holds, rank, field, improvedSec }: { name: string; holds: boolean; rank: number; field: number; improvedSec: number }) {
-  const lines: string[] = []
-  if (holds) lines.push(`You hold ${name}. Amazing work.`)
-  else if (rank > 0 && field >= 10 && rank / field <= 0.1) lines.push(`You're in the top 10% on ${name}. Amazing work.`)
-  if (improvedSec >= 60) lines.push(`You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`)
-  if (lines.length === 0) return null
+function percentBucket(place: number, total: number, cuts: number[]): number | null {
+  if (place <= 0 || total < 8) return null
+  const pct = place / total
+  return cuts.find((cut) => pct <= cut / 100) ?? null
+}
+
+function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name: string; holds: boolean; rank: number; field: number; attempts: number; improvedSec: number }) {
+  let text: string | null = null
+  const amongHikers = percentBucket(rank, field, [5, 10, 15])
+  const amongYours = percentBucket(1, attempts, [5, 10])
+  if (holds) text = `You hold ${name}. Amazing work.`
+  else if (amongHikers) text = `You're in the top ${amongHikers}% on ${name}. Amazing work.`
+  else if (amongYours) text = `This is in the top ${amongYours}% of the ${attempts} times you've hiked ${name}.`
+  else if (attempts >= 3) text = `Your fastest of the ${attempts} times you've hiked ${name}.`
+  else if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
+  if (!text) return null
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
-      {lines.map((text) => (
-        <p
-          key={text}
-          style={{
-            margin: 0,
-            padding: '11px 14px',
-            borderRadius: 14,
-            background: 'rgba(217,119,6,0.12)',
-            border: '1px solid rgba(217,119,6,0.45)',
-            fontWeight: 700,
-            fontSize: 14,
-            lineHeight: 1.35,
-          }}
-        >
-          {text}
-        </p>
-      ))}
-    </div>
+    <p
+      style={{
+        margin: '14px 0 0',
+        padding: '11px 14px',
+        borderRadius: 14,
+        background: 'rgba(217,119,6,0.12)',
+        border: '1px solid rgba(217,119,6,0.45)',
+        fontWeight: 700,
+        fontSize: 14,
+        lineHeight: 1.35,
+      }}
+    >
+      {text}
+    </p>
   )
 }
 
@@ -160,6 +165,7 @@ export function TrailDetail() {
             holds={iAmFirst}
             rank={hasRun ? myIdx + 1 : 0}
             field={board.length}
+            attempts={runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length}
             improvedSec={(() => {
               const mine = runs
                 .filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id)

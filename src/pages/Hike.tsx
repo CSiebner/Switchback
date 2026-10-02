@@ -58,6 +58,8 @@ export function Hike() {
           <Stat v={effort.ascentPaceSec ? `${formatPace(effort.ascentPaceSec)}` : '—'} l="per 100 m up" />
         </div>
 
+        <EffortBadge name={trail.name} timeSec={run.timeSec} mine={mine.map((r) => r.timeSec)} />
+
         {prev && prevDelta !== undefined && (
           <p style={{ marginTop: 18, fontWeight: 700 }}>
             {prevDelta < 0 ? `${formatTime(-prevDelta)} faster` : prevDelta > 0 ? `${formatTime(prevDelta)} slower` : 'Same time'} than your previous {formatTime(prev.timeSec)} on this line.
@@ -81,6 +83,33 @@ export function Hike() {
       </div>
     </div>
   )
+}
+
+function EffortBadge({ name, timeSec, mine }: { name: string; timeSec: number; mine: number[] }) {
+  if (mine.length < 2) return null
+  const place = mine.filter((t) => t < timeSec).length + 1
+  const pct = place / mine.length
+  const bucket = mine.length >= 8 ? [5, 10].find((cut) => pct <= cut / 100) : undefined
+  const text = bucket
+    ? `Top ${bucket}% of the ${mine.length} times you've hiked ${name}.`
+    : place === 1
+      ? `Your fastest of the ${mine.length} times you've hiked ${name}.`
+      : `Your ${ordinal(place)} best of the ${mine.length} times you've hiked ${name}.`
+  return (
+    <p style={{ margin: '16px 0 0', padding: '11px 14px', borderRadius: 14, background: 'rgba(217,119,6,0.12)', border: '1px solid rgba(217,119,6,0.45)', fontWeight: 700, fontSize: 14, lineHeight: 1.35 }}>
+      {text}
+    </p>
+  )
+}
+
+function ordinal(n: number) {
+  const mod = n % 100
+  if (mod >= 11 && mod <= 13) return `${n}th`
+  const last = n % 10
+  if (last === 1) return `${n}st`
+  if (last === 2) return `${n}nd`
+  if (last === 3) return `${n}rd`
+  return `${n}th`
 }
 
 function Stat({ v, l }: { v: string; l: string }) {
