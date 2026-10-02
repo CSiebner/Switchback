@@ -182,7 +182,7 @@ export function Record() {
           ) : (
             <>
               <p className="survey">
-                {activeChase ? `ghost · ${activeChase.label}` : pb ? 'ghost · your best' : 'first ascent'}
+                {activeChase ? `Against ${activeChase.label}'s time` : pb ? 'Against your best' : 'First time on this line'}
               </p>
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 8, lineHeight: 0.95, color: 'var(--rock-flour)' }}>
                 {formatTime(targetSec)}
@@ -216,7 +216,7 @@ export function Record() {
                     style={{ padding: '22px 44px', fontSize: 'var(--type-lg)' }}
                     onClick={() => startRecording(trail.id, activeChase)}
                   >
-                    Run the ghost
+                    Start the hike
                   </button>
                 </motion.div>
               )}

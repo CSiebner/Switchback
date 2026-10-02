@@ -157,7 +157,7 @@ export function Result() {
                     navigate(`/record?trail=${trail.id}`)
                   }}
                 >
-                  Set next ghost −1%
+                  Aim 1% faster
                 </button>
                 <Link to={`/trail/${trail.id}`} className="btn btn-ghost" onClick={() => clearResult()}>
                   Trail

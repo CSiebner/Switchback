@@ -91,7 +91,7 @@ export function ExploreSelected({ line }: { line: Line }) {
           Open line
         </Link>
         <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={runGhost}>
-          {above ? 'Run the ghost' : 'Record'}
+          Hike this line
         </button>
       </div>
     </motion.div>
