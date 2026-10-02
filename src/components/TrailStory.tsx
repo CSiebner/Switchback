@@ -48,9 +48,9 @@ export function TrailStory({ trailId }: { trailId: string }) {
         </p>
       )}
       <button className="btn btn-ghost" style={{ width: '100%', marginTop: 14 }} onClick={() => pack(trailId)} disabled={packed.includes(trailId)}>
-        {packed.includes(trailId) ? 'Line packed on this phone' : 'Pack this line'}
+        {packed.includes(trailId) ? 'Saved on this phone' : 'Save this trail on my phone'}
       </button>
-      <p className="survey" style={{ marginTop: 6 }}>The line and its shape stay on the phone. The map picture still needs signal. Your position is never shared.</p>
+      <p className="survey" style={{ marginTop: 6 }}>The route stays available with no signal. The map picture still needs a connection. Your location is never shared.</p>
     </section>
   )
 }

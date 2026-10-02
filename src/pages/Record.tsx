@@ -196,7 +196,7 @@ export function Record() {
                   ? `Off the line · ${Math.round(gps.offM)} m`
                   : `On the line · ${(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · ${Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit`}
                 {usingGps ? ' · GPS' : ''}
-                {packed.includes(trail.id) ? ' · line packed on this phone' : ''}
+                {packed.includes(trail.id) ? ' · saved on this phone' : ''}
               </p>
             </>
           ) : (
