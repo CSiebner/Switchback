@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
 import { RouteGlyph } from '../components/RouteGlyph'
@@ -14,6 +15,20 @@ export function Home() {
   const crews = useAppStore((s) => s.crews)
   const joined = useAppStore((s) => s.joinedCrewIds)
   const setOutingGoing = useAppStore((s) => s.setOutingGoing)
+
+  const season = useMemo(() => {
+    const mine = runs.filter((r) => r.userId === CURRENT_USER_ID)
+    let km = 0
+    let gain = 0
+    const lines = new Set<string>()
+    for (const run of mine) {
+      const trail = getTrail(run.trailId)
+      km += trail?.distKm ?? 0
+      gain += trail?.gainM ?? 0
+      lines.add(run.trailId)
+    }
+    return { hikes: mine.length, km, gain, lines: lines.size }
+  }, [runs])
 
   const last = [...runs].filter((r) => r.userId === CURRENT_USER_ID).sort((a, b) => b.timestamp - a.timestamp)[0]
   const lastTrail = last ? getTrail(last.trailId) : undefined
@@ -46,6 +61,27 @@ export function Home() {
           </div>
         </section>
       )}
+      <section className="container page-pad" style={{ marginTop: 8 }}>
+        <p className="survey">Your season</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px 12px', marginTop: 16 }}>
+          <div>
+            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{season.km.toFixed(1)}</p>
+            <p className="survey" style={{ marginTop: 6 }}>km hiked</p>
+          </div>
+          <div>
+            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{Math.round(season.gain).toLocaleString('en-US')}</p>
+            <p className="survey" style={{ marginTop: 6 }}>metres up</p>
+          </div>
+          <div>
+            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{season.hikes}</p>
+            <p className="survey" style={{ marginTop: 6 }}>hikes</p>
+          </div>
+        </div>
+        <p className="survey" style={{ marginTop: 16 }}>
+          {season.lines} {season.lines === 1 ? 'line' : 'lines'} ·{' '}
+          <Link to="/you" style={{ color: 'var(--glacier)' }}>Open the logbook</Link>
+        </p>
+      </section>
       {(() => {
         const crew = crews.find((c) => joined.includes(c.id) && c.outing)
         const outing = crew?.outing

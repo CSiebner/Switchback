@@ -24,8 +24,24 @@
   color: var(--rock-flour);
 }
 
+.cr-card.plan .survey,
+.cr-card.plan .cr-body,
+.cr-card.plan .cr-name,
+.cr-card.plan .chip,
+.cr-card.plan .cr-kudo {
+  color: var(--rock-flour);
+}
+
 .cr-card.plan .survey {
   color: var(--scree);
+}
+
+.cr-card.plan .chip {
+  border-color: rgba(228, 238, 235, 0.35);
+}
+
+.cr-card.plan .cr-glyph {
+  color: var(--glacier);
 }
 
 .cr-card.mine {
@@ -136,9 +152,9 @@
   display: grid;
   grid-template-columns: 44px 1fr auto;
   column-gap: 14px;
-  align-items: center;
+  align-items: start;
   min-height: 64px;
-  padding: 12px 0;
+  padding: 4px 0 8px;
   width: 100%;
   text-align: left;
   color: inherit;
@@ -177,9 +193,11 @@ button.cr-row {
 }
 
 .cr-body {
+  display: block;
   font-size: var(--type-sm);
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--ink);
+  overflow-wrap: break-word;
 }
 
 .cr-text .survey.ell {

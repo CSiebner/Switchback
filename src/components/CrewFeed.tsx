@@ -61,14 +61,26 @@ export function CrewFeed() {
               <span className={`cr-initials ${isMe ? 'me' : ''}`}>{hiker?.initials ?? '??'}</span>
             )}
             <div className="cr-text">
-              <span className="cr-body">
-                <span className={`cr-name ${item.type === 'pb' ? 'pb' : ''}`}>{isMe ? 'You' : (hiker?.name ?? 'Hiker')}</span>{' '}
-                {item.text}
-              </span>
-              <span className="survey num">
-                {relativeTime(item.timestamp)} · {TYPE_LABEL[item.type]}
-                {trail ? ` · ${trail.name}` : ''}
-              </span>
+              {item.type === 'outing' ? (
+                <>
+                  <span className="cr-name">{trail?.name ?? 'Planned hike'}</span>
+                  {item.text.split(' · ').map((line) => (
+                    <span key={line} className="cr-body">{line}</span>
+                  ))}
+                  <span className="survey num">{relativeTime(item.timestamp)}</span>
+                </>
+              ) : (
+                <>
+                  <span className="cr-body">
+                    <span className={`cr-name ${item.type === 'pb' ? 'pb' : ''}`}>{isMe ? 'You' : (hiker?.name ?? 'Hiker')}</span>{' '}
+                    {item.text}
+                  </span>
+                  <span className="survey num">
+                    {relativeTime(item.timestamp)} · {TYPE_LABEL[item.type]}
+                    {trail ? ` · ${trail.name}` : ''}
+                  </span>
+                </>
+              )}
             </div>
             <button
               className={`kudo cr-kudo ${loved ? 'loved' : ''}`}
@@ -89,7 +101,7 @@ export function CrewFeed() {
             )}
             {(item.comments ?? []).map((c) => (
               <p key={c.id} className="survey" style={{ marginTop: 8 }}>
-                <strong style={{ color: 'var(--ink)' }}>{getHiker(c.userId)?.name}</strong> {c.text}
+                <strong>{getHiker(c.userId)?.name}</strong> {c.text}
               </p>
             ))}
             {openId === item.id ? (
