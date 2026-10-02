@@ -5,6 +5,7 @@ import { TrailMap } from '../components/TrailMap'
 import { RouteGlyph } from '../components/RouteGlyph'
 import { Mark } from '../components/Mark'
 import { PhotoRail } from '../components/PhotoRail'
+import { WeatherWeek } from '../components/WeatherWeek'
 import { formatSplit } from '../components/Split'
 import { getHiker } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
@@ -95,7 +96,12 @@ export function Home() {
 
         <div style={{ position: 'absolute', top: 'calc(18px + env(safe-area-inset-top))', left: 20, right: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Mark />
-          <span className="survey">Bow Valley · {trails.length} lines</span>
+          <span style={{ textAlign: 'right' }}>
+            <span className="survey">Bow Valley · {trails.length} lines</span>
+            {chaseTrail && (
+              <WeatherWeek lat={chaseTrail.center[1]} lng={chaseTrail.center[0]} compact />
+            )}
+          </span>
         </div>
 
         <motion.div

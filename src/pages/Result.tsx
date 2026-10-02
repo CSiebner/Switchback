@@ -54,7 +54,7 @@ export function Result() {
   const crew = crews.find((c) => joinedCrewIds.includes(c.id))
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--spruce-950)', color: 'var(--rock-flour)', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--spruce-950)', color: 'var(--rock-flour)', position: 'relative', overflowY: 'auto' }}>
       <ContourBackdrop coords={trail.path} />
 
       <div className="container" style={{ position: 'relative', padding: '24px 20px calc(32px + env(safe-area-inset-bottom))', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
@@ -131,6 +131,7 @@ export function Result() {
                   </p>
                 </div>
               </div>
+              <Splits distKm={trail.distKm} elevation={trail.elevation} timeSec={result.timeSec} />
               <div className="btn-row" style={{ marginTop: 10 }}>
                 <Link
                   to="/crews"
@@ -166,6 +167,26 @@ export function Result() {
           )}
         </AnimatePresence>
       </div>
+    </div>
+  )
+}
+
+function Splits({ distKm, elevation, timeSec }: { distKm: number; elevation: number[]; timeSec: number }) {
+  const e = effortFor({ distKm, elevation }, timeSec)
+  const max = Math.max(...e.splits.map((s) => s.sec))
+  const kcal = Math.round((timeSec / 3600) * 420 + e.ascentM * 0.15)
+  return (
+    <div style={{ marginTop: 8, paddingTop: 8 }}>
+      <p className="survey">Splits · {kcal.toLocaleString()} kcal</p>
+      {e.splits.map((s) => (
+        <div key={s.km} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 64px', gap: 10, alignItems: 'center', marginTop: 8 }}>
+          <span className="num" style={{ fontWeight: 700 }}>{s.km}</span>
+          <span style={{ height: 8, borderRadius: 99, background: 'rgba(228,238,235,0.12)', overflow: 'hidden' }}>
+            <span style={{ display: 'block', height: '100%', width: `${(s.sec / max) * 100}%`, background: 'var(--glacier-glow)' }} />
+          </span>
+          <span className="num survey" style={{ textAlign: 'right' }}>{formatTime(s.sec)} · {s.gainM}m</span>
+        </div>
+      ))}
     </div>
   )
 }

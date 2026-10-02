@@ -337,7 +337,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'switchback-v1.1',
+      name: 'switchback-v1.2',
       partialize: (s) => ({
         runs: s.runs,
         reviews: s.reviews,

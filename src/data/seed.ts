@@ -222,6 +222,16 @@ export const seedRuns: Run[] = [
   { id: 'r18', userId: 'ava', trailId: 'prairie-mountain', timeSec: 3540, timestamp: now - 5 * day, conditions: ['Dry'] },
   { id: 'r19', userId: 'liam', trailId: 'tunnel-mountain', timeSec: 2280, timestamp: now - 11 * day, conditions: ['Dry'] },
   { id: 'r20', userId: 'sofia', trailId: 'heart-creek', timeSec: 3600, timestamp: now - 4 * day, conditions: ['Bugs'] },
+
+  // Your year, so the logbook chart has a season behind it. All slower than current bests.
+  { id: 'r21', userId: 'you', trailId: 'tunnel-mountain', timeSec: 2800, timestamp: new Date(2026, 0, 18).getTime(), conditions: ['Dry'] },
+  { id: 'r22', userId: 'you', trailId: 'heart-creek', timeSec: 3600, timestamp: new Date(2026, 1, 12).getTime(), conditions: ['Snow'] },
+  { id: 'r23', userId: 'you', trailId: 'ha-ling', timeSec: 4000, timestamp: new Date(2026, 3, 20).getTime(), conditions: ['Dry'] },
+  { id: 'r24', userId: 'you', trailId: 'prairie-mountain', timeSec: 4600, timestamp: new Date(2026, 4, 8).getTime(), conditions: ['Muddy'] },
+  { id: 'r25', userId: 'you', trailId: 'grotto-canyon', timeSec: 2700, timestamp: new Date(2026, 5, 14).getTime(), conditions: ['Dry'] },
+  { id: 'r26', userId: 'you', trailId: 'johnston-canyon', timeSec: 8000, timestamp: new Date(2026, 6, 19).getTime(), conditions: ['Busy'] },
+  { id: 'r27', userId: 'you', trailId: 'ha-ling', timeSec: 3700, timestamp: new Date(2026, 7, 9).getTime(), conditions: ['Dry'] },
+  { id: 'r28', userId: 'you', trailId: 'tunnel-mountain', timeSec: 2600, timestamp: new Date(2026, 8, 6).getTime(), conditions: ['Dry'] },
 ]
 
 export const seedReviews: Review[] = [

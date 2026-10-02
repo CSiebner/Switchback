@@ -6,6 +6,7 @@ import { TrailBoard } from '../components/TrailBoard'
 import { TrailDirt } from '../components/TrailDirt'
 import { TrailElevation } from '../components/TrailElevation'
 import { PhotoRail } from '../components/PhotoRail'
+import { WeatherWeek } from '../components/WeatherWeek'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
@@ -115,6 +116,7 @@ export function TrailDetail() {
           </p>
           <h1 className="display tr-h1">{trail.name}</h1>
           <p className="tr-summary">{trail.summary}</p>
+          <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
 
           <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
           <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>

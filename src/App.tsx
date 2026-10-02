@@ -35,7 +35,7 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}>
       <div className="app-shell full-bleed">
         <AnimatedRoutes />
         <NavDock />

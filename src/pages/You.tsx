@@ -2,6 +2,7 @@ import '../styles/you.css'
 import { useEffect, useMemo } from 'react'
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
 import { YouChart } from '../components/YouChart'
+import { YouYear } from '../components/YouYear'
 import { YouLines, type YouLine } from '../components/YouLines'
 import { YouLog } from '../components/YouLog'
 import { YouSettings } from '../components/YouSettings'
@@ -94,6 +95,7 @@ export function You() {
           {lines.length > 0 && <YouStrip lines={lines.map((l) => ({ trail: l.trail, held: l.rank === 1 }))} />}
         </motion.div>
 
+        <YouYear runs={mine} />
         <YouLines lines={lines} />
 
         {chase && chaseTrail && chaseRuns.length >= 2 && <YouChart trail={chaseTrail} runs={chaseRuns} chase={chase} />}
