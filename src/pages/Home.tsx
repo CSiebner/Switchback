@@ -7,7 +7,7 @@ import { WeatherWeek } from '../components/WeatherWeek'
 import { formatSplit } from '../components/Split'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
-import { formatTime, relativeTime } from '../lib/format'
+import { formatDuration, formatTime, relativeTime } from '../lib/format'
 import { effortFor, formatPace } from '../lib/effort'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
@@ -18,6 +18,7 @@ export function Home() {
   const setChase = useAppStore((s) => s.setChase)
   const crews = useAppStore((s) => s.crews)
   const joined = useAppStore((s) => s.joinedCrewIds)
+  const setOutingGoing = useAppStore((s) => s.setOutingGoing)
 
   const rivals = trails
     .map((tr) => {
@@ -51,8 +52,32 @@ export function Home() {
   const lastPace = last && lastTrail ? formatPace(effortFor(lastTrail, last.timeSec).paceSecPerKm) : undefined
   const photo = lastTrail ? heroPhoto(lastTrail.id) : undefined
 
+  const fresh = trails.find((t) => !runs.some((r) => r.userId === 'you' && r.trailId === t.id))
+  const freshPhoto = fresh ? heroPhoto(fresh.id) : undefined
+
   return (
     <div className="page">
+      {fresh && (
+        <section>
+          <div style={{ position: 'relative', height: 280 }}>
+            {freshPhoto && <img src={freshPhoto.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.12), rgba(11,23,22,0.78))' }} />
+            <div style={{ position: 'absolute', left: 20, right: 20, bottom: 22, color: 'var(--rock-flour)' }}>
+              <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>New to you · {fresh.region}</p>
+              <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>{fresh.name}</h1>
+              <p className="survey num" style={{ marginTop: 8, color: 'rgba(228,238,235,0.85)' }}>
+                {fresh.difficulty} · {fresh.distKm.toFixed(1)} km · {Math.round(fresh.gainM)} m ↑ · about {formatDuration(fresh.typicalMin)}
+              </p>
+            </div>
+          </div>
+          <div className="container page-pad" style={{ marginTop: 14 }}>
+            <div className="btn-row">
+              <Link to={`/trail/${fresh.id}`} className="btn btn-ghost" style={{ flex: 1 }}>See the trail</Link>
+              <Link to={`/record?trail=${fresh.id}`} className="btn btn-larch" style={{ flex: 1.3 }}>Hike this line</Link>
+            </div>
+          </div>
+        </section>
+      )}
       <section>
         {last && lastTrail ? (
           <>
@@ -105,15 +130,26 @@ export function Home() {
         if (!crew || !outing || !outingTrail) return null
         return (
           <section className="container page-pad" style={{ marginTop: 8 }}>
-            <p className="survey">Your crew is going</p>
+            <p className="survey">With your crew</p>
             <Link to={`/trail/${outingTrail.id}`} className="hairline" style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center', padding: '16px 0' }}>
               <RouteGlyph coords={outingTrail.path} size={44} stroke="#0f201e" strokeWidth={2} />
               <span>
                 <span style={{ fontWeight: 800, display: 'block' }}>{outingTrail.name}</span>
                 <span className="survey" style={{ display: 'block', marginTop: 4 }}>{outing.when} · {outing.pace}</span>
                 <span className="survey" style={{ display: 'block' }}>{outing.meet} · {getHiker(outing.driver ?? '')?.name} driving</span>
+                <span className="survey" style={{ display: 'block' }}>
+                  {outing.going.map((id) => getHiker(id)?.name).filter(Boolean).join(', ')}
+                  {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - outing.going.length)} seats left` : ''}
+                </span>
               </span>
             </Link>
+            <button
+              className={`chip ${outing.going.includes('you') ? 'active' : ''}`}
+              style={{ marginTop: 8 }}
+              onClick={() => setOutingGoing(crew.id, !outing.going.includes('you'))}
+            >
+              {outing.going.includes('you') ? 'Going' : "I'm in"}
+            </button>
           </section>
         )
       })()}

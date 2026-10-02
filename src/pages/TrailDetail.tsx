@@ -13,7 +13,7 @@ import { TrailMap } from '../components/TrailMap'
 import { heroPhoto } from '../data/photos'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
 import { getTrail } from '../data/trails'
-import { formatDuration, formatGain, formatKm, formatTime } from '../lib/format'
+import { formatTime } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -137,7 +137,8 @@ export function TrailDetail() {
         </button>
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 64 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-            {trail.region} · {trail.difficulty} · {formatKm(trail.distKm)} · {formatGain(trail.gainM)} ↑ · typical {formatDuration(trail.typicalMin)}
+            {hasRun ? `You've walked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
+            {' · '}{trail.region} · {trail.difficulty}
           </p>
           <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 6 }}>{trail.name}</h1>
         </div>
@@ -167,8 +168,12 @@ export function TrailDetail() {
               </p>
             </div>
           </div>
-          <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
-          <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
+          {hasRun && (
+            <>
+              <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
+              <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
+            </>
+          )}
           {(() => {
             const list = reviews.filter((r) => r.trailId === trail.id)
             if (!list.length) return null
@@ -190,10 +195,13 @@ export function TrailDetail() {
             })()}
           />
           <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} band />
-          <TrailStory trailId={trail.id} />
+          {hasRun && <TrailStory trailId={trail.id} />}
         </motion.div>
 
-        <section style={{ marginTop: 22 }}>
+        <TrailDirt trailId={trail.id} />
+        <TrailReviews trailId={trail.id} />
+
+        <section style={{ marginTop: 36 }}>
           <p className="survey">More of this line</p>
           <div style={{ marginTop: 10 }}>
             <PhotoRail trailId={trail.id} />
@@ -201,13 +209,11 @@ export function TrailDetail() {
         </section>
         <TrailElevation trail={trail} />
         <TrailBoard trailId={trail.id} />
-        <TrailDirt trailId={trail.id} />
-        <TrailReviews trailId={trail.id} />
       </div>
 
       <div className="container tr-bar">
         <div className="btn-row">
-          <button className="btn btn-larch" onClick={go}>Hike this line</button>
+          <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Hike this line'}</button>
           {above && (
             <button className="btn btn-ghost" onClick={useTheirTime}>
               {nameOf(above.userId).replace(/\s+\S\.$/, '')}'s time

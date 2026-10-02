@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CURRENT_USER_ID, getHiker, type Crew } from '../data/seed'
@@ -11,10 +10,10 @@ const MAX_DISCS = 6
 
 export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
   const joinCrew = useAppStore((s) => s.joinCrew)
+  const setOutingGoing = useAppStore((s) => s.setOutingGoing)
   const outing = crew.outing
   const outingTrail = outing ? getTrail(outing.trailId) : undefined
-  const alreadyGoing = outing?.going.includes(CURRENT_USER_ID) ?? false
-  const [going, setGoing] = useState(alreadyGoing)
+  const going = outing?.going.includes(CURRENT_USER_ID) ?? false
 
   const pct = Math.min(100, (crew.challengeProgress / crew.challengeGoal) * 100)
   const ordered = [...crew.members].sort((a, b) => (a === CURRENT_USER_ID ? -1 : b === CURRENT_USER_ID ? 1 : 0))
@@ -58,13 +57,14 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
                 <span className="survey">
                   {outing.meet ?? 'Meet TBD'}
                   {outing.driver ? ` · ${getHiker(outing.driver)?.name ?? 'someone'} driving` : ''}
-                  {outing.seats !== undefined ? ` · ${outing.seats} seats` : ''}
+                  {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - goingCount)} seats left` : ''}
                 </span>
+                <span className="survey">{outing.going.map((id) => getHiker(id)?.name ?? 'Hiker').join(', ')}</span>
               </div>
               <button
                 className={`chip cr-chip ${going ? 'active' : ''}`}
                 aria-pressed={going}
-                onClick={() => setGoing((g) => !g)}
+                onClick={() => setOutingGoing(crew.id, !going)}
               >
                 {going ? 'Going' : "I'm in"}
               </button>

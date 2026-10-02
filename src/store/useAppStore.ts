@@ -76,6 +76,7 @@ interface AppState {
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
   createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; pace: 'easy' | 'steady' | 'pushing'; driver: string; seats: number; whenIso?: string }) => void
+  setOutingGoing: (crewId: string, going: boolean) => void
   createCrew: (name: string, region: string, inviteIds: string[]) => void
   addComment: (feedId: string, text: string) => void
   packTrail: (trailId: string) => void
@@ -333,6 +334,20 @@ export const useAppStore = create<AppState>()(
           joinedCrewIds: [id, ...s.joinedCrewIds],
         }))
       },
+
+      setOutingGoing: (crewId, going) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing) return c
+            const has = c.outing.going.includes(CURRENT_USER_ID)
+            const next = going
+              ? has
+                ? c.outing.going
+                : [...c.outing.going, CURRENT_USER_ID]
+              : c.outing.going.filter((id) => id !== CURRENT_USER_ID)
+            return { ...c, outing: { ...c.outing, going: next } }
+          }),
+        })),
 
       createOuting: (crewId, plan) =>
         set((s) => ({

@@ -343,7 +343,7 @@ export const seedCrews: Crew[] = [
     challengeProgress: 18420,
     challengeGoal: 25000,
     challengeUnit: 'm',
-    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam' },
+    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam', seats: 4 },
   },
   {
     id: 'canmore-dawn',
