@@ -1,6 +1,6 @@
 .tr-page {
   overflow-x: hidden;
-  padding-bottom: calc(var(--dock-h) + 24px + 96px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--dock-h) + 220px + env(safe-area-inset-bottom));
 }
 
 .tr-hero {
@@ -58,14 +58,15 @@
 }
 
 .tr-summary {
-  margin-top: 12px;
+  margin-top: 8px;
   font-size: var(--type-md);
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--scree-dark);
+  max-width: 36ch;
 }
 
 .tr-big {
-  margin-top: 22px;
+  margin-top: 36px;
   font-family: var(--font-display);
   font-variation-settings: 'opsz' 96;
   font-weight: 800;

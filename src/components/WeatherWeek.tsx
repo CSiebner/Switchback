@@ -30,7 +30,7 @@ export function WeatherWeek({ lat, lng, compact = false }: { lat: number; lng: n
 
   const todayPrecip = forecast.days[0]?.precip ?? 0
   return (
-    <section style={{ marginTop: 22 }}>
+    <section style={{ marginTop: 40 }}>
       <p className="survey">Weather · {skyLabel(forecast.code).toLowerCase()}</p>
       <p className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 4, lineHeight: 1 }}>
         {Math.round(forecast.temp)}°

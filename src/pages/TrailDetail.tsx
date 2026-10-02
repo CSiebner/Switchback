@@ -18,6 +18,14 @@ import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+function spokenMinutes(min: number) {
+  const rounded = Math.max(1, Math.round(min))
+  if (rounded < 60) return `${rounded} min`
+  const hours = Math.floor(rounded / 60)
+  const rest = rounded % 60
+  return rest ? `${hours} hr ${rest} min` : `${hours} hr`
+}
+
 function plainDuration(sec: number) {
   const minutes = Math.round(sec / 60)
   if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
@@ -45,7 +53,7 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   return (
     <p
       style={{
-        margin: '14px 0 0',
+        margin: '22px 0 0',
         padding: '11px 14px',
         borderRadius: 14,
         background: 'rgba(217,119,6,0.12)',
@@ -152,6 +160,24 @@ export function TrailDetail() {
       <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 28 }}>
+            <div>
+              <p className="display" style={{ fontSize: '1.45rem', fontWeight: 800 }}>{spokenMinutes(trail.typicalMin)}</p>
+              <p className="survey" style={{ marginTop: 6 }}>estimated to finish</p>
+            </div>
+            <div>
+              <p className="display" style={{ fontSize: '1.45rem', fontWeight: 800 }}>
+                {(() => {
+                  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
+                  if (!times.length) return '—'
+                  return spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)
+                })()}
+              </p>
+              <p className="survey" style={{ marginTop: 6 }}>
+                average of {runs.filter((r) => r.trailId === trail.id).length} hikes
+              </p>
+            </div>
+          </div>
           <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
           <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
           {(() => {

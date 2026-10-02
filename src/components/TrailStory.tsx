@@ -23,7 +23,7 @@ export function TrailStory({ trailId }: { trailId: string }) {
   const outing = crews.find((c) => joined.includes(c.id) && c.outing?.trailId === trailId)?.outing
 
   return (
-    <section style={{ marginTop: 22 }}>
+    <section style={{ marginTop: 40 }}>
       <p className="survey">Your history on this line</p>
       {mine.length === 0 && <p style={{ marginTop: 8 }}>No ascents yet. The first one starts the record.</p>}
       {any && (
