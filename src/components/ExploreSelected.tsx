@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouteGlyph } from './RouteGlyph'
+import { heroPhoto } from '../data/photos'
 import { formatTime, relativeTime } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
 import { lineStats, type Line } from './ExploreModel'
@@ -26,12 +27,13 @@ export function ExploreSelected({ line }: { line: Line }) {
   const big = pb ?? trail.typicalMin * 60
   const pct = fresh ? Math.round(Math.min(1, fresh.conf) * 100) : 0
 
-  const runGhost = () => {
-    if (above) {
-      setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: above.name })
-    }
-    navigate(`/record?trail=${trail.id}`)
+  const start = () => navigate(`/record?trail=${trail.id}`)
+  const useTheirs = () => {
+    if (!above) return
+    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: above.name })
+    navigate(`/record?trail=${trail.id}&against=1`)
   }
+  const photo = heroPhoto(trail.id)
 
   return (
     <motion.div
@@ -41,6 +43,9 @@ export function ExploreSelected({ line }: { line: Line }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: EASE }}
     >
+      {photo && (
+        <img src={photo.thumb} alt="" style={{ width: '100%', height: 96, objectFit: 'cover', borderRadius: 14, marginBottom: 12 }} />
+      )}
       <div className="ex-head">
         <RouteGlyph
           key={trail.id}
@@ -90,9 +95,14 @@ export function ExploreSelected({ line }: { line: Line }) {
         <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: '1 1 0' }}>
           Open line
         </Link>
-        <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={runGhost}>
+        <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={start}>
           Hike this line
         </button>
+        {above && (
+          <button className="btn btn-ghost" style={{ flex: '1 1 0' }} onClick={useTheirs}>
+            Their time
+          </button>
+        )}
       </div>
     </motion.div>
   )
