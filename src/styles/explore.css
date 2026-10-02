@@ -114,77 +114,50 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--dock-h) + 10px + env(safe-area-inset-bottom));
+  bottom: calc(var(--dock-h) + 22px + env(safe-area-inset-bottom));
   z-index: 10;
   width: min(100%, 520px);
-  height: 300px;
+  height: min(430px, calc(100% - 180px));
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: var(--paper);
-  transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ex-sheet[data-snap='half'] {
-  height: calc(100% - 96px);
-}
-
-.ex-grab {
-  flex: none;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  cursor: grab;
-  touch-action: none;
-}
-
-.ex-body {
-  position: relative;
+.ex-scroll {
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding: 4px 20px 24px;
 }
 
-.ex-peek {
-  position: absolute;
-  inset: 0;
-  padding: 0 20px 8px;
-  overflow: hidden;
-}
-
-.ex-sheet[data-snap='half'] .ex-peek {
-  visibility: hidden;
-  pointer-events: none;
+.ex-more {
+  margin-top: 8px;
+  padding-top: 4px;
+  border-top: 1px solid var(--contour-light);
 }
 
 .ex-list {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.18s ease;
 }
 
-.ex-list[data-active='true'] {
-  pointer-events: auto;
-  opacity: 1;
-  transition-duration: 0.4s;
-}
-
-.ex-list-head {
+.ex-scroll .ex-list-head {
   flex: none;
-  padding: 0 20px 8px;
+  padding: 10px 0 6px;
+  font-size: var(--type-sm);
+  font-weight: 800;
+  color: var(--ink);
 }
 
 .ex-rows {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .ex-row {

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { TrailMap } from '../components/TrailMap'
 import { RouteGlyph } from '../components/RouteGlyph'
-import { ExploreSheet, type Snap } from '../components/ExploreSheet'
+import { ExploreSheet } from '../components/ExploreSheet'
 import { ExploreSelected } from '../components/ExploreSelected'
 import { ExploreList } from '../components/ExploreList'
 import {
@@ -17,7 +17,7 @@ import { trails } from '../data/trails'
 import type { Trail } from '../data/seed'
 import { useAppStore } from '../store/useAppStore'
 
-const FIT_PADDING = { top: 110, bottom: 390, left: 28, right: 28 }
+const FIT_PADDING = { top: 100, bottom: 460, left: 28, right: 28 }
 
 export function Explore() {
   const runs = useAppStore((s) => s.runs)
@@ -28,7 +28,6 @@ export function Explore() {
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<string | undefined>()
   const [focused, setFocused] = useState(false)
-  const [snap, setSnap] = useState<Snap>('peek')
   const [showFilters, setShowFilters] = useState(false)
 
   const all = useMemo(() => buildLines(trails, runs, conditions), [runs, conditions])
@@ -68,7 +67,6 @@ export function Explore() {
   const pick = useCallback((id: string) => {
     setSelectedId(id)
     setFocused(true)
-    setSnap('peek')
   }, [])
   const reset = () => {
     setFilter('All')
@@ -140,8 +138,6 @@ export function Explore() {
       </div>
 
       <ExploreSheet
-        snap={snap}
-        onSnap={setSnap}
         peek={
           selected ? (
             <ExploreSelected line={selected} />
@@ -154,7 +150,7 @@ export function Explore() {
             </motion.div>
           )
         }
-        list={<ExploreList lines={lines} selectedId={selected?.trail.id} active={snap === 'half'} onPick={pick} />}
+        list={<ExploreList lines={lines} selectedId={selected?.trail.id} active onPick={pick} />}
       />
     </div>
   )
