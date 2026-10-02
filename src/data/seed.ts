@@ -30,10 +30,20 @@ export interface Run {
   userId: string
   trailId: string
   timeSec: number
+  /** Time spent moving. Stops are the gap between this and timeSec. */
+  movingSec?: number
   timestamp: number
   conditions: ConditionTag[]
   note?: string
   selfReported?: boolean
+  weather?: { temp: number; sky: string; wind: number }
+}
+
+export interface Comment {
+  id: string
+  userId: string
+  text: string
+  timestamp: number
 }
 
 export interface Review {
@@ -64,7 +74,14 @@ export interface Crew {
   challengeProgress: number
   challengeGoal: number
   challengeUnit: string
-  outing?: { trailId: string; when: string; going: string[] }
+  outing?: {
+    trailId: string
+    when: string
+    going: string[]
+    meet?: string
+    pace?: 'easy' | 'steady' | 'pushing'
+    driver?: string
+  }
 }
 
 export interface FeedItem {
@@ -76,6 +93,7 @@ export interface FeedItem {
   text: string
   timestamp: number
   kudos: string[]
+  comments?: Comment[]
 }
 
 export const CURRENT_USER_ID = 'you'
@@ -198,7 +216,7 @@ const now = Date.now()
 
 export const seedRuns: Run[] = [
   // You — history on Ha Ling & Tunnel
-  { id: 'r1', userId: 'you', trailId: 'ha-ling', timeSec: 3120, timestamp: now - 3 * day, conditions: ['Dry'], note: 'Felt strong on the upper switchbacks' },
+  { id: 'r1', userId: 'you', trailId: 'ha-ling', timeSec: 3120, movingSec: 2940, timestamp: now - 3 * day, conditions: ['Dry'], note: 'Felt strong on the upper switchbacks', weather: { temp: 6, sky: 'Cloudy', wind: 11 } },
   { id: 'r2', userId: 'you', trailId: 'ha-ling', timeSec: 3280, timestamp: now - 18 * day, conditions: ['Muddy'] },
   { id: 'r3', userId: 'you', trailId: 'ha-ling', timeSec: 3450, timestamp: now - 40 * day, conditions: ['Dry'] },
   { id: 'r4', userId: 'you', trailId: 'tunnel-mountain', timeSec: 2480, timestamp: now - 5 * day, conditions: ['Dry'] },
@@ -263,7 +281,7 @@ export const seedCrews: Crew[] = [
     challengeProgress: 18420,
     challengeGoal: 25000,
     challengeUnit: 'm',
-    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'] },
+    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam' },
   },
   {
     id: 'canmore-dawn',
@@ -323,6 +341,7 @@ export const seedFeed: FeedItem[] = [
     text: 'Took 3 minutes off Ha Ling. Dry ridge helped.',
     timestamp: now - 2 * day,
     kudos: ['you', 'maya', 'ava'],
+    comments: [{ id: 'cm1', userId: 'you', text: 'Saving a Saturday to try that line with you.', timestamp: now - 1 * day }],
   },
 ]
 

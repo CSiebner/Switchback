@@ -71,7 +71,9 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
               <div className="cr-text">
                 <span className="cr-name">{outingTrail.name}</span>
                 <span className="survey num">
-                  {outing.when} · {goingCount} going
+                  {outing.when} · {outing.pace ?? 'steady'} · {goingCount} going
+                  {outing.meet ? ` · ${outing.meet}` : ''}
+                  {outing.driver ? ` · ${getHiker(outing.driver)?.name ?? 'someone'} driving` : ''}
                 </span>
               </div>
               <button

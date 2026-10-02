@@ -49,6 +49,8 @@ interface AppState {
   crews: Crew[]
   joinedCrewIds: string[]
   savedTrailIds: string[]
+  packedTrailIds: string[]
+  onboarded: boolean
   chase?: ChaseTarget
   recording?: ActiveRecording
   lastResult?: LastResult
@@ -71,8 +73,11 @@ interface AppState {
   finishRecording: (opts?: { conditions?: ConditionTag[]; note?: string; adjustSec?: number }) => LastResult | undefined
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
-  createOuting: (crewId: string, trailId: string, when: string) => void
+  createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; pace: 'easy' | 'steady' | 'pushing'; driver: string }) => void
   createCrew: (name: string, region: string, inviteIds: string[]) => void
+  addComment: (feedId: string, text: string) => void
+  packTrail: (trailId: string) => void
+  finishOnboarding: (knownTrailIds: string[]) => void
 }
 
 function uid(prefix: string) {
@@ -89,6 +94,8 @@ export const useAppStore = create<AppState>()(
       crews: seedCrews,
       joinedCrewIds: ['beltline'],
       savedTrailIds: ['ha-ling', 'tunnel-mountain'],
+      packedTrailIds: ['ha-ling'],
+      onboarded: false,
       chase: {
         trailId: 'ha-ling',
         userId: 'liam',
@@ -322,24 +329,55 @@ export const useAppStore = create<AppState>()(
         }))
       },
 
-      createOuting: (crewId, trailId, when) =>
+      createOuting: (crewId, plan) =>
         set((s) => ({
           crews: s.crews.map((c) =>
-            c.id === crewId ? { ...c, outing: { trailId, when, going: [CURRENT_USER_ID] } } : c,
+            c.id === crewId
+              ? { ...c, outing: { ...plan, going: [CURRENT_USER_ID] } }
+              : c,
           ),
           feed: [
             {
               id: uid('f'),
               type: 'outing' as const,
               userId: CURRENT_USER_ID,
-              trailId,
+              trailId: plan.trailId,
               crewId,
-              text: `Who's in? ${when}.`,
+              text: `${plan.when} · ${plan.pace} · meet at ${plan.meet}`,
               timestamp: Date.now(),
               kudos: [],
+              comments: [],
             },
             ...s.feed,
           ],
+        })),
+
+      addComment: (feedId, text) =>
+        set((s) => ({
+          feed: s.feed.map((f) =>
+            f.id === feedId
+              ? {
+                  ...f,
+                  comments: [
+                    ...(f.comments ?? []),
+                    { id: uid('cm'), userId: CURRENT_USER_ID, text: text.trim(), timestamp: Date.now() },
+                  ],
+                }
+              : f,
+          ),
+        })),
+
+      packTrail: (trailId) =>
+        set((s) => ({
+          packedTrailIds: s.packedTrailIds.includes(trailId)
+            ? s.packedTrailIds
+            : [...s.packedTrailIds, trailId],
+        })),
+
+      finishOnboarding: (knownTrailIds) =>
+        set((s) => ({
+          onboarded: true,
+          savedTrailIds: [...new Set([...s.savedTrailIds, ...knownTrailIds])],
         })),
 
       logManualRun: (trailId, timeSec, conditions) => {
@@ -356,7 +394,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'switchback-v1.2',
+      name: 'switchback-v1.3',
       partialize: (s) => ({
         runs: s.runs,
         reviews: s.reviews,
@@ -365,6 +403,8 @@ export const useAppStore = create<AppState>()(
         crews: s.crews,
         joinedCrewIds: s.joinedCrewIds,
         savedTrailIds: s.savedTrailIds,
+        packedTrailIds: s.packedTrailIds,
+        onboarded: s.onboarded,
         chase: s.chase,
         ageBracket: s.ageBracket,
         experience: s.experience,

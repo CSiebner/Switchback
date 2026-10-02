@@ -9,6 +9,9 @@ import { Record } from './pages/Record'
 import { Result } from './pages/Result'
 import { Crews } from './pages/Crews'
 import { You } from './pages/You'
+import { Hike } from './pages/Hike'
+import { Onboarding } from './components/Onboarding'
+import { useAppStore } from './store/useAppStore'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -28,9 +31,22 @@ function AnimatedRoutes() {
         <Route path="/result" element={<Result />} />
         <Route path="/crews" element={<Crews />} />
         <Route path="/you" element={<You />} />
+        <Route path="/hike/:id" element={<Hike />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </motion.div>
+  )
+}
+
+function Gate() {
+  const onboarded = useAppStore((s) => s.onboarded)
+  return (
+    <>
+      <BrandBar />
+      <AnimatedRoutes />
+      <NavDock />
+      {!onboarded && <Onboarding />}
+    </>
   )
 }
 
@@ -38,9 +54,7 @@ export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}>
       <div className="app-shell full-bleed">
-        <BrandBar />
-        <AnimatedRoutes />
-        <NavDock />
+        <Gate />
       </div>
     </BrowserRouter>
   )

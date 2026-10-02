@@ -16,6 +16,8 @@ export function Home() {
   const pinnedChase = useAppStore((s) => s.chase)
   const feed = useAppStore((s) => s.feed)
   const setChase = useAppStore((s) => s.setChase)
+  const crews = useAppStore((s) => s.crews)
+  const joined = useAppStore((s) => s.joinedCrewIds)
 
   const rivals = trails
     .map((tr) => {
@@ -63,10 +65,10 @@ export function Home() {
             pitch={50}
             fit
             fitPadding={{ top: 36, bottom: 200, left: 40, right: 40 }}
-            interactive={false}
+            interactive
           />
         ) : (
-          <TrailMap trails={trails} mood="day" pitch={45} fit={false} interactive={false} />
+          <TrailMap trails={trails} mood="day" pitch={45} fit={false} interactive />
         )}
 
         <div
@@ -98,8 +100,8 @@ export function Home() {
                 <WeatherWeek lat={lastTrail.center[1]} lng={lastTrail.center[0]} compact />
               </div>
               <div className="btn-row" style={{ marginTop: 16 }}>
-                <Link to={`/trail/${lastTrail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>
-                  The line
+                <Link to={`/hike/${last.id}`} className="btn btn-ghost" style={{ flex: 1 }}>
+                  The hike
                 </Link>
                 <Link to={`/record?trail=${lastTrail.id}`} className="btn btn-larch" style={{ flex: 1 }}>
                   Hike it again
@@ -118,6 +120,24 @@ export function Home() {
           )}
         </motion.div>
       </section>
+
+      {(() => {
+        const crew = crews.find((c) => joined.includes(c.id) && c.outing)
+        const outing = crew?.outing
+        const outingTrail = outing ? getTrail(outing.trailId) : undefined
+        if (!crew || !outing || !outingTrail) return null
+        return (
+          <section className="container page-pad" style={{ marginTop: 8 }}>
+            <p className="survey">Your crew is going</p>
+            <Link to={`/trail/${outingTrail.id}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>
+              <p style={{ fontWeight: 800 }}>{outingTrail.name}</p>
+              <p className="survey num" style={{ marginTop: 4 }}>
+                {outing.when} · {outing.pace} · {outing.meet} · {getHiker(outing.driver ?? '')?.name} driving
+              </p>
+            </Link>
+          </section>
+        )
+      })()}
 
       {lastTrail && (
         <section className="container page-pad" style={{ marginTop: 8 }}>

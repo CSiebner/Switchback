@@ -5,6 +5,7 @@ import { CrewFeed } from '../components/CrewFeed'
 import { CrewHero } from '../components/CrewHero'
 import { PlanHike } from '../components/PlanHike'
 import { StartCrew } from '../components/StartCrew'
+import { CrewWeek } from '../components/CrewWeek'
 import { useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -36,6 +37,7 @@ export function Crews() {
         <StartCrew />
         {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} />}
         {mine && <PlanHike crewId={mine.id} />}
+        {mine && <CrewWeek crew={mine} />}
         {mine && <CrewBoard crew={mine} />}
         <CrewFeed />
 

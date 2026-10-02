@@ -34,6 +34,7 @@ export function Record() {
   const resumeRecording = useAppStore((s) => s.resumeRecording)
   const tickRecording = useAppStore((s) => s.tickRecording)
   const finishRecording = useAppStore((s) => s.finishRecording)
+  const packed = useAppStore((s) => s.packedTrailIds)
 
   const [finishing, setFinishing] = useState(false)
   const [tags, setTags] = useState<ConditionTag[]>(['Dry'])
@@ -170,6 +171,10 @@ export function Record() {
               </p>
               <p className="survey num" style={{ marginTop: 6 }}>
                 {formatTime(trailSec)} · km {kmDone} / {trail.distKm.toFixed(1)} · target {formatTime(targetSec)}
+              </p>
+              <p className="survey num" style={{ marginTop: 4 }}>
+                On the line · {(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · {Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit
+                {packed.includes(trail.id) ? ' · line packed on this phone' : ''}
               </p>
             </>
           ) : (

@@ -18,6 +18,8 @@ export interface Effort {
   descentPaceSec: number | null
   steps: number
   splits: KmSplit[]
+  /** Time spent gaining each 100 m. */
+  vertical: { fromM: number; sec: number }[]
 }
 
 /**
@@ -69,6 +71,35 @@ export function effortFor(trail: Pick<Trail, 'distKm' | 'elevation'>, timeSec: n
   const downCost = costs.reduce((sum, c, i) => sum + (elev[i + 1] - elev[i] < 0 ? c : 0), 0)
   const stride = Math.max(0.55, 0.78 - (upM / distM) * 0.9)
 
+  const vertical: { fromM: number; sec: number }[] = []
+  let climbed = 0
+  let bucket = 0
+  let mark = 100
+  for (let i = 0; i < costs.length; i++) {
+    const de = elev[i + 1] - elev[i]
+    if (de <= 0) continue
+    let left = de
+    let leftCost = costs[i]
+    while (left > 0.2) {
+      const room = mark - climbed
+      if (room <= 0.2) {
+        mark += 100
+        continue
+      }
+      const take = Math.min(left, room)
+      const frac = take / left
+      bucket += leftCost * frac
+      climbed += take
+      left -= take
+      leftCost -= leftCost * frac
+      if (climbed >= mark - 0.2) {
+        vertical.push({ fromM: mark - 100, sec: totalCost > 0 ? Math.round(timeSec * (bucket / totalCost)) : 0 })
+        bucket = 0
+        mark += 100
+      }
+    }
+  }
+
   return {
     paceSecPerKm: timeSec / trail.distKm,
     gapSecPerKm: flatTime / trail.distKm,
@@ -82,6 +113,7 @@ export function effortFor(trail: Pick<Trail, 'distKm' | 'elevation'>, timeSec: n
       sec: totalCost > 0 ? Math.round(timeSec * (b.cost / totalCost)) : Math.round(timeSec / kmCount),
       gainM: Math.round(b.gain),
     })),
+    vertical,
   }
 }
 
