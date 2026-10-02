@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { CURRENT_USER_ID, getHiker, type FeedItem } from '../data/seed'
@@ -32,18 +32,22 @@ const TYPE_LABEL: Record<FeedItem['type'], string> = {
   outing: 'planned hike',
 }
 
-export function CrewFeed() {
+export function CrewFeed({ pin, hideOutings = false }: { pin?: ReactNode; hideOutings?: boolean }) {
   const feed = useAppStore((s) => s.feed)
   const runs = useAppStore((s) => s.runs)
   const toggleKudo = useAppStore((s) => s.toggleKudo)
   const addComment = useAppStore((s) => s.addComment)
   const [drafts, setDrafts] = useState<Record<string, string>>({})
   const [openId, setOpenId] = useState<string | null>(null)
-  const items = useMemo(() => [...feed].sort((a, b) => b.timestamp - a.timestamp), [feed])
+  const items = useMemo(
+    () => [...feed].filter((item) => !(hideOutings && item.type === 'outing')).sort((a, b) => b.timestamp - a.timestamp),
+    [feed, hideOutings],
+  )
 
   return (
-    <section className="cr-section">
-      <span className="survey head">From your crew</span>
+    <section className="cr-feed">
+      <h2 className="chapter">From your crew</h2>
+      {pin && <div className="cr-pin">{pin}</div>}
       {items.map((item, i) => {
         const hiker = getHiker(item.userId)
         const trail = item.trailId ? getTrail(item.trailId) : undefined

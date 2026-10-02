@@ -28,24 +28,51 @@ export function Crews() {
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.15), rgba(11,23,22,0.82))' }} />
           <div style={{ position: 'absolute', left: 20, right: 20, bottom: 22, color: 'var(--rock-flour)' }}>
             <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-              {heroCrew.name} · {heroCrew.members.length} hikers
+              {heroCrew.members.length} hikers
             </p>
-            <p className="display num" style={{ fontSize: 'clamp(3rem, 14vw, 4rem)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>
-              {heroCrew.challengeProgress.toLocaleString('en-US')}
+            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>
+              {heroCrew.name}
+            </h1>
+            <p style={{ marginTop: 8, fontWeight: 700 }}>
+              {heroCrew.challengeProgress.toLocaleString('en-US')} of {heroCrew.challengeGoal.toLocaleString('en-US')} {heroCrew.challengeUnit}
             </p>
-            <p className="survey" style={{ marginTop: 6, color: 'rgba(228,238,235,0.85)' }}>
-              of {heroCrew.challengeGoal.toLocaleString('en-US')} {heroCrew.challengeUnit} · {heroCrew.challenge}
+            <p className="survey" style={{ marginTop: 4, color: 'rgba(228,238,235,0.85)' }}>
+              {heroCrew.challenge}
             </p>
           </div>
         </div>
       )}
       <div className="container page-pad">
-        {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} />}
-        <StartCrew />
-        {mine && <PlanHike crewId={mine.id} />}
+        {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} showOuting={false} />}
+        <CrewFeed
+          hideOutings={!!mine}
+          pin={
+            mine ? (
+              <div className="cr-pin-card">
+                <p className="chapter">{outingTrail && mine.outing ? 'Planned hike' : 'No hike planned'}</p>
+                {outingTrail && mine.outing && (
+                  <p style={{ fontWeight: 800, fontSize: 'var(--type-lg)', marginTop: 4 }}>{outingTrail.name}</p>
+                )}
+                {mine.outing && (
+                  <p className="fact-label" style={{ marginTop: 4 }}>
+                    {mine.outing.when} · {mine.outing.pace ?? 'steady'}
+                    {mine.outing.meet ? ` · ${mine.outing.meet}` : ''}
+                  </p>
+                )}
+                <PlanHike crewId={mine.id} />
+              </div>
+            ) : (
+              <StartCrew />
+            )
+          }
+        />
         {mine && <CrewWeek crew={mine} />}
         {mine && <CrewBoard crew={mine} />}
-        <CrewFeed />
+        {mine && (
+          <div style={{ marginTop: 8 }}>
+            <StartCrew />
+          </div>
+        )}
 
         {others.length > 0 && (
           <section className="cr-section">

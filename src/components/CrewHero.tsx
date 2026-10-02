@@ -8,7 +8,7 @@ import { RouteGlyph } from './RouteGlyph'
 const EASE = [0.22, 1, 0.36, 1] as const
 const MAX_DISCS = 6
 
-export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
+export function CrewHero({ crew, joined, showOuting = true }: { crew: Crew; joined: boolean; showOuting?: boolean }) {
   const joinCrew = useAppStore((s) => s.joinCrew)
   const setOutingGoing = useAppStore((s) => s.setOutingGoing)
   const outing = crew.outing
@@ -45,7 +45,7 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
             {extra > 0 && <span className="cr-disc more">+{extra}</span>}
           </div>
 
-          {outing && outingTrail && (
+          {showOuting && outing && outingTrail && (
             <div className="hairline cr-row">
               <Link to={`/trail/${outingTrail.id}`} className="cr-glyph" aria-label={outingTrail.name}>
                 <RouteGlyph coords={outingTrail.path} size={44} strokeWidth={2} />

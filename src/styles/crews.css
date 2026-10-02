@@ -13,6 +13,37 @@
   margin-top: 40px;
 }
 
+.cr-feed {
+  margin-top: 28px;
+  padding: 16px 14px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.cr-pin {
+  position: sticky;
+  top: calc(var(--brand-h) + 8px);
+  z-index: 3;
+  margin: 12px 0 8px;
+}
+
+.cr-pin-card {
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--spruce-950);
+  color: var(--rock-flour);
+}
+
+.cr-pin-card .chapter,
+.cr-pin-card .fact-label,
+.cr-pin-card .survey {
+  color: var(--rock-flour);
+}
+
+.cr-pin-card .survey {
+  color: var(--scree);
+}
+
 .cr-card {
   margin-top: 14px;
   padding: 14px;

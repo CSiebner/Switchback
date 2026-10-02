@@ -170,7 +170,7 @@ function ensureRouteLayers(map: Map, mood: MapMood) {
     type: 'line',
     source: SRC_ROUTE,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': dusk ? '#2a5d58' : '#0a8a82', 'line-width': 3.5, 'line-opacity': dusk ? 1 : 0.62 },
+    paint: { 'line-color': dusk ? '#2fd4c4' : '#06685f', 'line-width': 5, 'line-opacity': 1 },
   })
   add({
     id: 'sb-route-glow',
@@ -360,8 +360,8 @@ export function TrailMap({
         if (!map.getLayer(id)) return
         if (id === 'sb-route-casing') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#06110f' : '#f3f8f6')
         if (id === 'sb-route') {
-          map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2a5d58' : '#0a8a82')
-          map.setPaintProperty(id, 'line-opacity', mood === 'dusk' ? 1 : 0.62)
+          map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2fd4c4' : '#06685f')
+          map.setPaintProperty(id, 'line-opacity', 1)
         }
         if (id === 'sb-route-done') map.setPaintProperty(id, 'line-color', mood === 'dusk' ? '#2fd4c4' : '#0a8a82')
         if (id === 'sb-you') map.setPaintProperty(id, 'circle-color', mood === 'dusk' ? '#2fd4c4' : '#0a8a82')
@@ -438,7 +438,7 @@ export function TrailMap({
       const cum = cumulativeDistances(route)
       upsert(map, SRC_ROUTE, lineFeature(route))
 
-      const key = route.map((c) => c.join(',')).join('|')
+      const key = `${selectedId ?? ''}::${route.map((c) => c.join(',')).join('|')}`
       if (fit && lastFitRef.current !== key) {
         lastFitRef.current = key
         const b = route.reduce(
@@ -459,7 +459,7 @@ export function TrailMap({
 
     if (readyRef.current) draw()
     else map.once('sb-ready' as never, draw)
-  }, [route, youProgress, ghostProgress, follow, fit, pitch, mood, fitPadding])
+  }, [route, selectedId, youProgress, ghostProgress, follow, fit, pitch, mood, fitPadding])
 
   // Imperative animation loop (no React state per frame)
   useEffect(() => {
