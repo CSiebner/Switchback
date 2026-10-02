@@ -13,6 +13,36 @@
   margin-top: 40px;
 }
 
+.cr-card {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+}
+
+.cr-card.plan {
+  background: var(--spruce-950);
+  color: var(--rock-flour);
+}
+
+.cr-card.plan .survey {
+  color: var(--scree);
+}
+
+.cr-card.mine {
+  background: rgba(217, 119, 6, 0.1);
+  box-shadow: inset 3px 0 0 var(--larch);
+}
+
+.cr-card.friend {
+  background: rgba(10, 138, 130, 0.08);
+  box-shadow: inset 3px 0 0 var(--glacier);
+}
+
+.cr-kicker {
+  display: block;
+  margin-bottom: 8px;
+}
+
 .cr-section > .survey.head {
   display: block;
   margin-bottom: 8px;

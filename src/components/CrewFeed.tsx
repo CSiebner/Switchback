@@ -15,7 +15,7 @@ const TYPE_LABEL: Record<FeedItem['type'], string> = {
   pb: 'personal best',
   hike: 'hike',
   condition: 'dirt report',
-  outing: 'outing',
+  outing: 'planned hike',
 }
 
 export function CrewFeed() {
@@ -34,14 +34,14 @@ export function CrewFeed() {
         const hiker = getHiker(item.userId)
         const trail = item.trailId ? getTrail(item.trailId) : undefined
         const isMe = item.userId === CURRENT_USER_ID
+        const kind = item.type === 'outing' ? 'plan' : isMe ? 'mine' : 'friend'
         const loved = item.kudos.includes(CURRENT_USER_ID)
         const photo = trail ? heroPhoto(trail.id) : undefined
         const time = trail ? bestTime(runs, item.userId, trail.id) : undefined
         return (
           <motion.article
             key={item.id}
-            className="hairline"
-            style={{ padding: '16px 0' }}
+            className={`cr-card ${kind}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE, delay: Math.min(i, 8) * 0.04 }}
@@ -49,6 +49,9 @@ export function CrewFeed() {
             {photo && (
               <img src={photo.thumb} alt="" style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 16, marginBottom: 12 }} />
             )}
+            <span className="survey cr-kicker">
+              {kind === 'plan' ? 'Planned hike' : kind === 'mine' ? 'Your post' : 'From the crew'}
+            </span>
             <div className="cr-row">
             {trail ? (
               <Link to={`/trail/${trail.id}`} className="cr-glyph" aria-label={trail.name}>
