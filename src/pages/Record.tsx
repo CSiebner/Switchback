@@ -59,17 +59,36 @@ export function Record() {
   const useDemoTime = elapsedSec < 120
 
   if (finishing && recording) {
+    const saveSec = useDemoTime ? demoTimeSec : Math.round(elapsedSec)
     return (
-      <div className="page page-pad">
-        <h1 className="display" style={{ fontSize: '2rem', fontWeight: 800, marginTop: 12 }}>
-          Finish hike
-        </h1>
-        <p className="muted" style={{ marginTop: 6 }}>
-          {trail.name} · timer {formatTime(elapsedSec)}
-          {useDemoTime ? ` · saving as ${formatTime(demoTimeSec)} (demo pace)` : ''}
-        </p>
-        <div style={{ marginTop: 20 }}>
-          <p style={{ fontWeight: 700, marginBottom: 8 }}>Conditions</p>
+      <div className="page" style={{ padding: '20px 16px calc(var(--dock-h) + 24px)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            borderRadius: 28,
+            padding: 20,
+            background: 'rgba(250,252,251,0.96)',
+            border: '1px solid var(--line)',
+            boxShadow: 'var(--shadow)',
+          }}
+        >
+          <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-soft)' }}>
+            Finish hike
+          </p>
+          <h1 className="display" style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: 6 }}>
+            {trail.name}
+          </h1>
+          <p className="display pb-gold" style={{ fontSize: '2.2rem', fontWeight: 800, marginTop: 8 }}>
+            {formatTime(saveSec)}
+          </p>
+          {useDemoTime && (
+            <p className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+              Short demo session — saving a realistic pace vs your ghost target.
+            </p>
+          )}
+
+          <p style={{ fontWeight: 700, marginTop: 20, marginBottom: 8 }}>Trail conditions</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {(['Dry', 'Muddy', 'Snow', 'Icy', 'Bugs', 'Busy'] as ConditionTag[]).map((tag) => (
               <button
@@ -118,7 +137,7 @@ export function Record() {
           <button className="btn btn-ghost" style={{ width: '100%', marginTop: 8 }} onClick={() => setFinishing(false)}>
             Back to timer
           </button>
-        </div>
+        </motion.div>
       </div>
     )
   }
