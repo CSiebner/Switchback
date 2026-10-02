@@ -1,12 +1,9 @@
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouteGlyph } from './RouteGlyph'
-import { heroPhoto } from '../data/photos'
-import { formatTime, formatDuration, relativeTime } from '../lib/format'
-import { expectedMin } from '../lib/bodyPlan'
+import { formatTime, relativeTime } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
 import { type Line } from './ExploreModel'
-import { StatMark } from './StatMark'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -25,13 +22,7 @@ function survey(l: Line): string {
 export function ExploreSelected({ line }: { line: Line }) {
   const navigate = useNavigate()
   const setChase = useAppStore((s) => s.setChase)
-  const runs = useAppStore((s) => s.runs)
-  const weightKg = useAppStore((s) => s.weightKg)
-  const heightCm = useAppStore((s) => s.heightCm)
   const { trail, pb, holds, above, fresh } = line
-  const yours = expectedMin(trail, runs, weightKg ?? 70, heightCm ?? 175)
-  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
-  const average = times.length ? times.reduce((sum, t) => sum + t, 0) / times.length / 60 : null
   const big = pb ?? trail.typicalMin * 60
   const pct = fresh ? Math.round(Math.min(1, fresh.conf) * 100) : 0
 
@@ -41,8 +32,6 @@ export function ExploreSelected({ line }: { line: Line }) {
     setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: above.name })
     navigate(`/record?trail=${trail.id}&against=1`)
   }
-  const photo = heroPhoto(trail.id)
-
   return (
     <motion.div
       key={trail.id}
@@ -51,9 +40,6 @@ export function ExploreSelected({ line }: { line: Line }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: EASE }}
     >
-      {photo && (
-        <img src={photo.thumb} alt="" style={{ width: '100%', height: 96, objectFit: 'cover', borderRadius: 14, marginBottom: 12 }} />
-      )}
       <div className="ex-head">
         <RouteGlyph
           key={trail.id}
@@ -65,12 +51,8 @@ export function ExploreSelected({ line }: { line: Line }) {
         <div className="ex-head-text">
           <p className="survey">{pb === undefined ? 'New to you' : 'A line you know'}</p>
           <p className="display ex-name">{trail.name}</p>
-          <p className="survey num">{trail.region} · {trail.difficulty}</p>
-          <p className="stat-inline">
-            <span><StatMark kind="distance" />{trail.distKm.toFixed(1)} km</span>
-            <span><StatMark kind="climb" />{Math.round(trail.gainM)} m</span>
-            <span><StatMark kind="time" />{formatDuration(yours)}</span>
-            {average !== null && <span><StatMark kind="time" />avg {formatDuration(average)}</span>}
+          <p className="survey num">
+            {trail.region} · {trail.difficulty} · {trail.distKm.toFixed(1)} km · {Math.round(trail.gainM)} m
           </p>
         </div>
       </div>

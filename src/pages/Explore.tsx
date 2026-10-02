@@ -17,7 +17,7 @@ import { trails } from '../data/trails'
 import type { Trail } from '../data/seed'
 import { useAppStore } from '../store/useAppStore'
 
-const FIT_PADDING = { top: 150, bottom: 340, left: 40, right: 40 }
+const FIT_PADDING = { top: 120, bottom: 280, left: 36, right: 36 }
 
 export function Explore() {
   const runs = useAppStore((s) => s.runs)

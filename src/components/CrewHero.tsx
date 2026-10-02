@@ -19,8 +19,7 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
   const ordered = [...crew.members].sort((a, b) => (a === CURRENT_USER_ID ? -1 : b === CURRENT_USER_ID ? 1 : 0))
   const shown = ordered.slice(0, MAX_DISCS)
   const extra = ordered.length - shown.length
-  const othersGoing = outing ? outing.going.filter((id) => id !== CURRENT_USER_ID).length : 0
-  const goingCount = othersGoing + (going ? 1 : 0)
+  const seatsLeft = outing?.seats !== undefined ? Math.max(0, outing.seats - outing.going.length) : undefined
 
   return (
     <section style={{ marginTop: 8 }}>
@@ -47,44 +46,21 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
           </div>
 
           {outing && outingTrail && (
-            <div className="hairline" style={{ marginTop: 16, paddingTop: 16 }}>
-              <Link to={`/trail/${outingTrail.id}`} style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center' }}>
+            <div className="hairline cr-row">
+              <Link to={`/trail/${outingTrail.id}`} className="cr-glyph" aria-label={outingTrail.name}>
                 <RouteGlyph coords={outingTrail.path} size={44} strokeWidth={2} />
-                <span>
-                  <span className="cr-name">{outingTrail.name}</span>
-                  <span className="survey" style={{ display: 'block', marginTop: 2 }}>{goingCount} going</span>
-                </span>
               </Link>
-              <div className="plan-list">
-                <div className="plan-row">
-                  <span className="plan-k">When</span>
-                  <p className="plan-v">{outing.when}</p>
-                </div>
-                <div className="plan-row">
-                  <span className="plan-k">Pace</span>
-                  <p className="plan-v">{outing.pace ?? 'steady'}</p>
-                </div>
-                <div className="plan-row">
-                  <span className="plan-k">Meet</span>
-                  <p className="plan-v">{outing.meet ?? 'Meet TBD'}</p>
-                </div>
-                <div className="plan-row">
-                  <span className="plan-k">Driving</span>
-                  <p className="plan-v">{outing.driver ? (getHiker(outing.driver)?.name ?? 'Open') : 'Open'}</p>
-                </div>
-                <div className="plan-row">
-                  <span className="plan-k">Going</span>
-                  <p className="plan-v">
-                    {outing.going.map((id) => getHiker(id)?.name ?? 'Hiker').join(', ')}
-                    {outing.seats !== undefined
-                      ? ` · ${Math.max(0, outing.seats - goingCount)} ${outing.seats - goingCount === 1 ? 'seat' : 'seats'} left`
-                      : ''}
-                  </p>
-                </div>
+              <div className="cr-text">
+                <span className="cr-name">{outingTrail.name}</span>
+                <span style={{ fontWeight: 700 }}>{outing.when} · {outing.pace ?? 'steady'}</span>
+                <span className="survey">
+                  {outing.meet ?? 'Meet TBD'}
+                  {outing.driver ? ` · ${getHiker(outing.driver)?.name ?? 'someone'} driving` : ''}
+                  {seatsLeft !== undefined ? ` · ${seatsLeft} ${seatsLeft === 1 ? 'seat' : 'seats'} left` : ''}
+                </span>
               </div>
               <button
                 className={`chip cr-chip ${going ? 'active' : ''}`}
-                style={{ marginTop: 14 }}
                 aria-pressed={going}
                 onClick={() => setOutingGoing(crew.id, !going)}
               >

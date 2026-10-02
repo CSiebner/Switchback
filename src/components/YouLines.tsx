@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import type { Trail } from '../data/seed'
+import { getHiker, type Trail } from '../data/seed'
 import { formatTime } from '../lib/format'
+import { formatSplit } from './Split'
 import { RouteGlyph } from './RouteGlyph'
 import { heroPhoto } from '../data/photos'
+import { leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -27,6 +29,7 @@ function lineTrend(l: YouLine) {
 }
 
 export function YouLines({ lines }: { lines: YouLine[] }) {
+  const runs = useAppStore((s) => s.runs)
   return (
     <section className="yo-section">
       <span className="survey head">Lines you know</span>
@@ -35,6 +38,9 @@ export function YouLines({ lines }: { lines: YouLine[] }) {
       )}
       {lines.map((l, i) => {
         const first = l.rank === 1
+        const board = leaderboard(runs, l.trail.id)
+        const ahead = l.rank > 1 ? board[l.rank - 2] : undefined
+        const aheadName = ahead ? (getHiker(ahead.userId)?.name ?? 'Hiker') : undefined
         return (
           <motion.div
             key={l.trail.id}
@@ -54,8 +60,10 @@ export function YouLines({ lines }: { lines: YouLine[] }) {
               <span className="yo-text">
                 <span className="yo-name">{l.trail.name}</span>
                 <span className="survey num">
-                  #{l.rank} of {l.of} · {lineTrend(l)}
+                  #{l.rank} of {l.of}
+                  {ahead && aheadName ? ` · ${formatSplit(l.pb - ahead.timeSec).replace('+', '')} behind ${aheadName}` : first ? ' · holding the line' : ''}
                 </span>
+                <span className="survey">{lineTrend(l)}</span>
               </span>
               <span className={`yo-pb ${first ? 'gold' : ''}`}>{formatTime(l.pb)}</span>
             </Link>
