@@ -18,11 +18,19 @@ import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+function plainDuration(sec: number) {
+  const minutes = Math.round(sec / 60)
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'}`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest ? `${hours} hr ${rest} min` : `${hours} hr`
+}
+
 function TrailBadges({ name, holds, rank, field, improvedSec }: { name: string; holds: boolean; rank: number; field: number; improvedSec: number }) {
   const lines: string[] = []
   if (holds) lines.push(`You hold ${name}. Amazing work.`)
   else if (rank > 0 && field >= 10 && rank / field <= 0.1) lines.push(`You're in the top 10% on ${name}. Amazing work.`)
-  if (improvedSec >= 60) lines.push(`${formatTime(improvedSec)} faster than your first time on ${name}.`)
+  if (improvedSec >= 60) lines.push(`You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`)
   if (lines.length === 0) return null
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
