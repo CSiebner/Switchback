@@ -9,6 +9,7 @@ import { PhotoRail } from '../components/PhotoRail'
 import { WeatherWeek } from '../components/WeatherWeek'
 import { PackAdvice } from '../components/PackAdvice'
 import { LineStars, lineRatingLabel } from '../components/LineStars'
+import { Fact } from '../components/StatMark'
 import { expectedMin } from '../lib/bodyPlan'
 import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
@@ -63,11 +64,11 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
 function LineRating({ reviews }: { reviews: { rating: number }[] }) {
   const avg = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
   return (
-    <div>
-      <p style={{ margin: 0, minHeight: '1.2em' }} aria-label={reviews.length ? `${avg.toFixed(1)} line rating` : 'No line rating yet'}>
+    <div className="fact">
+      <p style={{ margin: 0, minHeight: 18 }} aria-label={reviews.length ? `${avg.toFixed(1)} line rating` : 'No line rating yet'}>
         <LineStars value={avg} />
       </p>
-      <p className="survey" style={{ marginTop: 6 }}>{lineRatingLabel(avg, reviews.length)}</p>
+      <p className="fact-label">{lineRatingLabel(avg, reviews.length)}</p>
     </div>
   )
 }
@@ -168,29 +169,22 @@ export function TrailDetail() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 16px', marginTop: 28 }}>
-            <div>
-              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
-                {spokenMinutes(expectedMin(trail, runs, weightKg ?? 70, heightCm ?? 175))}
-              </p>
-              <p className="survey" style={{ marginTop: 6 }}>your expected time</p>
-            </div>
-            <div>
-              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
-                {(() => {
-                  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
-                  if (!times.length) return '—'
-                  return spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)
-                })()}
-              </p>
-              <p className="survey" style={{ marginTop: 6 }}>hikers' average</p>
-            </div>
-            <div>
-              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{Math.round(trail.gainM)} m</p>
-              <p className="survey" style={{ marginTop: 6 }}>elevation gain</p>
-            </div>
-            <div>
-              <LineRating reviews={reviews.filter((r) => r.trailId === trail.id)} />
-            </div>
+            <Fact
+              kind="time"
+              value={spokenMinutes(expectedMin(trail, runs, weightKg ?? 70, heightCm ?? 175))}
+              label="your expected time"
+            />
+            <Fact
+              kind="time"
+              value={(() => {
+                const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
+                if (!times.length) return '—'
+                return spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)
+              })()}
+              label="hikers' average"
+            />
+            <Fact kind="climb" value={`${Math.round(trail.gainM)} m`} label="elevation gain" />
+            <LineRating reviews={reviews.filter((r) => r.trailId === trail.id)} />
           </div>
           {hasRun && (
             <>
@@ -227,7 +221,7 @@ export function TrailDetail() {
         <TrailReviews trailId={trail.id} />
 
         <section className="tr-band photos">
-          <p className="survey head">More of this line</p>
+          <h2 className="chapter">More of this line</h2>
           <PhotoRail trailId={trail.id} />
         </section>
         <TrailElevation trail={trail} />

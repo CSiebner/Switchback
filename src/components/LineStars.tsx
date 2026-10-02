@@ -1,24 +1,26 @@
-const STAR = 'M12 3.2 14.7 9l6.3.6-4.8 4.1 1.5 6.1L12 16.8 6.3 19.8 7.8 13.7 3 9.6 9.3 9z'
-
+/** One contour stroke. Five of them are a line rating. */
 export function LineStar({ on, size = 18 }: { on: boolean; size?: number }) {
+  const width = Math.max(8, Math.round(size * 0.42))
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path
-        d={STAR}
-        fill={on ? 'var(--larch)' : 'none'}
-        stroke="var(--larch)"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
+    <svg width={width} height={size} viewBox="0 0 8 18" aria-hidden>
+      <rect
+        x="2.4"
+        y="1.2"
+        width="3.2"
+        height="15.6"
+        rx="1.6"
+        transform="rotate(18 4 9)"
+        fill={on ? 'var(--glacier)' : 'rgba(10, 138, 130, 0.22)'}
       />
     </svg>
   )
 }
 
-/** The line rating: five gold stars, filled to the nearest mark. */
+/** The line rating: five contour strokes, filled to the nearest mark. */
 export function LineStars({ value, size = 18 }: { value: number; size?: number }) {
   const filled = Math.round(value)
   return (
-    <span className="line-stars">
+    <span className="line-stars" style={{ color: 'var(--glacier)' }}>
       {[1, 2, 3, 4, 5].map((n) => (
         <LineStar key={n} on={n <= filled} size={size} />
       ))}

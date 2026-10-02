@@ -11,6 +11,20 @@ import { useState } from 'react'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+function outingRows(text: string) {
+  const parts = text.split(' · ').map((part) => part.trim()).filter(Boolean)
+  const pace = parts.find((part) => /^(easy|steady|pushing)$/i.test(part))
+  const when = parts.find((part) => part !== pace && !/^meet at /i.test(part))
+  const meet = parts.find((part) => /^meet at /i.test(part))?.replace(/^meet at /i, '')
+  if (!pace && !meet) return [{ k: 'Plan', v: text }]
+  const rows = [
+    when ? { k: 'When', v: when } : null,
+    pace ? { k: 'Pace', v: pace } : null,
+    meet ? { k: 'Meet', v: meet } : null,
+  ].filter(Boolean) as { k: string; v: string }[]
+  return rows
+}
+
 const TYPE_LABEL: Record<FeedItem['type'], string> = {
   pb: 'personal best',
   hike: 'hike',
@@ -64,9 +78,14 @@ export function CrewFeed() {
               {item.type === 'outing' ? (
                 <>
                   <span className="cr-name">{trail?.name ?? 'Planned hike'}</span>
-                  {item.text.split(' · ').map((line) => (
-                    <span key={line} className="cr-body">{line}</span>
-                  ))}
+                  <div className="plan-list">
+                    {outingRows(item.text).map((row) => (
+                      <div key={row.k} className="plan-row">
+                        <span className="plan-k">{row.k}</span>
+                        <p className="plan-v">{row.v}</p>
+                      </div>
+                    ))}
+                  </div>
                   <span className="survey num">{relativeTime(item.timestamp)}</span>
                 </>
               ) : (

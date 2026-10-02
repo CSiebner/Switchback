@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { Run, Trail } from '../data/seed'
 import { expectedMin, litresFor, packFor, personalCalories, paceFactor } from '../lib/bodyPlan'
 import { fetchForecast } from '../lib/weather'
+import { StatMark } from './StatMark'
 
 /** Water, calories, and a short pack list from your body, your pace, and today's sky. */
 export function PackAdvice({
@@ -66,12 +67,13 @@ export function PackAdvice({
         }}
       >
         <span>
-          <span className="survey" style={{ display: 'block' }}>What to bring</span>
-          <span className="num" style={{ display: 'block', marginTop: 4, fontWeight: 800 }}>
-            {litres} L · {kcal.toLocaleString()} kcal
+          <span className="chapter">What to bring</span>
+          <span className="stat-inline">
+            <span><StatMark kind="water" />{litres} L</span>
+            <span><StatMark kind="heat" />{kcal.toLocaleString()} kcal</span>
           </span>
         </span>
-        <span className="survey">{open ? 'Hide' : 'Show'}</span>
+        <span style={{ fontWeight: 800, color: 'var(--glacier-deep)' }}>{open ? 'Hide' : 'Show'}</span>
       </button>
       {open && (
         <div style={{ paddingBottom: 8 }}>

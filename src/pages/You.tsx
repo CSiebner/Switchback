@@ -11,6 +11,7 @@ import { CURRENT_USER_ID } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
 import { heroPhoto } from '../data/photos'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
+import { StatMark } from '../components/StatMark'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -84,12 +85,16 @@ export function You() {
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
             {displayName || 'Logbook'} · {ageBracket} · {experience} · {joinedCrewIds.length} crew
           </p>
-          <div className="yo-big-row" style={{ color: 'var(--rock-flour)', marginTop: 8 }}>
+          <div className="yo-big-row" style={{ color: 'var(--rock-flour)', marginTop: 8, alignItems: 'center' }}>
+            <StatMark kind="climb" size={22} light />
             <CountUp value={totalGain} />
-            <span className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>m ↑</span>
+            <span className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>m</span>
           </div>
-          <p className="survey num" style={{ marginTop: 6, color: 'rgba(228,238,235,0.85)' }}>
-            {totalKm.toFixed(1)} km · {mine.length} hikes · {pbCount} lines improved · {heldCount} held
+          <p className="stat-inline light">
+            <span><StatMark kind="distance" />{totalKm.toFixed(1)} km</span>
+            <span><StatMark kind="hikes" />{mine.length} hikes</span>
+            <span>{pbCount} improved</span>
+            <span>{heldCount} held</span>
           </p>
         </div>
       </div>

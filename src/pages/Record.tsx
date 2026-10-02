@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { TrailMap } from '../components/TrailMap'
 import { formatSplit } from '../components/Split'
 import { HoldButton } from '../components/HoldButton'
+import { StatMark } from '../components/StatMark'
 import { ElevationProfile } from '../components/ElevationProfile'
 import { getTrail, trails } from '../data/trails'
 import type { ConditionTag } from '../data/seed'
@@ -207,8 +208,10 @@ export function Record() {
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 8, lineHeight: 0.95, color: 'var(--rock-flour)' }}>
                 {formatTime(targetSec)}
               </h1>
-              <p className="survey num" style={{ marginTop: 10 }}>
-                {trail.distKm.toFixed(1)} km · {Math.round(trail.gainM)} m ↑ · {trail.region}
+              <p className="stat-inline light" style={{ marginTop: 10 }}>
+                <span><StatMark kind="distance" />{trail.distKm.toFixed(1)} km</span>
+                <span><StatMark kind="climb" />{Math.round(trail.gainM)} m</span>
+                <span>{trail.region}</span>
               </p>
               <p className="survey" style={{ marginTop: 8 }}>Teal is you. Gold is the time you are measuring against.</p>
               <p className="survey" style={{ marginTop: 4 }}>This replays the line. On the trail it follows your GPS.</p>

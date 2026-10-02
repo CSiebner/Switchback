@@ -27,7 +27,7 @@ export function TrailStory({ trailId }: { trailId: string }) {
 
   return (
     <section style={{ marginTop: 36 }}>
-      <p className="survey">On your record</p>
+      <h2 className="chapter">On your record</h2>
       {mine.length === 0 && <p style={{ marginTop: 10 }}>No ascents yet. The first one starts the record.</p>}
       {dry && mine.length > 0 && <p style={{ marginTop: 10, fontWeight: 700 }}>Your best was set on a dry day.</p>}
       {facts.length > 0 && (

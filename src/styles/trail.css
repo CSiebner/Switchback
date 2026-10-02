@@ -316,7 +316,7 @@
 
 .line-stars {
   display: inline-flex;
-  gap: 3px;
+  gap: 4px;
   align-items: center;
 }
 
@@ -336,6 +336,7 @@
   place-items: center;
   cursor: pointer;
   padding: 0;
+  color: var(--glacier);
 }
 
 .tr-band {

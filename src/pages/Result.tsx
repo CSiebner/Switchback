@@ -7,6 +7,7 @@ import { getTrail } from '../data/trails'
 import { getHiker } from '../data/seed'
 import { formatTime } from '../lib/format'
 import { effortFor, formatPace } from '../lib/effort'
+import { StatMark } from '../components/StatMark'
 import { projectToBox, smoothPath } from '../lib/geo'
 import { useDusk } from '../lib/useMood'
 import { leaderboard, useAppStore } from '../store/useAppStore'
@@ -177,7 +178,10 @@ function Splits({ distKm, elevation, timeSec }: { distKm: number; elevation: num
   const kcal = Math.round((timeSec / 3600) * 420 + e.ascentM * 0.15)
   return (
     <div style={{ marginTop: 8, paddingTop: 8 }}>
-      <p className="survey">Splits · {kcal.toLocaleString()} kcal</p>
+      <p className="stat-inline light" style={{ marginTop: 0 }}>
+        <span><StatMark kind="heat" />{kcal.toLocaleString()} kcal</span>
+        <span><StatMark kind="climb" />{Math.round(e.ascentM)} m</span>
+      </p>
       {e.splits.map((s) => (
         <div key={s.km} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 64px', gap: 10, alignItems: 'center', marginTop: 8 }}>
           <span className="num" style={{ fontWeight: 700 }}>{s.km}</span>
@@ -194,17 +198,18 @@ function Splits({ distKm, elevation, timeSec }: { distKm: number; elevation: num
 function EffortLine({ distKm, elevation, timeSec }: { distKm: number; elevation: number[]; timeSec: number }) {
   const e = effortFor({ distKm, elevation }, timeSec)
   const cells = [
-    { v: formatPace(e.paceSecPerKm), l: '/km' },
-    { v: formatPace(e.gapSecPerKm), l: 'grade pace' },
-    { v: e.ascentPaceSec ? formatPace(e.ascentPaceSec) : '—', l: '/100m up' },
-    { v: e.descentPaceSec ? formatPace(e.descentPaceSec) : '—', l: '/100m down' },
-    { v: e.steps.toLocaleString(), l: 'steps' },
+    { v: formatPace(e.paceSecPerKm), l: '/km', kind: 'distance' as const },
+    { v: formatPace(e.gapSecPerKm), l: 'grade pace', kind: 'climb' as const },
+    { v: e.ascentPaceSec ? formatPace(e.ascentPaceSec) : '—', l: '/100m up', kind: 'climb' as const },
+    { v: e.descentPaceSec ? formatPace(e.descentPaceSec) : '—', l: '/100m down', kind: 'climb' as const },
+    { v: e.steps.toLocaleString(), l: 'steps', kind: 'hikes' as const },
   ]
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px 8px', marginTop: 16 }}>
       {cells.map((c) => (
         <div key={c.l}>
-          <p className="num" style={{ fontWeight: 800, fontSize: 13, color: 'var(--rock-flour)' }}>{c.v}</p>
+          <StatMark kind={c.kind} />
+          <p className="num" style={{ fontWeight: 800, fontSize: 13, color: 'var(--rock-flour)', marginTop: 4 }}>{c.v}</p>
           <p className="survey" style={{ marginTop: 2 }}>{c.l}</p>
         </div>
       ))}

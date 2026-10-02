@@ -27,7 +27,7 @@ export function TrailReviews({ trailId }: { trailId: string }) {
 
   return (
     <section className="tr-band line">
-      <span className="survey head">Line rating</span>
+      <h2 className="chapter">Line rating</h2>
       <p style={{ margin: '0 0 4px' }} aria-label={list.length ? `${avg.toFixed(1)} line rating from ${list.length}` : 'No line rating yet'}>
         <LineStars value={avg} size={22} />
       </p>
@@ -65,7 +65,7 @@ export function TrailReviews({ trailId }: { trailId: string }) {
           <button className="btn btn-ghost" onClick={() => setOpen(true)}>Rate this line</button>
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-            <span className="survey">Your line rating</span>
+            <span className="chapter">Your line rating</span>
             <div className="tr-pick" role="group" aria-label="Line rating">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button key={n} type="button" aria-label={`${n} line rating`} aria-pressed={n === rating} onClick={() => setRating(n)}>

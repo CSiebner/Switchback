@@ -39,8 +39,8 @@ export function TrailDirt({ trailId }: { trailId: string }) {
 
   return (
     <section className="tr-band dirt">
-      <span className="survey head">The dirt</span>
-      <p className="survey" style={{ marginTop: -4, marginBottom: 8 }}>Reports fade after a week</p>
+      <h2 className="chapter">The dirt</h2>
+      <p className="survey" style={{ marginTop: 4, marginBottom: 8 }}>Reports fade after a week</p>
       <div>
         {reports.length === 0 && (
           <p className="survey hairline" style={{ padding: '16px 0' }}>No reports yet · be the first on this dirt</p>

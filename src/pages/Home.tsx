@@ -9,6 +9,7 @@ import { getTrail, trails } from '../data/trails'
 import { formatDuration, formatTime, relativeTime } from '../lib/format'
 import { effortFor, formatPace } from '../lib/effort'
 import { useAppStore } from '../store/useAppStore'
+import { Fact, StatMark } from '../components/StatMark'
 
 export function Home() {
   const runs = useAppStore((s) => s.runs)
@@ -48,8 +49,11 @@ export function Home() {
             <div style={{ position: 'absolute', left: 20, right: 20, bottom: 22, color: 'var(--rock-flour)' }}>
               <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>New to you · {fresh.region}</p>
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>{fresh.name}</h1>
-              <p className="survey num" style={{ marginTop: 8, color: 'rgba(228,238,235,0.85)' }}>
-                {fresh.difficulty} · {fresh.distKm.toFixed(1)} km · {Math.round(fresh.gainM)} m ↑ · about {formatDuration(fresh.typicalMin)}
+              <p className="stat-inline light">
+                <span>{fresh.difficulty}</span>
+                <span><StatMark kind="distance" />{fresh.distKm.toFixed(1)} km</span>
+                <span><StatMark kind="climb" />{Math.round(fresh.gainM)} m</span>
+                <span><StatMark kind="time" />{formatDuration(fresh.typicalMin)}</span>
               </p>
             </div>
           </div>
@@ -62,20 +66,11 @@ export function Home() {
         </section>
       )}
       <section className="container page-pad" style={{ marginTop: 8 }}>
-        <p className="survey">Your season</p>
+        <h2 className="chapter">Your season</h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px 12px', marginTop: 16 }}>
-          <div>
-            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{season.km.toFixed(1)}</p>
-            <p className="survey" style={{ marginTop: 6 }}>km hiked</p>
-          </div>
-          <div>
-            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{Math.round(season.gain).toLocaleString('en-US')}</p>
-            <p className="survey" style={{ marginTop: 6 }}>metres up</p>
-          </div>
-          <div>
-            <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{season.hikes}</p>
-            <p className="survey" style={{ marginTop: 6 }}>hikes</p>
-          </div>
+          <Fact kind="distance" value={season.km.toFixed(1)} label="km hiked" />
+          <Fact kind="climb" value={Math.round(season.gain).toLocaleString('en-US')} label="metres up" />
+          <Fact kind="hikes" value={String(season.hikes)} label="hikes" />
         </div>
         <p className="survey" style={{ marginTop: 16 }}>
           {season.lines} {season.lines === 1 ? 'line' : 'lines'} ·{' '}
@@ -91,19 +86,41 @@ export function Home() {
         return (
           <section className="tr-weather" style={{ margin: '28px 0 0', padding: '22px 20px' }}>
             <div className="container">
-              <p className="survey">Saturday with your crew</p>
-              <Link to={`/trail/${outingTrail.id}`} style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center', marginTop: 12 }}>
+              <h2 className="chapter">Saturday</h2>
+              <Link to={`/trail/${outingTrail.id}`} style={{ display: 'grid', gridTemplateColumns: '44px 1fr', gap: 12, alignItems: 'center', marginTop: 14 }}>
                 <RouteGlyph coords={outingTrail.path} size={44} stroke="#e4eeeb" strokeWidth={2} />
                 <span>
-                  <span style={{ fontWeight: 800, display: 'block' }}>{outingTrail.name}</span>
-                  <span className="survey" style={{ display: 'block', marginTop: 4 }}>{known ? "You've walked this" : 'New to you'} · {outing.when} · {outing.pace}</span>
-                  <span className="survey" style={{ display: 'block' }}>{outing.meet} · {getHiker(outing.driver ?? '')?.name} driving</span>
-                  <span className="survey" style={{ display: 'block' }}>
-                    {outing.going.map((id) => getHiker(id)?.name).filter(Boolean).join(', ')}
-                    {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - outing.going.length)} seats left` : ''}
-                  </span>
+                  <span className="fact-value" style={{ color: 'var(--rock-flour)', display: 'block' }}>{outingTrail.name}</span>
+                  <span className="survey" style={{ display: 'block', marginTop: 4 }}>{known ? "You've walked this" : 'New to you'}</span>
                 </span>
               </Link>
+              <div className="plan-list">
+                <div className="plan-row">
+                  <span className="plan-k">When</span>
+                  <p className="plan-v">{outing.when}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Pace</span>
+                  <p className="plan-v">{outing.pace}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Meet</span>
+                  <p className="plan-v">{outing.meet}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Driving</span>
+                  <p className="plan-v">{getHiker(outing.driver ?? '')?.name ?? 'Open'}</p>
+                </div>
+                <div className="plan-row">
+                  <span className="plan-k">Going</span>
+                  <p className="plan-v">
+                    {outing.going.map((id) => getHiker(id)?.name).filter(Boolean).join(', ')}
+                    {outing.seats !== undefined
+                      ? ` · ${Math.max(0, outing.seats - outing.going.length)} ${outing.seats - outing.going.length === 1 ? 'seat' : 'seats'} left`
+                      : ''}
+                  </p>
+                </div>
+              </div>
               <button
                 className={`chip ${outing.going.includes('you') ? 'active' : ''}`}
                 style={{ marginTop: 12 }}
@@ -129,8 +146,11 @@ export function Home() {
                 <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6, color: 'var(--rock-flour)' }}>
                   {lastTrail.name}
                 </h1>
-                <p className="num" style={{ marginTop: 8, fontWeight: 700, color: 'var(--rock-flour)' }}>
-                  {formatTime(last.timeSec)} · {lastTrail.distKm.toFixed(1)} km · {Math.round(lastTrail.gainM)} m ↑ · {lastPace}/km
+                <p className="stat-inline light">
+                  <span><StatMark kind="time" />{formatTime(last.timeSec)}</span>
+                  <span><StatMark kind="distance" />{lastTrail.distKm.toFixed(1)} km</span>
+                  <span><StatMark kind="climb" />{Math.round(lastTrail.gainM)} m</span>
+                  <span>{lastPace}/km</span>
                 </p>
               </div>
             </div>

@@ -5,7 +5,8 @@ import { heroPhoto } from '../data/photos'
 import { formatTime, formatDuration, relativeTime } from '../lib/format'
 import { expectedMin } from '../lib/bodyPlan'
 import { useAppStore } from '../store/useAppStore'
-import { lineStats, type Line } from './ExploreModel'
+import { type Line } from './ExploreModel'
+import { StatMark } from './StatMark'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -64,12 +65,12 @@ export function ExploreSelected({ line }: { line: Line }) {
         <div className="ex-head-text">
           <p className="survey">{pb === undefined ? 'New to you' : 'A line you know'}</p>
           <p className="display ex-name">{trail.name}</p>
-          <p className="survey num">
-            {trail.region} · {trail.difficulty} · {lineStats(trail)}
-          </p>
-          <p className="survey num ex-pace">
-            your time {formatDuration(yours)}
-            {average !== null ? ` · average ${formatDuration(average)}` : ''}
+          <p className="survey num">{trail.region} · {trail.difficulty}</p>
+          <p className="stat-inline">
+            <span><StatMark kind="distance" />{trail.distKm.toFixed(1)} km</span>
+            <span><StatMark kind="climb" />{Math.round(trail.gainM)} m</span>
+            <span><StatMark kind="time" />{formatDuration(yours)}</span>
+            {average !== null && <span><StatMark kind="time" />avg {formatDuration(average)}</span>}
           </p>
         </div>
       </div>
