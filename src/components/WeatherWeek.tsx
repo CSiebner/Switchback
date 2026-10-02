@@ -3,7 +3,7 @@ import { fetchForecast, skyLabel, type Forecast } from '../lib/weather'
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export function WeatherWeek({ lat, lng, compact = false }: { lat: number; lng: number; compact?: boolean }) {
+export function WeatherWeek({ lat, lng, compact = false, band = false }: { lat: number; lng: number; compact?: boolean; band?: boolean }) {
   const [forecast, setForecast] = useState<Forecast | null>(null)
   const [failed, setFailed] = useState(false)
 
@@ -29,25 +29,27 @@ export function WeatherWeek({ lat, lng, compact = false }: { lat: number; lng: n
   }
 
   const todayPrecip = forecast.days[0]?.precip ?? 0
+  const dirt = todayPrecip < 1 ? 'dirt likely dry' : 'expect mud'
   return (
-    <section style={{ marginTop: 40 }}>
-      <p className="survey">Weather · {skyLabel(forecast.code).toLowerCase()}</p>
-      <p className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 4, lineHeight: 1 }}>
-        {Math.round(forecast.temp)}°
-      </p>
-      <p className="survey num" style={{ marginTop: 6 }}>
-        wind {Math.round(forecast.wind)} km/h
-        {todayPrecip > 0 ? ` · ${todayPrecip.toFixed(1)} mm today` : ' · dry today'}
-        {todayPrecip < 1 ? ' · dirt likely dry' : ' · expect mud'}
-      </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, marginTop: 14 }}>
+    <section className={band ? 'tr-weather' : undefined} style={band ? undefined : { marginTop: 40 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16 }}>
+        <p className="display" style={{ fontSize: '3rem', fontWeight: 800, lineHeight: 0.9, color: band ? 'var(--rock-flour)' : undefined }}>
+          {Math.round(forecast.temp)}°
+        </p>
+        <div style={{ textAlign: 'right' }}>
+          <p style={{ fontWeight: 700 }}>{skyLabel(forecast.code)}</p>
+          <p className="survey num" style={{ marginTop: 4 }}>
+            wind {Math.round(forecast.wind)} km/h · {dirt}
+          </p>
+        </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 4, marginTop: 18 }}>
         {forecast.days.map((d) => {
           const day = DAYS[new Date(d.date + 'T12:00:00').getDay()]
           return (
-            <div key={d.date} style={{ textAlign: 'center' }}>
+            <div key={d.date} style={{ textAlign: 'center', minWidth: 0 }}>
               <p className="survey">{day}</p>
               <p className="num" style={{ fontWeight: 800, marginTop: 4 }}>{Math.round(d.max)}°</p>
-              <p className="survey">{Math.round(d.min)}°</p>
             </div>
           )
         })}

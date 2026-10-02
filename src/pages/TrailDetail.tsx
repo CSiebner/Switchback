@@ -200,7 +200,7 @@ export function TrailDetail() {
               return mine[0].timeSec - pb
             })()}
           />
-          <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
+          <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} band />
           <TrailStory trailId={trail.id} />
         </motion.div>
 
@@ -217,12 +217,14 @@ export function TrailDetail() {
       </div>
 
       <div className="container tr-bar">
-        <button className="btn btn-larch" onClick={go}>Hike this line</button>
-        {above && (
-          <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={useTheirTime}>
-            Use {nameOf(above.userId)}'s time
-          </button>
-        )}
+        <div className="btn-row">
+          <button className="btn btn-larch" onClick={go}>Hike this line</button>
+          {above && (
+            <button className="btn btn-ghost" onClick={useTheirTime}>
+              {nameOf(above.userId).replace(/\s+\S\.$/, '')}'s time
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
