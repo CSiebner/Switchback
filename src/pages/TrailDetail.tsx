@@ -18,6 +18,35 @@ import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+function TrailBadges({ name, holds, rank, field, improvedSec }: { name: string; holds: boolean; rank: number; field: number; improvedSec: number }) {
+  const lines: string[] = []
+  if (holds) lines.push(`You hold ${name}. Amazing work.`)
+  else if (rank > 0 && field >= 10 && rank / field <= 0.1) lines.push(`You're in the top 10% on ${name}. Amazing work.`)
+  if (improvedSec >= 60) lines.push(`${formatTime(improvedSec)} faster than your first time on ${name}.`)
+  if (lines.length === 0) return null
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
+      {lines.map((text) => (
+        <p
+          key={text}
+          style={{
+            margin: 0,
+            padding: '11px 14px',
+            borderRadius: 14,
+            background: 'rgba(217,119,6,0.12)',
+            border: '1px solid rgba(217,119,6,0.45)',
+            fontWeight: 700,
+            fontSize: 14,
+            lineHeight: 1.35,
+          }}
+        >
+          {text}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 function CountUp({ value, className }: { value: number; className: string }) {
   const mv = useMotionValue(0)
   const text = useTransform(mv, (v) => formatTime(v))
@@ -118,6 +147,19 @@ export function TrailDetail() {
             const avg = list.reduce((sum, r) => sum + r.rating, 0) / list.length
             return <p className="survey num" style={{ marginTop: 6 }}>{avg.toFixed(1)} average · {list.length} {list.length === 1 ? 'review' : 'reviews'}</p>
           })()}
+          <TrailBadges
+            name={trail.name}
+            holds={iAmFirst}
+            rank={hasRun ? myIdx + 1 : 0}
+            field={board.length}
+            improvedSec={(() => {
+              const mine = runs
+                .filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id)
+                .sort((a, b) => a.timestamp - b.timestamp)
+              if (!hasRun || !pb || mine.length < 2) return 0
+              return mine[0].timeSec - pb
+            })()}
+          />
           <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
           <TrailStory trailId={trail.id} />
         </motion.div>
