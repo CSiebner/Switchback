@@ -637,13 +637,14 @@ p {
 }
 
 .trail-pin {
-  width: 14px;
-  height: 14px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid var(--rock-flour);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   background: var(--spruce-900);
+  touch-action: manipulation;
 }
 
 .trail-pin.done {

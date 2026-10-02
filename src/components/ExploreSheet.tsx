@@ -10,7 +10,7 @@ interface Props {
   list: ReactNode
 }
 
-const PEEK_H = 332
+const PEEK_H = 268
 const SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const
 
 export function ExploreSheet({ snap, onSnap, peek, list }: Props) {

@@ -26,6 +26,8 @@ interface Props {
   pitch?: number
   follow?: boolean
   fit?: boolean
+  /** Fit every trail once, and do not zoom to the selected line until this is false. */
+  fitAll?: boolean
   fitPadding?: { top: number; bottom: number; left: number; right: number }
   interactive?: boolean
   className?: string
@@ -156,7 +158,7 @@ function ensureRouteLayers(map: Map, mood: MapMood) {
     type: 'line',
     source: SRC_ALL,
     layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: { 'line-color': dusk ? '#2a5d58' : '#0a8a82', 'line-width': 2.5, 'line-opacity': dusk ? 0.5 : 0.45 },
+    paint: { 'line-color': dusk ? '#2a5d58' : '#0a8a82', 'line-width': 3.5, 'line-opacity': dusk ? 0.7 : 0.9 },
   })
   add({
     id: 'sb-route-casing',
@@ -306,6 +308,7 @@ export function TrailMap({
   pitch = 0,
   follow = false,
   fit = true,
+  fitAll = false,
   fitPadding,
   interactive = true,
   className,
@@ -338,6 +341,11 @@ export function TrailMap({
       ensureTerrain(map, mood)
       ensureRouteLayers(map, mood)
       readyRef.current = true
+      if (interactive) {
+        map.dragPan.enable()
+        map.scrollZoom.enable()
+        map.touchZoomRotate.enable()
+      }
       map.fire('sb-ready' as never)
     })
     return () => {
@@ -426,6 +434,23 @@ export function TrailMap({
 
     const draw = () => {
       ensureRouteLayers(map, mood)
+      const cloud = fitAll ? (routes ?? []).flatMap((r) => r.coords) : (route ?? [])
+      const routeKey = (route ?? []).map((c) => c.join(',')).join('|')
+      const key = fitAll ? 'overview' : `${selectedId ?? ''}::${routeKey}`
+      if (fit && cloud.length > 1 && lastFitRef.current !== key) {
+        lastFitRef.current = key
+        const b = cloud.reduce(
+          (acc, c) => acc.extend(c as [number, number]),
+          new LngLatBounds(cloud[0], cloud[0]),
+        )
+        map.fitBounds(b, {
+          padding: fitPadding ?? { top: 80, bottom: 220, left: 40, right: 40 },
+          pitch,
+          duration: 900,
+          maxZoom: fitAll ? 11 : 14,
+        })
+      }
+
       if (!route || route.length < 2) {
         upsert(map, SRC_ROUTE, empty)
         upsert(map, SRC_DONE, empty)
@@ -438,28 +463,13 @@ export function TrailMap({
       const cum = cumulativeDistances(route)
       upsert(map, SRC_ROUTE, lineFeature(route))
 
-      const key = `${selectedId ?? ''}::${route.map((c) => c.join(',')).join('|')}`
-      if (fit && lastFitRef.current !== key) {
-        lastFitRef.current = key
-        const b = route.reduce(
-          (acc, c) => acc.extend(c as [number, number]),
-          new LngLatBounds(route[0], route[0]),
-        )
-        map.fitBounds(b, {
-          padding: fitPadding ?? { top: 80, bottom: 220, left: 40, right: 40 },
-          pitch,
-          duration: 900,
-          maxZoom: 15,
-        })
-      }
-
       if (animateRef.current) return
       drawProgress(map, route, cum, youProgress, ghostProgress, follow ? pitch : undefined)
     }
 
     if (readyRef.current) draw()
     else map.once('sb-ready' as never, draw)
-  }, [route, selectedId, youProgress, ghostProgress, follow, fit, pitch, mood, fitPadding])
+  }, [route, routes, selectedId, youProgress, ghostProgress, follow, fit, fitAll, pitch, mood, fitPadding])
 
   // Imperative animation loop (no React state per frame)
   useEffect(() => {

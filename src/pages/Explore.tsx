@@ -17,7 +17,7 @@ import { trails } from '../data/trails'
 import type { Trail } from '../data/seed'
 import { useAppStore } from '../store/useAppStore'
 
-const FIT_PADDING = { top: 120, bottom: 530, left: 48, right: 48 }
+const FIT_PADDING = { top: 110, bottom: 390, left: 28, right: 28 }
 
 export function Explore() {
   const runs = useAppStore((s) => s.runs)
@@ -27,6 +27,7 @@ export function Explore() {
   const [climb, setClimb] = useState<'Any climb' | 'Under 400 m' | '400–700 m' | 'Over 700 m'>('Any climb')
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<string | undefined>()
+  const [focused, setFocused] = useState(false)
   const [snap, setSnap] = useState<Snap>('peek')
   const [showFilters, setShowFilters] = useState(false)
 
@@ -60,9 +61,13 @@ export function Explore() {
     },
     [byId],
   )
-  const select = useCallback((id: string) => setSelectedId(id), [])
+  const select = useCallback((id: string) => {
+    setSelectedId(id)
+    setFocused(true)
+  }, [])
   const pick = useCallback((id: string) => {
     setSelectedId(id)
+    setFocused(true)
     setSnap('peek')
   }, [])
   const reset = () => {
@@ -75,12 +80,13 @@ export function Explore() {
       <TrailMap
         trails={filteredTrails}
         routes={routes}
-        route={selected?.trail.path}
+        route={focused ? selected?.trail.path : undefined}
         selectedId={selected?.trail.id}
         onSelect={select}
         mood="day"
         pitch={45}
         fit
+        fitAll={!focused}
         fitPadding={FIT_PADDING}
         pinClass={pinClass}
       />
