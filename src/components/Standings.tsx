@@ -42,16 +42,17 @@ export function yourStandings(runs: Run[]): Standing[] {
   return rows.sort((a, b) => a.rank - b.rank || (a.ahead?.gap ?? 0) - (b.ahead?.gap ?? 0))
 }
 
-/** Where you sit on the lines you have walked, and who is next ahead. */
-export function Standings({ title, rows }: { title: string; rows: Standing[] }) {
+/** Where you sit on the trails you have walked, and who is next ahead. */
+export function Standings({ title, hint, rows }: { title: string; hint?: string; rows: Standing[] }) {
   const navigate = useNavigate()
   const setChase = useAppStore((s) => s.setChase)
 
   return (
     <section style={{ marginTop: 36 }}>
       <h2 className="chapter">{title}</h2>
+      {hint && <p className="survey" style={{ marginTop: 6 }}>{hint}</p>}
       {rows.length === 0 && (
-        <p className="survey" style={{ marginTop: 12 }}>Walk a line and you show up here.</p>
+        <p className="survey" style={{ marginTop: 12 }}>Hike a trail and your place shows up here.</p>
       )}
       <div style={{ marginTop: 8 }}>
         {rows.map((row) => (
@@ -75,7 +76,7 @@ export function Standings({ title, rows }: { title: string; rows: Standing[] }) 
               <span className="fact-label" style={{ display: 'block', marginTop: 3 }}>
                 {row.ahead
                   ? `${formatSplit(row.ahead.gap).replace('+', '')} behind ${row.ahead.name} · ${row.field} hikers`
-                  : `Holding the line · ${row.field} hikers`}
+                  : `Fastest here · ${row.field} hikers`}
               </span>
             </Link>
             <span style={{ textAlign: 'right' }}>
@@ -95,7 +96,7 @@ export function Standings({ title, rows }: { title: string; rows: Standing[] }) 
                     navigate(`/record?trail=${row.trailId}&against=1`)
                   }}
                 >
-                  Chase
+                  Race
                 </button>
               )}
             </span>

@@ -93,6 +93,6 @@ export function lineStats(t: Trail): string {
 }
 
 export function rowSurvey(l: Line): string {
-  const tail = l.pb !== undefined ? `PB ${formatTime(l.pb)}` : `typical ${formatTypical(l.trail.typicalMin)}`
+  const tail = l.pb !== undefined ? `best ${formatTime(l.pb)}` : `typical ${formatTypical(l.trail.typicalMin)}`
   return `${lineStats(l.trail)} · ${tail}`
 }

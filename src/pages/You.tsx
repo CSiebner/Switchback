@@ -83,7 +83,7 @@ export function You() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.1), rgba(11,23,22,0.78))' }} />
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 20 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-            {displayName || 'Logbook'} · {ageBracket} · {experience} · {joinedCrewIds.length} crew
+            {displayName || 'Your hikes'} · {ageBracket} · {experience} · {joinedCrewIds.length} {joinedCrewIds.length === 1 ? 'crew' : 'crews'}
           </p>
           <div className="yo-big-row" style={{ color: 'var(--rock-flour)', marginTop: 8, alignItems: 'center' }}>
             <StatMark kind="climb" size={22} light />
@@ -93,8 +93,8 @@ export function You() {
           <p className="stat-inline light">
             <span><StatMark kind="distance" />{totalKm.toFixed(1)} km</span>
             <span><StatMark kind="hikes" />{mine.length} hikes</span>
-            <span>{pbCount} improved</span>
-            <span>{heldCount} held</span>
+            <span>{pbCount} personal bests</span>
+            <span>{heldCount} trails led</span>
           </p>
         </div>
       </div>

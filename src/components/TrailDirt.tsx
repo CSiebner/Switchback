@@ -39,11 +39,11 @@ export function TrailDirt({ trailId }: { trailId: string }) {
 
   return (
     <section className="tr-band dirt">
-      <h2 className="chapter">The dirt</h2>
-      <p className="survey" style={{ marginTop: 4, marginBottom: 8 }}>Reports fade after a week</p>
+      <h2 className="chapter">Conditions</h2>
+      <p className="survey" style={{ marginTop: 4, marginBottom: 8 }}>What the trail is like right now. Reports fade after a week, so a dry day and a muddy day stay separate.</p>
       <div>
         {reports.length === 0 && (
-          <p className="survey hairline" style={{ padding: '16px 0' }}>No reports yet · be the first on this dirt</p>
+          <p className="survey hairline" style={{ padding: '16px 0' }}>No reports yet. Be the first to say what the trail is like.</p>
         )}
         {reports.map((c, i) => {
           const expired = c.conf < 0.15
@@ -92,10 +92,10 @@ export function TrailDirt({ trailId }: { trailId: string }) {
 
       <div className="hairline" style={{ paddingTop: 16 }}>
         {!open ? (
-          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Report dirt</button>
+          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Report conditions</button>
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-            <span className="survey">How is the dirt right now?</span>
+            <span className="survey">What is the trail like right now?</span>
             <div className="tr-grid">
               {CONDITIONS.map(({ tag, glyph }) => {
                 const on = tags.includes(tag)

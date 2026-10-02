@@ -79,9 +79,9 @@ export function PackAdvice({
         <div style={{ paddingBottom: 8 }}>
           <p className="survey" style={{ marginTop: 4 }}>
             {onThisLine
-              ? 'From your times on this line'
+              ? 'From your times on this trail'
               : personal
-                ? 'From your pace on other lines'
+                ? 'From your pace on other trails'
                 : 'From the guide time until you log a hike'}
             {saved ? `, at ${heightCm ?? 175} cm and ${weightKg} kg` : ', at 175 cm and 70 kg until you set yours'}.
             A planning estimate, not medical advice.

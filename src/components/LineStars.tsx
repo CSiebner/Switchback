@@ -29,6 +29,6 @@ export function LineStars({ value, size = 18 }: { value: number; size?: number }
 }
 
 export function lineRatingLabel(avg: number, count: number) {
-  if (!count) return 'no line rating yet'
-  return `${avg.toFixed(1)} line rating`
+  if (!count) return 'no trail rating yet'
+  return `${avg.toFixed(1)} trail rating`
 }

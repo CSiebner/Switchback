@@ -27,15 +27,15 @@ export function TrailReviews({ trailId }: { trailId: string }) {
 
   return (
     <section className="tr-band line">
-      <h2 className="chapter">Line rating</h2>
-      <p style={{ margin: '0 0 4px' }} aria-label={list.length ? `${avg.toFixed(1)} line rating from ${list.length}` : 'No line rating yet'}>
+      <h2 className="chapter">Trail rating</h2>
+      <p style={{ margin: '0 0 4px' }} aria-label={list.length ? `${avg.toFixed(1)} trail rating from ${list.length}` : 'No trail rating yet'}>
         <LineStars value={avg} size={22} />
       </p>
       <p className="survey" style={{ marginBottom: 4 }}>
         {list.length ? `${avg.toFixed(1)} from ${list.length} ${list.length === 1 ? 'hiker' : 'hikers'}` : lineRatingLabel(avg, list.length)}
       </p>
       <div>
-        {list.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No line rating yet</p>}
+        {list.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No trail rating yet</p>}
         {list.map((r, i) => (
           <motion.div
             key={r.id}
@@ -51,7 +51,7 @@ export function TrailReviews({ trailId }: { trailId: string }) {
                 {' · '}
                 {relativeTime(r.timestamp)}
               </span>
-              <span aria-label={`${r.rating} line rating`}>
+              <span aria-label={`${r.rating} trail rating`}>
                 <LineStars value={r.rating} size={14} />
               </span>
             </div>
@@ -62,13 +62,13 @@ export function TrailReviews({ trailId }: { trailId: string }) {
 
       <div className="hairline" style={{ paddingTop: 16 }}>
         {!open ? (
-          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Rate this line</button>
+          <button className="btn btn-ghost" onClick={() => setOpen(true)}>Rate this trail</button>
         ) : (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-            <span className="chapter">Your line rating</span>
-            <div className="tr-pick" role="group" aria-label="Line rating">
+            <span className="chapter">Your rating</span>
+            <div className="tr-pick" role="group" aria-label="Trail rating">
               {[1, 2, 3, 4, 5].map((n) => (
-                <button key={n} type="button" aria-label={`${n} line rating`} aria-pressed={n === rating} onClick={() => setRating(n)}>
+                <button key={n} type="button" aria-label={`${n} trail rating`} aria-pressed={n === rating} onClick={() => setRating(n)}>
                   <LineStar on={n <= rating} size={26} />
                 </button>
               ))}

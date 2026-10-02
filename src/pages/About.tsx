@@ -19,46 +19,46 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 28, color: 'var(--rock-flour)' }}>
           <Mark tone="flour" />
           <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 18, lineHeight: 0.95 }}>
-            Every hike is a turn. Progress you can share.
+            Go back. Get faster. Go with your crew.
           </h1>
         </div>
       </section>
 
       <div className="container page-pad" style={{ marginTop: 22 }}>
         <p style={{ fontSize: 'var(--type-lg)', fontWeight: 650, lineHeight: 1.35 }}>
-          AllTrails informs. Switchback turns every hike into progress you can share with people on the same dirt.
+          AllTrails tells you where a trail is. Switchback is what you do when you go back — your time, the person just ahead, and the people you hike with.
         </p>
 
         <Frame
           image={photo?.thumb}
-          kicker="The line"
-          title="A hike is a shape."
-          body="Not a pin on a map. The switchbacks, the creek, the ridge. You learn a line by walking it, and the line is how you remember it."
+          kicker="1 · Your time"
+          title="The same trail, again."
+          body="A hike here is a route you can repeat. The first person you measure against is your previous self. A dry day and a muddy day are not the same record."
           mark={ha ? <RouteGlyph coords={ha.path} size={72} stroke="#0f201e" strokeWidth={2.4} /> : null}
         />
         <Frame
           image={heroPhoto('prairie-mountain')?.thumb}
-          kicker="Your progress"
-          title="The same dirt, again."
-          body="Time, climb, the weather that day, and how you moved. The first person you measure against is your previous self. A dry day and a muddy day are not the same record."
+          kicker="2 · Who's ahead"
+          title="One person to catch."
+          body="On every trail you've hiked, Switchback shows the person just faster than you. Race their time. Rankings can match your age and experience, so the comparison stays fair."
         />
         <Frame
           image={crew?.thumb}
-          kicker="The crew"
-          title="People on that dirt."
+          kicker="3 · Your crew"
+          title="The people you go with."
           body="A crew is who you actually hike with. A plan, a meeting point, a pace, and a season of elevation you climbed together. The feed is hikes, not posts."
         />
 
         <p className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28, lineHeight: 1.15 }}>
-          A record you can hand to the people you go with.
+          That's the whole app. Hike, see the gap, tell your crew.
         </p>
         {onBegin ? (
           <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={onBegin}>
-            Set up your logbook
+            Set up your hikes
           </button>
         ) : (
           <Link to="/" className="btn btn-larch" style={{ width: '100%', marginTop: 18 }}>
-            Walk the valley
+            Back to your hikes
           </Link>
         )}
       </div>

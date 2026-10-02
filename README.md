@@ -1,8 +1,12 @@
 # Switchback
 
-AllTrails informs. **Switchback turns every hike into progress you can share with people on the same dirt.**
+AllTrails tells you where a trail is. **Switchback is what you do when you go back.**
 
-A hiking performance + local community prototype: beat your times, chase ghosts, rank fairly, keep conditions fresh, and gather in crews.
+Go back. Get faster. Go with your crew.
+
+1. **Your time** — the first person you race is you. A dry day and a muddy day are not the same record.
+2. **Who's ahead** — one person on the same trail. Race their time. Rankings can match age and experience.
+3. **Your crew** — the people you actually hike with. A plan, a meeting point, a pace.
 
 ## Run
 

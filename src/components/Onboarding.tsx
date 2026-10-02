@@ -7,7 +7,7 @@ import { useAppStore } from '../store/useAppStore'
 const AGES = ['18-29', '30-39', '40-49', '50+'] as const
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced'] as const
 
-/** One sitting: the lines you know, how you hike, and a crew. */
+/** One sitting: who you are, trails you know, a fair comparison, and a crew. */
 export function Onboarding({ onBack }: { onBack?: () => void }) {
   const finish = useAppStore((s) => s.finishOnboarding)
   const setAge = useAppStore((s) => s.setAgeBracket)
@@ -40,11 +40,15 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
             </button>
           )}
         </div>
+        <p className="survey" style={{ marginTop: 22 }}>Step {step + 1} of 3</p>
         {step === 0 && (
           <>
-            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 28, lineHeight: 0.95 }}>
+            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
               What should we call you?
             </h1>
+            <p className="survey" style={{ marginTop: 12 }}>
+              Switchback compares you to yourself, then to one person on the same trail.
+            </p>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -53,8 +57,11 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
               style={{ width: '100%', marginTop: 16, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
             />
             <h2 className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28 }}>
-              Which lines do you already know?
+              Which trails have you already hiked?
             </h2>
+            <p className="survey" style={{ marginTop: 8 }}>
+              We'll show your time on these, and who is just ahead. Leave off any you haven't walked.
+            </p>
             <div style={{ marginTop: 18 }}>
               {trails.map((t) => {
                 const on = known.includes(t.id)
@@ -83,9 +90,12 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
         )}
         {step === 1 && (
           <>
-            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 28, lineHeight: 0.95 }}>
-              How should the board compare you?
+            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
+              Keep the comparison fair.
             </h1>
+            <p className="survey" style={{ marginTop: 12 }}>
+              Rankings can match your age and experience. A fast day among people like you means more than a raw list of everyone.
+            </p>
             <p className="survey" style={{ marginTop: 16 }}>Age</p>
             <div className="segmented" style={{ marginTop: 8 }}>
               {AGES.map((a) => (
@@ -105,10 +115,12 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
         )}
         {step === 2 && (
           <>
-            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 28, lineHeight: 0.95 }}>
-              Start a crew, or use the one already here.
+            <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
+              Your crew is who you hike with.
             </h1>
-            <p className="survey" style={{ marginTop: 12 }}>Calgary Beltline Hikers is already yours. A new name starts another.</p>
+            <p className="survey" style={{ marginTop: 12 }}>
+              Calgary Beltline Hikers is already yours — a Saturday plan, a meeting spot, a shared season. Name another only if you want one.
+            </p>
             <input
               value={crewName}
               onChange={(e) => setCrewName(e.target.value)}

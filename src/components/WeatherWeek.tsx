@@ -60,7 +60,7 @@ export function WeatherWeek({ lat, lng, compact = false, band = false }: { lat: 
   }
 
   const todayPrecip = forecast.days[0]?.precip ?? 0
-  const dirt = todayPrecip < 1 ? 'dirt likely dry' : 'expect mud'
+  const dirt = todayPrecip < 1 ? 'trail likely dry' : 'expect mud'
   return (
     <section className={band ? 'tr-weather' : undefined} style={band ? undefined : { marginTop: 40 }}>
       <p className="display" style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '2rem', fontWeight: 800, lineHeight: 1, color: band ? 'var(--rock-flour)' : undefined }}>

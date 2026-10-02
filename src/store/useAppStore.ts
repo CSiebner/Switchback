@@ -328,7 +328,7 @@ export const useAppStore = create<AppState>()(
           name: name.trim(),
           region: region.trim() || 'Bow Valley',
           members: [CURRENT_USER_ID, ...inviteIds.filter((m) => m !== CURRENT_USER_ID)],
-          challenge: 'First month on the dirt',
+          challenge: 'First month of climbing',
           challengeProgress: 0,
           challengeGoal: 5000,
           challengeUnit: 'm',

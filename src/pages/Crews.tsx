@@ -28,7 +28,7 @@ export function Crews() {
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.15), rgba(11,23,22,0.82))' }} />
           <div style={{ position: 'absolute', left: 20, right: 20, bottom: 22, color: 'var(--rock-flour)' }}>
             <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-              {heroCrew.members.length} hikers
+              Your crew · {heroCrew.members.length} hikers · people you hike with
             </p>
             <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>
               {heroCrew.name}

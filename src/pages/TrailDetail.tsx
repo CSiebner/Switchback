@@ -65,7 +65,7 @@ function LineRating({ reviews }: { reviews: { rating: number }[] }) {
   const avg = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
   return (
     <div className="fact">
-      <p style={{ margin: 0, minHeight: 18 }} aria-label={reviews.length ? `${avg.toFixed(1)} line rating` : 'No line rating yet'}>
+      <p style={{ margin: 0, minHeight: 18 }} aria-label={reviews.length ? `${avg.toFixed(1)} trail rating` : 'No trail rating yet'}>
         <LineStars value={avg} />
       </p>
       <p className="fact-label">{lineRatingLabel(avg, reviews.length)}</p>
@@ -124,15 +124,15 @@ export function TrailDetail() {
   const saved = savedTrailIds.includes(trail.id)
 
   let bigValue = trail.typicalMin * 60
-  let survey = 'typical · first ascent waiting'
+  let survey = 'A typical time · your first hike is still open'
   if (hasRun && pb !== undefined) {
     bigValue = pb
     if (iAmFirst) {
       survey = below
-        ? `your PB · holding the line · ${formatTime(below.timeSec - pb)} ahead of ${nameOf(below.userId)}`
-        : 'your PB · holding the line'
+        ? `your best · fastest here · ${formatTime(below.timeSec - pb)} ahead of ${nameOf(below.userId)}`
+        : 'your best · fastest here'
     } else if (above) {
-      survey = `your PB · #${myIdx + 1} of ${board.length} · ${formatTime(pb - above.timeSec)} behind ${nameOf(above.userId)}`
+      survey = `your best · #${myIdx + 1} of ${board.length} · ${formatTime(pb - above.timeSec)} behind ${nameOf(above.userId)}`
     }
   }
 
@@ -155,7 +155,7 @@ export function TrailDetail() {
         </button>
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 64 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-            {hasRun ? `You've walked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
+            {hasRun ? `You've hiked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
             {' · '}{trail.region} · {trail.difficulty}
           </p>
           <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 6 }}>{trail.name}</h1>
@@ -221,7 +221,7 @@ export function TrailDetail() {
         <TrailReviews trailId={trail.id} />
 
         <section className="tr-band photos">
-          <h2 className="chapter">More of this line</h2>
+          <h2 className="chapter">Photos</h2>
           <PhotoRail trailId={trail.id} />
         </section>
         <TrailElevation trail={trail} />
@@ -230,10 +230,10 @@ export function TrailDetail() {
 
       <div className="container tr-bar">
         <div className="btn-row">
-          <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Hike this line'}</button>
+          <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Start this hike'}</button>
           {above && (
             <button className="btn btn-ghost" onClick={useTheirTime}>
-              {nameOf(above.userId).replace(/\s+\S\.$/, '')}'s time
+              Race {nameOf(above.userId).replace(/\s+\S\.$/, '').split(' ')[0]}
             </button>
           )}
         </div>

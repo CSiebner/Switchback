@@ -28,7 +28,7 @@ function outingRows(text: string) {
 const TYPE_LABEL: Record<FeedItem['type'], string> = {
   pb: 'personal best',
   hike: 'hike',
-  condition: 'dirt report',
+  condition: 'conditions',
   outing: 'planned hike',
 }
 

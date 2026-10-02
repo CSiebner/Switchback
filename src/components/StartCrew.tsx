@@ -24,7 +24,7 @@ export function StartCrew() {
     <section style={{ marginTop: 18 }}>
       <p className="survey">Start a crew</p>
       <p className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 6 }}>
-        People on the same dirt.
+        The people you actually hike with.
       </p>
       <input
         value={name}
