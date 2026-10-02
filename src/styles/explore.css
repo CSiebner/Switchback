@@ -13,7 +13,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 5;
+  z-index: 12;
   padding: 12px 0 0;
   pointer-events: none;
 }
@@ -109,37 +109,72 @@
   color: var(--rock-flour);
 }
 
-/* Sheet */
+/* Sheet. Collapsed height hugs the card. Open height is set in ExploreSheet. */
 .ex-sheet {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--dock-h) + 22px + env(safe-area-inset-bottom));
+  bottom: calc(14px + var(--dock-h) + 12px + env(safe-area-inset-bottom));
   z-index: 10;
   width: min(100%, 520px);
-  height: min(430px, calc(100% - 180px));
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: var(--paper);
+  border-radius: 28px;
+  transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ex-sheet.is-dragging {
+  transition: none;
+}
+
+.ex-grab {
+  flex: none;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.ex-grab:active {
+  cursor: grabbing;
+}
+
+.ex-grab .sheet-handle {
+  margin: 0;
+}
+
+.ex-peek {
+  flex: none;
+  padding: 0 20px 14px;
+  touch-action: none;
+  user-select: none;
+}
+
+.ex-peek a,
+.ex-peek button {
+  touch-action: manipulation;
+  user-select: auto;
 }
 
 .ex-scroll {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  padding: 4px 20px 24px;
+  padding: 0 20px 18px;
+  border-top: 1px solid var(--contour-light);
 }
 
-.ex-more {
-  margin-top: 8px;
-  padding-top: 4px;
-  border-top: 1px solid var(--contour-light);
+.ex-sheet[data-snap='peek']:not(.is-dragging) .ex-scroll {
+  display: none;
 }
 
 .ex-list {
@@ -176,6 +211,7 @@
   color: inherit;
   cursor: pointer;
   min-height: 44px;
+  touch-action: pan-y;
 }
 
 .ex-row-text {

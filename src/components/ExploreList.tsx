@@ -10,11 +10,11 @@ interface Props {
 }
 
 const rowVariants = {
-  out: { opacity: 0, y: 10, transition: { duration: 0.12 } },
+  out: { opacity: 1, y: 8, transition: { duration: 0.12 } },
   in: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const, delay: 0.12 + i * 0.04 },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const, delay: Math.min(i, 8) * 0.025 },
   }),
 }
 
