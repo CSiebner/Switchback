@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import type { Trail } from '../data/seed'
 import { formatTime, relativeTime } from '../lib/format'
 import { RouteGlyph } from './RouteGlyph'
+import { heroPhoto } from '../data/photos'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -39,14 +40,14 @@ export function YouLines({ lines }: { lines: YouLine[] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE, delay: i * 0.04 }}
           >
-            <Link to={`/trail/${l.trail.id}`} className="hairline yo-row">
-              <span className="yo-glyph">
-                <RouteGlyph
-                  coords={l.trail.path}
-                  size={48}
-                  strokeWidth={2.2}
-                  stroke={first ? 'var(--larch)' : 'currentColor'}
-                />
+            <Link to={`/trail/${l.trail.id}`} className="hairline yo-row" style={{ alignItems: 'stretch' }}>
+              <span style={{ width: 84, height: 72, borderRadius: 12, overflow: 'hidden', position: 'relative', flex: '0 0 84px' }}>
+                {heroPhoto(l.trail.id) && (
+                  <img src={heroPhoto(l.trail.id)!.thumb} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                )}
+                <span style={{ position: 'absolute', left: 6, bottom: 6 }}>
+                  <RouteGlyph coords={l.trail.path} size={28} stroke={first ? '#f5b544' : '#e4eeeb'} strokeWidth={2.4} />
+                </span>
               </span>
               <span className="yo-text">
                 <span className="yo-name">{l.trail.name}</span>

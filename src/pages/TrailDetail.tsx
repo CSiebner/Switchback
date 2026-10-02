@@ -10,6 +10,7 @@ import { WeatherWeek } from '../components/WeatherWeek'
 import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
+import { heroPhoto } from '../data/photos'
 import { CURRENT_USER_ID, getHiker } from '../data/seed'
 import { getTrail } from '../data/trails'
 import { formatDuration, formatGain, formatKm, formatTime } from '../lib/format'
@@ -77,57 +78,47 @@ export function TrailDetail() {
     }
   }
 
-  const go = () => {
-    if (above) {
-      setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: nameOf(above.userId) })
-    }
+  const go = () => navigate(`/record?trail=${trail.id}`)
+  const useTheirTime = () => {
+    if (!above) return
+    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: nameOf(above.userId) })
     navigate(`/record?trail=${trail.id}`)
   }
+  const photo = heroPhoto(trail.id)
 
   return (
     <div className="page tr-page">
-      <div className="tr-hero">
-        <TrailMap
-          trails={[]}
-          route={trail.path}
-          mood="day"
-          pitch={55}
-          fit
-          fitPadding={{ top: 72, bottom: 40, left: 44, right: 44 }}
-          interactive={false}
-        />
-        <button className="btn btn-ghost tr-chrome back" aria-label="Back" onClick={() => navigate(-1)}>
-          ←
-        </button>
-        <button
-          className={`btn btn-ghost tr-chrome save ${saved ? 'saved' : ''}`}
-          aria-pressed={saved}
-          onClick={() => toggleSaveTrail(trail.id)}
-        >
+      <div style={{ position: 'relative', height: 300 }}>
+        {photo && <img src={photo.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.12), rgba(11,23,22,0.78))' }} />
+        <button className="btn btn-ghost" style={{ position: 'absolute', top: 12, left: 16 }} aria-label="Back" onClick={() => navigate(-1)}>←</button>
+        <button className="btn btn-ghost" style={{ position: 'absolute', top: 12, right: 16, color: saved ? 'var(--glacier-glow)' : undefined }} onClick={() => toggleSaveTrail(trail.id)}>
           {saved ? 'Saved' : 'Save'}
         </button>
-        <div className="tr-hero-fade" />
+        <div style={{ position: 'absolute', left: 20, right: 20, bottom: 64 }}>
+          <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
+            {trail.region} · {trail.difficulty} · {formatKm(trail.distKm)} · {formatGain(trail.gainM)} ↑ · typical {formatDuration(trail.typicalMin)}
+          </p>
+          <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 6 }}>{trail.name}</h1>
+        </div>
+      </div>
+      <div style={{ margin: '-48px 16px 0', position: 'relative', height: 210, borderRadius: 20, overflow: 'hidden', boxShadow: '0 16px 40px rgba(11,23,22,0.18)' }}>
+        <TrailMap trails={[]} route={trail.path} mood="day" pitch={50} fit fitPadding={{ top: 20, bottom: 20, left: 20, right: 20 }} interactive />
       </div>
 
-      <div className="container page-pad tr-title">
+      <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-          <p className="survey num">
-            {trail.region} · {trail.difficulty} · {formatKm(trail.distKm)} · {formatGain(trail.gainM)} ↑ · typical{' '}
-            {formatDuration(trail.typicalMin)}
-          </p>
-          <h1 className="display tr-h1">{trail.name}</h1>
           <p className="tr-summary">{trail.summary}</p>
-          <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
-          <TrailStory trailId={trail.id} />
-
           <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
           <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
+          <WeatherWeek lat={trail.center[1]} lng={trail.center[0]} />
+          <TrailStory trailId={trail.id} />
         </motion.div>
 
         <section style={{ marginTop: 22 }}>
-          <p className="survey">On this line</p>
+          <p className="survey">More of this line</p>
           <div style={{ marginTop: 10 }}>
-            <PhotoRail trailId={trail.id} tall />
+            <PhotoRail trailId={trail.id} />
           </div>
         </section>
         <TrailElevation trail={trail} />
@@ -137,9 +128,12 @@ export function TrailDetail() {
       </div>
 
       <div className="container tr-bar">
-        <button className="btn btn-larch" onClick={go}>
-          {above ? `Run the ghost · vs ${nameOf(above.userId)}` : 'Record this line'}
-        </button>
+        <button className="btn btn-larch" onClick={go}>Hike this line</button>
+        {above && (
+          <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={useTheirTime}>
+            Use {nameOf(above.userId)}'s time
+          </button>
+        )}
       </div>
     </div>
   )

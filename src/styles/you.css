@@ -24,7 +24,7 @@
   line-height: 0.92;
   letter-spacing: -0.05em;
   font-variant-numeric: tabular-nums;
-  color: var(--ink);
+  color: inherit;
 }
 
 .yo-strip {
@@ -47,7 +47,7 @@
 
 .yo-row {
   display: grid;
-  grid-template-columns: 48px 1fr auto;
+  grid-template-columns: 96px 1fr auto;
   gap: 14px;
   align-items: center;
   min-height: 64px;

@@ -10,6 +10,11 @@ export function BrandBar() {
       <Link to="/" aria-label="Switchback home">
         <Mark tone={dusk ? 'flour' : 'ink'} />
       </Link>
+      {!dusk && pathname !== '/about' && (
+        <Link to="/about" className="survey" style={{ marginLeft: 'auto', marginBottom: 4 }}>
+          About
+        </Link>
+      )}
     </header>
   )
 }

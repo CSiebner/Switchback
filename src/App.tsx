@@ -10,6 +10,7 @@ import { Result } from './pages/Result'
 import { Crews } from './pages/Crews'
 import { You } from './pages/You'
 import { Hike } from './pages/Hike'
+import { About } from './pages/About'
 import { Onboarding } from './components/Onboarding'
 import { useAppStore } from './store/useAppStore'
 
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
         <Route path="/crews" element={<Crews />} />
         <Route path="/you" element={<You />} />
         <Route path="/hike/:id" element={<Hike />} />
+        <Route path="/about" element={<About />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </motion.div>

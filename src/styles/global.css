@@ -135,6 +135,7 @@ p {
   height: var(--brand-h);
   display: flex;
   align-items: flex-end;
+  gap: 12px;
   padding: 0 16px 8px;
   background: color-mix(in srgb, var(--rock-flour) 90%, transparent);
   backdrop-filter: blur(12px);

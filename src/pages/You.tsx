@@ -9,6 +9,7 @@ import { YouSettings } from '../components/YouSettings'
 import { YouStrip } from '../components/YouStrip'
 import { CURRENT_USER_ID } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
+import { heroPhoto } from '../data/photos'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -70,28 +71,29 @@ export function You() {
   const chaseTrail = chase ? getTrail(chase.trailId) : undefined
   const chaseRuns = chase ? mine.filter((r) => r.trailId === chase.trailId) : []
 
-  return (
-    <div className="page page-pad yo-page">
-      <div className="container">
-        <motion.div
-          className="yo-head"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE }}
-        >
-          <p className="survey">logbook</p>
-          <h1 className="display yo-h1">You</h1>
-          <p className="survey num" style={{ marginTop: 10 }}>
-            {ageBracket} · {experience} · {joinedCrewIds.length} crew · {mine.length} hikes
-          </p>
+  const cover = lines.find((l) => l.rank === 1) ?? lines[0]
+  const coverPhoto = cover ? heroPhoto(cover.trail.id) : undefined
 
-          <div className="yo-big-row">
-            <CountUp value={totalGain} />
-            <span className="survey">m ↑</span>
-          </div>
-          <p className="survey num" style={{ marginTop: 10 }}>
-            {totalKm.toFixed(1)} km · {mine.length} hikes · {pbCount} lines with a PB · {heldCount} held
+  return (
+    <div className="page yo-page">
+      <div style={{ position: 'relative', height: 280 }}>
+        {coverPhoto && <img src={coverPhoto.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.1), rgba(11,23,22,0.78))' }} />
+        <div style={{ position: 'absolute', left: 20, right: 20, bottom: 20 }}>
+          <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
+            Logbook · {ageBracket} · {experience} · {joinedCrewIds.length} crew
           </p>
+          <div className="yo-big-row" style={{ color: 'var(--rock-flour)', marginTop: 8 }}>
+            <CountUp value={totalGain} />
+            <span className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>m ↑</span>
+          </div>
+          <p className="survey num" style={{ marginTop: 6, color: 'rgba(228,238,235,0.85)' }}>
+            {totalKm.toFixed(1)} km · {mine.length} hikes · {pbCount} lines improved · {heldCount} held
+          </p>
+        </div>
+      </div>
+      <div className="container page-pad">
+        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           {lines.length > 0 && <YouStrip lines={lines.map((l) => ({ trail: l.trail, held: l.rank === 1 }))} />}
         </motion.div>
 
