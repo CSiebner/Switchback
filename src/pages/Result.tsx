@@ -75,7 +75,7 @@ export function Result() {
               <motion.div key="replay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <Replay coords={trail.path} youSec={result.timeSec} ghostSec={refSec} />
                 <p className="survey" style={{ textAlign: 'center', marginTop: 16 }}>
-                  you vs {refLabel}
+                  You and {refLabel}
                 </p>
               </motion.div>
             )}

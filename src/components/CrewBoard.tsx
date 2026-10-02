@@ -46,7 +46,7 @@ export function CrewBoard({ crew }: { crew: Crew }) {
 
   return (
     <section className="cr-section">
-      <span className="survey head">Crew bests · {weekly ? 'this week' : 'all time'}</span>
+      <span className="survey head">Times in the crew · {weekly ? 'this week' : 'all time'}</span>
       {rows.length === 0 && (
         <p className="survey hairline" style={{ padding: '16px 0' }}>No crew runs yet · be the first on the board</p>
       )}

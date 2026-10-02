@@ -29,7 +29,7 @@ export function CrewFeed() {
 
   return (
     <section className="cr-section">
-      <span className="survey head">On your dirt</span>
+      <span className="survey head">From your crew</span>
       {items.map((item, i) => {
         const hiker = getHiker(item.userId)
         const trail = item.trailId ? getTrail(item.trailId) : undefined

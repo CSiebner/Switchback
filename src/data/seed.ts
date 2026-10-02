@@ -263,6 +263,19 @@ export const trails: Trail[] = [
     elevation: [1876, 2042],
     summary: 'A short lookout line above Lake Minnewanka. Easy grade, big view.',
   },
+  {
+    id: 'plain-of-six-glaciers',
+    name: 'Plain of Six Glaciers',
+    region: 'Banff',
+    difficulty: 'Moderate',
+    distKm: 7.1,
+    gainM: 389,
+    typicalMin: 124,
+    center: [-116.18, 51.41],
+    path: [[-116.21, 51.42], [-116.16, 51.4]],
+    elevation: [1700, 2100],
+    summary: 'The walk from Lake Louise toward the glaciers. The mapped line is the recorded trail, out and back.',
+  },
 ]
 
 const day = 24 * 60 * 60 * 1000
@@ -312,6 +325,8 @@ export const seedRuns: Run[] = [
   { id: 'r34', userId: 'chen', trailId: 'rawson-lake', timeSec: 4200, timestamp: now - 8 * day, conditions: ['Muddy'] },
   { id: 'r35', userId: 'sofia', trailId: 'aylmer-lookout', timeSec: 3300, timestamp: now - 2 * day, conditions: ['Dry'] },
   { id: 'r36', userId: 'jordan', trailId: 'aylmer-lookout', timeSec: 3600, timestamp: now - 11 * day, conditions: ['Busy'] },
+  { id: 'r37', userId: 'liam', trailId: 'plain-of-six-glaciers', timeSec: 7200, timestamp: now - 5 * day, conditions: ['Dry'] },
+  { id: 'r38', userId: 'maya', trailId: 'plain-of-six-glaciers', timeSec: 7800, timestamp: now - 13 * day, conditions: ['Dry'] },
 ]
 
 export const seedReviews: Review[] = [

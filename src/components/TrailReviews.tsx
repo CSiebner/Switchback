@@ -37,7 +37,7 @@ export function TrailReviews({ trailId }: { trailId: string }) {
   return (
     <section className="tr-section">
       <span className="survey head">
-        Reviews · {list.length ? avg.toFixed(1) : '—'} · {list.length}
+        What people wrote · {list.length ? avg.toFixed(1) : '—'} · {list.length}
       </span>
       <div>
         {list.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No reviews yet</p>}

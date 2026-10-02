@@ -66,7 +66,7 @@ export function TrailBoard({ trailId }: { trailId: string }) {
 
   return (
     <section className="tr-section">
-      <span className="survey head">Local board · {rows.length} hikers</span>
+      <span className="survey head">Who has walked it · {rows.length}</span>
       <div className="segmented tr-seg" role="tablist">
         {options.map(([key, label]) => (
           <button key={key} className={filter === key ? 'active' : ''} onClick={() => setFilter(key)}>

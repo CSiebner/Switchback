@@ -55,9 +55,10 @@ export function ExploreSelected({ line }: { line: Line }) {
           strokeWidth={2.6}
         />
         <div className="ex-head-text">
+          <p className="survey">{pb === undefined ? 'New to you' : 'A line you know'}</p>
           <p className="display ex-name">{trail.name}</p>
           <p className="survey num">
-            {trail.region} · {trail.difficulty} · {lineStats(trail)}
+            {trail.region} · {trail.difficulty} · {lineStats(trail)} · about {formatTime(trail.typicalMin * 60)}
           </p>
         </div>
       </div>
@@ -93,7 +94,7 @@ export function ExploreSelected({ line }: { line: Line }) {
 
       <div className="btn-row ex-cta">
         <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: '1 1 0' }}>
-          Open line
+          See the trail
         </Link>
         <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={start}>
           Hike this line

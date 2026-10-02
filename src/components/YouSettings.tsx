@@ -22,7 +22,7 @@ export function YouSettings() {
         aria-label="First name"
         style={{ width: '100%', marginTop: 10, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
       />
-      <span className="survey head" style={{ marginTop: 28 }}>Fair rankings use</span>
+      <span className="survey head" style={{ marginTop: 28 }}>How the board compares you</span>
       <span className="survey yo-seg-label" style={{ marginTop: 0 }}>Age bracket</span>
       <div className="segmented yo-seg">
         {AGES.map((a) => (

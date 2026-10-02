@@ -21,7 +21,7 @@ export function CrewWeek({ crew }: { crew: Crew }) {
   if (routes.length === 0) return null
   return (
     <section className="cr-section">
-      <span className="survey head">This week on the dirt</span>
+      <span className="survey head">Where the crew went</span>
       <div style={{ position: 'relative', height: 220, marginTop: 12, borderRadius: 16, overflow: 'hidden' }}>
         <TrailMap trails={[]} routes={routes} mood="day" pitch={40} interactive fit fitPadding={{ top: 24, bottom: 24, left: 24, right: 24 }} />
       </div>

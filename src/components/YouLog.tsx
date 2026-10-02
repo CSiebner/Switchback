@@ -51,7 +51,7 @@ export function YouLog() {
 
   return (
     <section className="yo-section">
-      <span className="survey head">Missed recording it?</span>
+      <span className="survey head">Add a hike you didn't record</span>
       {!open ? (
         <button className="btn btn-ghost" onClick={() => setOpen(true)}>Log a hike by hand</button>
       ) : (

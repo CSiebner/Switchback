@@ -28,6 +28,7 @@ export function Explore() {
   const [query, setQuery] = useState('')
   const [selectedId, setSelectedId] = useState<string | undefined>()
   const [snap, setSnap] = useState<Snap>('peek')
+  const [showFilters, setShowFilters] = useState(false)
 
   const all = useMemo(() => buildLines(trails, runs, conditions), [runs, conditions])
   const lines = useMemo(() => {
@@ -101,6 +102,12 @@ export function Explore() {
             enterKeyHint="search"
           />
         </div>
+        <div className="ex-chips">
+          <button type="button" className={`chip ${showFilters ? 'active on' : ''}`} onClick={() => setShowFilters((v) => !v)}>
+            Filter
+          </button>
+        </div>
+        {showFilters && <>
         <div className="ex-chips" role="tablist" aria-label="Filter lines">
           {FILTERS.map((f) => (
             <button
@@ -123,6 +130,7 @@ export function Explore() {
             <button key={c} type="button" className={`chip ${climb === c ? 'active on' : ''}`} onClick={() => setClimb(c)}>{c}</button>
           ))}
         </div>
+        </>}
       </div>
 
       <ExploreSheet

@@ -29,7 +29,7 @@ function lineTrend(l: YouLine) {
 export function YouLines({ lines }: { lines: YouLine[] }) {
   return (
     <section className="yo-section">
-      <span className="survey head">Your lines · best first</span>
+      <span className="survey head">Lines you know</span>
       {lines.length === 0 && (
         <p className="survey hairline" style={{ padding: '16px 0' }}>No lines yet · log a hike to start your logbook</p>
       )}

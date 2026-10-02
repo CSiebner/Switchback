@@ -332,7 +332,63 @@ export const trailPhotos: TrailPhoto[] = [
     "license": "CC BY 2.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kananaskis_country_Alberta_Canada_(24330970022).jpg",
     "caption": "A couple of shots from a recent trip to the mountains."
+  },
+  {
+    "id": "rawson-lake-1",
+    "trailId": "rawson-lake",
+    "src": "/photos/rawson-lake-1.jpg",
+    "thumb": "/photos/rawson-lake-1-sm.jpg",
+    "width": 1400,
+    "height": 933,
+    "author": "Thank you for visiting my page from Canada",
+    "license": "CC BY 2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHeading_to_Rawson_Lake_kananaskis_country_Alberta_Canada_%2815788501396%29.jpg"
+  },
+  {
+    "id": "aylmer-lookout-1",
+    "trailId": "aylmer-lookout",
+    "src": "/photos/aylmer-lookout-1.jpg",
+    "thumb": "/photos/aylmer-lookout-1-sm.jpg",
+    "width": 1400,
+    "height": 933,
+    "author": "Khoshhat",
+    "license": "CC BY 4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3A1-_Lake_Minnewanka_01.jpg"
+  },
+  {
+    "id": "plain-of-six-glaciers-1",
+    "trailId": "plain-of-six-glaciers",
+    "src": "/photos/plain-of-six-glaciers-1.jpg",
+    "thumb": "/photos/plain-of-six-glaciers-1-sm.jpg",
+    "width": 1400,
+    "height": 933,
+    "author": "David Broad",
+    "license": "CC BY 3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ACanada%2C_Alberta%2C_Mt_Huber_and_Mt_Huber_from_the_Six_Glacier_trail_-_panoramio.jpg"
+  },
+  {
+    "id": "lady-macdonald-1",
+    "trailId": "lady-macdonald",
+    "src": "/photos/lady-macdonald-1.jpg",
+    "thumb": "/photos/lady-macdonald-1-sm.jpg",
+    "width": 1200,
+    "height": 800,
+    "author": "Khoshhat",
+    "license": "CC BY 4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3A01_Three_Sisters.jpg"
+  },
+  {
+    "id": "wasootch-ridge-1",
+    "trailId": "wasootch-ridge",
+    "src": "/photos/wasootch-ridge-1.jpg",
+    "thumb": "/photos/wasootch-ridge-1-sm.jpg",
+    "width": 1200,
+    "height": 800,
+    "author": "Thank you for visiting my page from Canada",
+    "license": "CC BY 2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlberta_Rocky_mountains_kananaskis_country_%2825556080994%29.jpg"
   }
+
 ]
 
 /** Prefix public-folder paths so they work both on `/` and under GitHub Pages. */
