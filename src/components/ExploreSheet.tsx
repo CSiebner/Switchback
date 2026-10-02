@@ -10,7 +10,7 @@ interface Props {
   list: ReactNode
 }
 
-const PEEK_H = 300
+const PEEK_H = 430
 const SPRING = { type: 'spring', stiffness: 320, damping: 32 } as const
 
 export function ExploreSheet({ snap, onSnap, peek, list }: Props) {
@@ -39,7 +39,7 @@ export function ExploreSheet({ snap, onSnap, peek, list }: Props) {
     <motion.section
       className="sheet ex-sheet"
       data-snap={snap}
-      style={{ y, height: `calc(${halfH}px + var(--dock-h) + 14px + env(safe-area-inset-bottom))` }}
+      style={{ y, height: halfH }}
       drag="y"
       dragControls={controls}
       dragListener={false}
@@ -75,7 +75,6 @@ export function ExploreSheet({ snap, onSnap, peek, list }: Props) {
         <motion.div
           className="ex-peek"
           style={{ opacity: peekOpacity, pointerEvents: snap === 'peek' ? 'auto' : 'none' }}
-          onPointerDown={grab}
           aria-hidden={snap !== 'peek'}
         >
           {peek}
