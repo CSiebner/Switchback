@@ -26,9 +26,6 @@ export function YouYear({ runs }: { runs: Run[] }) {
   }, [runs, year])
 
   const max = Math.max(1, ...bars.km)
-  const totalKm = bars.km.reduce((a, b) => a + b, 0)
-  const totalHikes = bars.hikes.reduce((a, b) => a + b, 0)
-  const totalGain = bars.gain.reduce((a, b) => a + b, 0)
   const nowM = new Date().getMonth()
   let monthsActive = 0
   for (let i = nowM; i >= 0; i--) {
@@ -41,10 +38,7 @@ export function YouYear({ runs }: { runs: Run[] }) {
 
   return (
     <section className="yo-section">
-      <span className="survey head">Progress · {year}</span>
-      <p className="survey num" style={{ marginTop: 6 }}>
-        {monthsActive} month streak · {totalHikes} hikes · {Math.round(totalKm)} km · {Math.round(totalGain).toLocaleString()} m ↑
-      </p>
+      <span className="survey head">{year}{monthsActive > 1 ? ` · ${monthsActive} month streak` : ''}</span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 4, alignItems: 'end', height: 96, marginTop: 16 }}>
         {bars.km.map((value, i) => (
           <button

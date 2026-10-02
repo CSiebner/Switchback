@@ -43,7 +43,7 @@ export function YouChart({ trail, runs, chase }: { trail: Trail; runs: Run[]; ch
 
   return (
     <section className="yo-section">
-      <span className="survey head">{trail.name} · every run</span>
+      <span className="survey head">Your times on {trail.name}</span>
       <svg ref={ref} className="yo-chart" viewBox={`0 0 ${w} ${H}`} role="img" aria-label={`Run times on ${trail.name}`}>
         <line
           x1={0}

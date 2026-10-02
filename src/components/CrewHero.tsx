@@ -24,23 +24,7 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
   const goingCount = othersGoing + (going ? 1 : 0)
 
   return (
-    <motion.section
-      className="panel cr-hero"
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: EASE }}
-    >
-      <span className="survey cr-hero-name">
-        {crew.name} · {crew.region} · {crew.members.length} hikers
-      </span>
-
-      <div className="cr-big-row">
-        <span className="cr-big num">{crew.challengeProgress.toLocaleString('en-US')}</span>
-        <span className="survey">
-          / {crew.challengeGoal.toLocaleString('en-US')} {crew.challengeUnit} · {crew.challenge}
-        </span>
-      </div>
-
+    <section style={{ marginTop: 8 }}>
       <div className="cr-bar" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
         <motion.i
           initial={{ width: 0 }}
@@ -93,6 +77,6 @@ export function CrewHero({ crew, joined }: { crew: Crew; joined: boolean }) {
           Join {crew.name}
         </button>
       )}
-    </motion.section>
+    </section>
   )
 }

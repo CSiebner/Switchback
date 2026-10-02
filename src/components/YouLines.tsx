@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import type { Trail } from '../data/seed'
-import { formatTime, relativeTime } from '../lib/format'
+import { formatTime } from '../lib/format'
 import { RouteGlyph } from './RouteGlyph'
 import { heroPhoto } from '../data/photos'
 
@@ -18,10 +18,12 @@ export interface YouLine {
 }
 
 function lineTrend(l: YouLine) {
-  if (l.runCount < 2) return 'one run · go again'
+  if (l.runCount < 2) return 'One time so far'
   const gain = l.firstSec - l.pb
-  if (gain <= 0) return `first run is still best · since ${relativeTime(l.firstTs)}`
-  return `−${formatTime(gain)} since ${relativeTime(l.firstTs)}`
+  if (gain <= 0) return `First time is still the best`
+  const minutes = Math.round(gain / 60)
+  const cut = minutes < 60 ? `${minutes} min` : `${Math.floor(minutes / 60)} hr ${minutes % 60} min`
+  return `${cut} off your first time`
 }
 
 export function YouLines({ lines }: { lines: YouLine[] }) {

@@ -1,14 +1,13 @@
 import '../styles/crews.css'
-import { motion } from 'framer-motion'
 import { CrewBoard } from '../components/CrewBoard'
+import { heroPhoto } from '../data/photos'
+import { getTrail } from '../data/trails'
 import { CrewFeed } from '../components/CrewFeed'
 import { CrewHero } from '../components/CrewHero'
 import { PlanHike } from '../components/PlanHike'
 import { StartCrew } from '../components/StartCrew'
 import { CrewWeek } from '../components/CrewWeek'
 import { useAppStore } from '../store/useAppStore'
-
-const EASE = [0.22, 1, 0.36, 1] as const
 
 export function Crews() {
   const crews = useAppStore((s) => s.crews)
@@ -18,24 +17,31 @@ export function Crews() {
   const mine = joinedCrewIds.map((id) => crews.find((c) => c.id === id)).find(Boolean)
   const heroCrew = mine ?? [...crews].sort((a, b) => b.members.length - a.members.length)[0]
   const others = crews.filter((c) => c.id !== heroCrew?.id)
+  const outingTrail = heroCrew?.outing ? getTrail(heroCrew.outing.trailId) : undefined
+  const photo = heroPhoto(outingTrail?.id ?? 'bow-valley')
 
   return (
-    <div className="page page-pad cr-page">
-      <div className="container">
-        <motion.div
-          className="cr-head"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE }}
-        >
-          <h1 className="display cr-h1">Crews</h1>
-          <p className="survey num" style={{ marginTop: 10 }}>
-            {crews.length} crews near you · {mine ? mine.name : 'pick one'}
-          </p>
-        </motion.div>
-
-        <StartCrew />
+    <div className="page cr-page">
+      {heroCrew && (
+        <div style={{ position: 'relative', height: 280 }}>
+          {photo && <img src={photo.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(11,23,22,0.15), rgba(11,23,22,0.82))' }} />
+          <div style={{ position: 'absolute', left: 20, right: 20, bottom: 22, color: 'var(--rock-flour)' }}>
+            <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
+              {heroCrew.name} · {heroCrew.members.length} hikers
+            </p>
+            <p className="display num" style={{ fontSize: 'clamp(3rem, 14vw, 4rem)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>
+              {heroCrew.challengeProgress.toLocaleString('en-US')}
+            </p>
+            <p className="survey" style={{ marginTop: 6, color: 'rgba(228,238,235,0.85)' }}>
+              of {heroCrew.challengeGoal.toLocaleString('en-US')} {heroCrew.challengeUnit} · {heroCrew.challenge}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="container page-pad">
         {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} />}
+        <StartCrew />
         {mine && <PlanHike crewId={mine.id} />}
         {mine && <CrewWeek crew={mine} />}
         {mine && <CrewBoard crew={mine} />}

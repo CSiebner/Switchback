@@ -14,7 +14,7 @@ export function StartCrew() {
 
   if (!open) {
     return (
-      <button className="btn btn-ghost" style={{ width: '100%', marginTop: 14 }} onClick={() => setOpen(true)}>
+      <button type="button" className="survey" style={{ marginTop: 18, background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--glacier-deep)' }} onClick={() => setOpen(true)}>
         Start a crew
       </button>
     )
