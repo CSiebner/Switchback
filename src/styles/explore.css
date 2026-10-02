@@ -1,6 +1,9 @@
 .ex-root {
   position: fixed;
-  inset: 0;
+  top: var(--brand-h);
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
   background: var(--rock-flour);
 }
@@ -11,7 +14,7 @@
   left: 0;
   right: 0;
   z-index: 5;
-  padding: calc(12px + env(safe-area-inset-top)) 0 0;
+  padding: 12px 0 0;
   pointer-events: none;
 }
 

@@ -36,6 +36,7 @@
   --r-lg: 20px;
   --r-pill: 999px;
   --dock-h: 72px;
+  --brand-h: calc(52px + env(safe-area-inset-top));
 
   --font-display: 'Bricolage Grotesque', Georgia, serif;
   --font-body: 'Figtree', system-ui, sans-serif;
@@ -121,7 +122,27 @@ p {
 
 .page {
   min-height: 100dvh;
+  padding-top: var(--brand-h);
   padding-bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom));
+}
+
+.brand-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  height: var(--brand-h);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 16px 8px;
+  background: color-mix(in srgb, var(--rock-flour) 90%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.brand-bar.dusk {
+  background: color-mix(in srgb, var(--spruce-950) 90%, transparent);
 }
 
 .page-pad {

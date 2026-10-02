@@ -1,5 +1,5 @@
 .cr-head {
-  padding-top: 8px;
+  padding-top: calc(var(--brand-h) + 8px);
 }
 
 .cr-h1 {

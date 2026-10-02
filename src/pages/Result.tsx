@@ -57,7 +57,7 @@ export function Result() {
     <div style={{ minHeight: '100dvh', background: 'var(--spruce-950)', color: 'var(--rock-flour)', position: 'relative', overflowY: 'auto' }}>
       <ContourBackdrop coords={trail.path} />
 
-      <div className="container" style={{ position: 'relative', padding: '24px 20px calc(32px + env(safe-area-inset-bottom))', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div className="container" style={{ position: 'relative', padding: 'calc(var(--brand-h) + 12px) 20px calc(32px + env(safe-area-inset-bottom))', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p className="survey">{trail.name} · {formatTime(result.timeSec)}</p>
           <button

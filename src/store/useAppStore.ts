@@ -72,6 +72,7 @@ interface AppState {
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
   createOuting: (crewId: string, trailId: string, when: string) => void
+  createCrew: (name: string, region: string, inviteIds: string[]) => void
 }
 
 function uid(prefix: string) {
@@ -302,6 +303,24 @@ export const useAppStore = create<AppState>()(
       },
 
       clearResult: () => set({ lastResult: undefined }),
+
+      createCrew: (name, region, inviteIds) => {
+        const id = uid('c')
+        const crew: Crew = {
+          id,
+          name: name.trim(),
+          region: region.trim() || 'Bow Valley',
+          members: [CURRENT_USER_ID, ...inviteIds.filter((m) => m !== CURRENT_USER_ID)],
+          challenge: 'First month on the dirt',
+          challengeProgress: 0,
+          challengeGoal: 5000,
+          challengeUnit: 'm',
+        }
+        set((s) => ({
+          crews: [crew, ...s.crews],
+          joinedCrewIds: [id, ...s.joinedCrewIds],
+        }))
+      },
 
       createOuting: (crewId, trailId, when) =>
         set((s) => ({

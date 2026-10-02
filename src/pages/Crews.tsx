@@ -4,6 +4,7 @@ import { CrewBoard } from '../components/CrewBoard'
 import { CrewFeed } from '../components/CrewFeed'
 import { CrewHero } from '../components/CrewHero'
 import { PlanHike } from '../components/PlanHike'
+import { StartCrew } from '../components/StartCrew'
 import { useAppStore } from '../store/useAppStore'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -32,6 +33,7 @@ export function Crews() {
           </p>
         </motion.div>
 
+        <StartCrew />
         {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} />}
         {mine && <PlanHike crewId={mine.id} />}
         {mine && <CrewBoard crew={mine} />}

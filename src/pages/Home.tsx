@@ -1,15 +1,14 @@
-import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { TrailMap } from '../components/TrailMap'
 import { RouteGlyph } from '../components/RouteGlyph'
-import { Mark } from '../components/Mark'
 import { PhotoRail } from '../components/PhotoRail'
 import { WeatherWeek } from '../components/WeatherWeek'
 import { formatSplit } from '../components/Split'
-import { getHiker } from '../data/seed'
+import { CURRENT_USER_ID, getHiker } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
 import { formatTime, relativeTime } from '../lib/format'
+import { effortFor, formatPace } from '../lib/effort'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 
 export function Home() {
@@ -48,36 +47,22 @@ export function Home() {
   const yourBest = chase ? bestTime(runs, 'you', chase.trailId) : undefined
   const gap = yourBest !== undefined && chase ? yourBest - chase.timeSec : undefined
 
-  // Ghost race preview: 6s loop driven imperatively inside TrailMap (no per-frame React state)
-  const ghostSec = chase?.timeSec ?? 1
-  const youSec = yourBest ?? ghostSec * 1.05
-  const race = useMemo(() => {
-    const slower = Math.max(ghostSec, youSec)
-    let start: number | undefined
-    return (now: number) => {
-      start ??= now
-      const t = ((now - start) / 6000) % 1
-      return {
-        ghost: Math.min(1, (t * slower) / ghostSec),
-        you: Math.min(1, (t * slower) / youSec),
-      }
-    }
-  }, [ghostSec, youSec])
-
   const yourTrails = trails.filter((tr) => runs.some((r) => r.userId === 'you' && r.trailId === tr.id))
+  const last = [...runs].filter((r) => r.userId === CURRENT_USER_ID).sort((a, b) => b.timestamp - a.timestamp)[0]
+  const lastTrail = last ? getTrail(last.trailId) : undefined
+  const lastPace = last && lastTrail ? formatPace(effortFor(lastTrail, last.timeSec).paceSecPerKm) : undefined
 
   return (
     <div className="page">
-      <section style={{ position: 'relative', height: '68dvh', minHeight: 480, overflow: 'hidden' }}>
-        {chaseTrail ? (
+      <section style={{ position: 'relative', height: '62dvh', minHeight: 440, overflow: 'hidden' }}>
+        {lastTrail ? (
           <TrailMap
             trails={[]}
-            route={chaseTrail.path}
-            animate={race}
+            route={lastTrail.path}
             mood="day"
-            pitch={55}
+            pitch={50}
             fit
-            fitPadding={{ top: 80, bottom: 260, left: 40, right: 40 }}
+            fitPadding={{ top: 36, bottom: 200, left: 40, right: 40 }}
             interactive={false}
           />
         ) : (
@@ -90,63 +75,43 @@ export function Home() {
             inset: 0,
             pointerEvents: 'none',
             background:
-              'linear-gradient(180deg, rgba(228,238,235,0.0) 0%, rgba(228,238,235,0) 45%, rgba(228,238,235,0.75) 75%, rgba(228,238,235,1) 100%)',
+              'linear-gradient(180deg, rgba(228,238,235,0.15) 0%, rgba(228,238,235,0) 28%, rgba(228,238,235,0.8) 72%, rgba(228,238,235,1) 100%)',
           }}
         />
-
-        <div style={{ position: 'absolute', top: 'calc(18px + env(safe-area-inset-top))', left: 20, right: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Mark />
-          <span style={{ textAlign: 'right' }}>
-            <span className="survey">Bow Valley · {trails.length} lines</span>
-            {chaseTrail && (
-              <WeatherWeek lat={chaseTrail.center[1]} lng={chaseTrail.center[0]} compact />
-            )}
-          </span>
-        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: 'absolute', left: 20, right: 20, bottom: 20 }}
+          style={{ position: 'absolute', left: 20, right: 20, bottom: 16 }}
         >
-          {chase && chaseTrail && gap !== undefined ? (
+          {last && lastTrail ? (
             <>
-              <div style={{ color: 'var(--ink)' }}>
-                <div
-                  className={`split ${gap <= 0 ? 'ahead' : ''}`}
-                  style={{
-                    fontSize: 'clamp(4rem, 20vw, 6rem)',
-                    color: gap <= 0 ? 'var(--larch)' : 'transparent',
-                    WebkitTextStroke: gap <= 0 ? undefined : '2px #0f201e',
-                  }}
-                >
-                  {formatSplit(gap)}
-                </div>
+              <p className="survey">Last hike · {relativeTime(last.timestamp)} · {lastTrail.region}</p>
+              <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95, marginTop: 6 }}>
+                {lastTrail.name}
+              </h1>
+              <p className="num" style={{ marginTop: 8, fontWeight: 700 }}>
+                {formatTime(last.timeSec)} · {lastTrail.distKm.toFixed(1)} km · {Math.round(lastTrail.gainM)} m ↑ · {lastPace}/km
+              </p>
+              <div style={{ marginTop: 4 }}>
+                <WeatherWeek lat={lastTrail.center[1]} lng={lastTrail.center[0]} compact />
               </div>
-              <p style={{ marginTop: 10, fontSize: 'var(--type-lg)', fontWeight: 700 }}>
-                {gap <= 0 ? 'ahead of' : 'behind'} {chase.label} · {chaseTrail.name}
-              </p>
-              <p className="survey num" style={{ marginTop: 6 }}>
-                {pinnedChase ? 'chasing' : 'next up'} · your {formatTime(yourBest!)} · their {formatTime(chase.timeSec)} · {chaseTrail.distKm.toFixed(1)} km · {Math.round(chaseTrail.gainM)} m ↑
-              </p>
-              <Link
-                to={`/record?trail=${chase.trailId}`}
-                className="btn btn-larch"
-                style={{ marginTop: 18, width: '100%', padding: '20px' , fontSize: 'var(--type-lg)' }}
-                onClick={() => {
-                  if (!pinnedChase) setChase(chase)
-                }}
-              >
-                Run the ghost
-              </Link>
+              <div className="btn-row" style={{ marginTop: 16 }}>
+                <Link to={`/trail/${lastTrail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>
+                  The line
+                </Link>
+                <Link to={`/record?trail=${lastTrail.id}`} className="btn btn-larch" style={{ flex: 1 }}>
+                  Hike it again
+                </Link>
+              </div>
             </>
           ) : (
             <>
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, lineHeight: 0.95 }}>
-                Pick a line.<br />Chase someone on it.
+                Pick a line.
               </h1>
-              <Link to="/explore" className="btn btn-larch" style={{ marginTop: 18, width: '100%', padding: '20px' }}>
+              <Link to="/explore" className="btn btn-larch" style={{ marginTop: 18, width: '100%' }}>
                 Open the map
               </Link>
             </>
@@ -154,18 +119,42 @@ export function Home() {
         </motion.div>
       </section>
 
-      {chaseTrail && (
+      {lastTrail && (
         <section className="container page-pad" style={{ marginTop: 8 }}>
-          <p className="survey">The dirt · {chaseTrail.name}</p>
+          <p className="survey">On {lastTrail.name}</p>
           <div style={{ marginTop: 10 }}>
-            <PhotoRail trailId={chaseTrail.id} />
+            <PhotoRail trailId={lastTrail.id} />
+          </div>
+        </section>
+      )}
+
+      {chase && chaseTrail && gap !== undefined && (
+        <section className="container page-pad" style={{ marginTop: 18 }}>
+          <p className="survey">Someone you know is faster here</p>
+          <div className="hairline" style={{ display: 'grid', gridTemplateColumns: '48px 1fr auto', gap: 14, alignItems: 'center', padding: '14px 0' }}>
+            <RouteGlyph coords={chaseTrail.path} size={48} stroke="#0f201e" strokeWidth={2} />
+            <div>
+              <p style={{ fontWeight: 800 }}>{chase.label}</p>
+              <p className="survey num">
+                {formatSplit(gap).replace('+', '')} faster · {chaseTrail.name} · their {formatTime(chase.timeSec)}
+              </p>
+            </div>
+            <Link
+              to={`/record?trail=${chase.trailId}`}
+              className="chip"
+              onClick={() => {
+                if (!pinnedChase) setChase(chase)
+              }}
+            >
+              Their time
+            </Link>
           </div>
         </section>
       )}
 
       {rivals.length > 0 && (
         <section className="container page-pad" style={{ marginTop: 12 }}>
-          <p className="survey">Rivals within reach</p>
+          <p className="survey">Faster on your lines</p>
           <div style={{ marginTop: 8 }}>
             {rivals
               .filter((r) => !(chase && r.trail.id === chase.trailId && r.ahead.userId === chase.userId))
@@ -194,7 +183,7 @@ export function Home() {
                     })
                   }
                 >
-                  Chase
+                  Their time
                 </button>
               </div>
             ))}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { NavDock } from './components/NavDock'
+import { BrandBar } from './components/BrandBar'
 import { Home } from './pages/Home'
 import { Explore } from './pages/Explore'
 import { TrailDetail } from './pages/TrailDetail'
@@ -37,6 +38,7 @@ export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '') || undefined}>
       <div className="app-shell full-bleed">
+        <BrandBar />
         <AnimatedRoutes />
         <NavDock />
       </div>

@@ -151,7 +151,7 @@ export function Record() {
         }}
       />
 
-      <div style={{ position: 'absolute', top: 'calc(14px + env(safe-area-inset-top))', left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ position: 'absolute', top: 'calc(var(--brand-h) + 8px)', left: 16, right: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ padding: '10px 14px', fontSize: 'var(--type-sm)' }}>
           ← {trail.name}
         </Link>
@@ -160,7 +160,7 @@ export function Record() {
         </span>
       </div>
 
-      <div style={{ position: 'absolute', top: 'calc(74px + env(safe-area-inset-top))', left: 20, right: 20 }}>
+      <div style={{ position: 'absolute', top: 'calc(var(--brand-h) + 64px)', left: 20, right: 20 }}>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           {recording ? (
             <>
