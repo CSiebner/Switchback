@@ -57,6 +57,31 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   )
 }
 
+function LineStars({ reviews }: { reviews: { rating: number }[] }) {
+  const avg = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
+  const filled = Math.round(avg)
+  return (
+    <div>
+      <p style={{ display: 'flex', gap: 2, margin: 0, minHeight: '1.2em' }} aria-label={reviews.length ? `${avg.toFixed(1)} out of 5` : 'No ratings yet'}>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <svg key={i} width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+            <path
+              d="M12 3.2 14.7 9l6.3.6-4.8 4.1 1.5 6.1L12 16.8 6.3 19.8 7.8 13.7 3 9.6 9.3 9z"
+              fill={i <= filled ? 'var(--larch)' : 'none'}
+              stroke="var(--larch)"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+          </svg>
+        ))}
+      </p>
+      <p className="survey" style={{ marginTop: 6 }}>
+        {reviews.length ? `${avg.toFixed(1)} · ${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}` : 'no ratings yet'}
+      </p>
+    </div>
+  )
+}
+
 function CountUp({ value, className }: { value: number; className: string }) {
   const mv = useMotionValue(0)
   const text = useTransform(mv, (v) => formatTime(v))
@@ -150,36 +175,34 @@ export function TrailDetail() {
       <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginTop: 28 }}>
             <div>
               <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{spokenMinutes(trail.typicalMin)}</p>
               <p className="survey" style={{ marginTop: 6 }}>estimated to finish</p>
             </div>
             <div>
-              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>
-                {(() => {
-                  const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
-                  if (!times.length) return '—'
-                  return spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)
-                })()}
-              </p>
-              <p className="survey" style={{ marginTop: 6 }}>
-                average of {runs.filter((r) => r.trailId === trail.id).length} hikes
-              </p>
+              <p className="num" style={{ fontWeight: 800, fontSize: 'var(--type-lg)' }}>{Math.round(trail.gainM)} m</p>
+              <p className="survey" style={{ marginTop: 6 }}>elevation gain</p>
+            </div>
+            <div>
+              <LineStars reviews={reviews.filter((r) => r.trailId === trail.id)} />
             </div>
           </div>
+          {(() => {
+            const times = runs.filter((r) => r.trailId === trail.id).map((r) => r.timeSec)
+            if (!times.length) return null
+            return (
+              <p className="survey num" style={{ marginTop: 14 }}>
+                hikers average {spokenMinutes(times.reduce((sum, t) => sum + t, 0) / times.length / 60)} · {times.length} hikes
+              </p>
+            )
+          })()}
           {hasRun && (
             <>
               <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
               <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
             </>
           )}
-          {(() => {
-            const list = reviews.filter((r) => r.trailId === trail.id)
-            if (!list.length) return null
-            const avg = list.reduce((sum, r) => sum + r.rating, 0) / list.length
-            return <p className="survey num" style={{ marginTop: 6 }}>{avg.toFixed(1)} average · {list.length} {list.length === 1 ? 'review' : 'reviews'}</p>
-          })()}
           <TrailBadges
             name={trail.name}
             holds={iAmFirst}
