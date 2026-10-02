@@ -335,8 +335,16 @@ export const trailPhotos: TrailPhoto[] = [
   }
 ]
 
+/** Prefix public-folder paths so they work both on `/` and under GitHub Pages. */
+export function publicUrl(path: string): string {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+  return `${base}${path}`
+}
+
 export function photosFor(trailId: string): TrailPhoto[] {
-  return trailPhotos.filter((p) => p.trailId === trailId)
+  return trailPhotos
+    .filter((p) => p.trailId === trailId)
+    .map((p) => ({ ...p, src: publicUrl(p.src), thumb: publicUrl(p.thumb) }))
 }
 
 export function heroPhoto(trailId: string): TrailPhoto | undefined {
