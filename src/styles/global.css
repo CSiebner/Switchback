@@ -955,11 +955,17 @@ p {
   color: inherit;
 }
 
+.kudo svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
 .kudo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: var(--r-pill);
   border: 1px solid var(--contour-light);
   background: transparent;

@@ -13,6 +13,24 @@
   margin-top: 40px;
 }
 
+.cr-composer textarea {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--contour-light);
+  background: transparent;
+  color: inherit;
+  resize: vertical;
+}
+
+.cr-composer-trails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
 .cr-feed {
   margin-top: 28px;
   padding: 16px 14px 8px;

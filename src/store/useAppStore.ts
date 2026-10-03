@@ -111,6 +111,7 @@ interface AppState {
   addQuestionComment: (id: string, text: string) => void
   createCrew: (name: string, region: string, inviteIds: string[]) => void
   addComment: (feedId: string, text: string) => void
+  addCrewPost: (text: string, trailId?: string) => void
   packTrail: (trailId: string) => void
   finishOnboarding: (knownTrailIds: string[], hikeWith: 'solo' | 'crew') => void
   acceptDuel: (id: string) => void
@@ -569,6 +570,25 @@ export const useAppStore = create<AppState>()(
             },
             ...s.feed,
           ],
+        })),
+
+      addCrewPost: (text, trailId) =>
+        set((s) => ({
+          feed: text.trim()
+            ? [
+                {
+                  id: uid('f'),
+                  type: 'post' as const,
+                  userId: CURRENT_USER_ID,
+                  trailId,
+                  text: text.trim(),
+                  timestamp: Date.now(),
+                  kudos: [],
+                  comments: [],
+                },
+                ...s.feed,
+              ]
+            : s.feed,
         })),
 
       addComment: (feedId, text) =>

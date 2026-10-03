@@ -124,7 +124,7 @@ export interface LodgeChallenge {
 
 export interface FeedItem {
   id: string
-  type: 'pb' | 'hike' | 'condition' | 'outing'
+  type: 'pb' | 'hike' | 'condition' | 'outing' | 'post'
   userId: string
   trailId?: string
   crewId?: string
