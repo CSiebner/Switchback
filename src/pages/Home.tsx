@@ -4,7 +4,7 @@ import { RouteGlyph } from '../components/RouteGlyph'
 import { heroPhoto } from '../data/photos'
 import { WeatherWeek } from '../components/WeatherWeek'
 import { PackAdvice } from '../components/PackAdvice'
-import { CURRENT_USER_ID, getHiker, type Run } from '../data/seed'
+import { CURRENT_USER_ID, type Run } from '../data/seed'
 import { getTrail } from '../data/trails'
 import { formatTime, relativeTime } from '../lib/format'
 import { activeDuel, crewScore, formatMetric, hikerScores, primaryLodge } from '../lib/lodge'
@@ -142,7 +142,8 @@ export function Home() {
               </span>
             </Link>
             <p className="survey" style={{ marginTop: 12 }}>
-              {outing.meet} · {getHiker(outing.driver ?? '')?.name ?? 'No driver yet'} driving
+              {outing.meet ? `Trailhead · ${outing.meet}` : 'Trailhead to be decided'}
+              {outing.depart ? ` · Ride from ${outing.depart}` : ''}
               {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - outing.going.length)} seats left` : ''}
             </p>
             <div className="btn-row" style={{ marginTop: 14 }}>

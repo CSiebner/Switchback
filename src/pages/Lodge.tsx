@@ -6,6 +6,7 @@ import type { LodgeMetric } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
 import { crewScore, formatMetric, hikerScores } from '../lib/lodge'
 import { relativeTime } from '../lib/format'
+import { Talk } from '../components/Talk'
 import { useAppStore } from '../store/useAppStore'
 
 export function Lodge() {
@@ -24,6 +25,14 @@ export function Lodge() {
   const confirmCondition = useAppStore((s) => s.confirmCondition)
   const addQuestion = useAppStore((s) => s.addQuestion)
   const joinLodgeChallenge = useAppStore((s) => s.joinLodgeChallenge)
+  const requestRide = useAppStore((s) => s.requestRide)
+  const meetAtPin = useAppStore((s) => s.meetAtPin)
+  const toggleOutingKudo = useAppStore((s) => s.toggleOutingKudo)
+  const addOutingComment = useAppStore((s) => s.addOutingComment)
+  const toggleConditionKudo = useAppStore((s) => s.toggleConditionKudo)
+  const addConditionComment = useAppStore((s) => s.addConditionComment)
+  const toggleQuestionKudo = useAppStore((s) => s.toggleQuestionKudo)
+  const addQuestionComment = useAppStore((s) => s.addQuestionComment)
   const [askTrail, setAskTrail] = useState('ha-ling')
   const [askText, setAskText] = useState('')
   const lodge = lodges.find((l) => l.id === id)
@@ -69,10 +78,6 @@ export function Lodge() {
     .slice()
     .sort((a, b) => b.timestamp - a.timestamp)
     .slice(0, 5)
-  const notes = [
-    ...questions.map((q) => ({ id: q.id, trailId: q.trailId, userId: q.userId, text: q.text, timestamp: q.timestamp })),
-    ...reviews.map((r) => ({ id: r.id, trailId: r.trailId, userId: r.userId, text: r.text, timestamp: r.timestamp })),
-  ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 6)
   const openChallenge = lodgeChallenges.find((c) => c.lodgeId === id)
   const fromName = crews.find((c) => c.id === duel?.fromCrewId)?.name
   const toName = crews.find((c) => c.id === duel?.toCrewId)?.name
@@ -171,15 +176,43 @@ export function Lodge() {
           {weekend.map((c) => {
             const trail = c.outing ? getTrail(c.outing.trailId) : undefined
             if (!c.outing || !trail) return null
+            const outing = c.outing
             return (
-              <Link key={c.id} to={`/trail/${trail.id}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>
-                <span style={{ fontWeight: 800, display: 'block' }}>{trail.name}</span>
-                <span className="survey">
-                  {c.name} · {c.outing.when} · {c.outing.pace} · {c.outing.meet}
-                  {c.outing.seats !== undefined ? ` · ${Math.max(0, c.outing.seats - c.outing.going.length)} seats left` : ''}
-                  {c.outing.openToSolo ? ' · Solo hikers welcome' : ' · Crew only'}
-                </span>
-              </Link>
+              <div key={c.id} className="hairline" style={{ padding: '14px 0' }}>
+                <Link to={`/trail/${trail.id}`}>
+                  <span style={{ fontWeight: 800, display: 'block' }}>{trail.name}</span>
+                  <span className="survey" style={{ display: 'block', marginTop: 4 }}>
+                    {c.name} · {outing.when} · {outing.pace}
+                    {outing.seats !== undefined ? ` · ${Math.max(0, outing.seats - outing.going.length)} seats left` : ''}
+                    {outing.openToSolo ? ' · Solo hikers welcome' : ' · Crew only'}
+                  </span>
+                </Link>
+                {outing.meet && (
+                  <a className="cr-map" style={{ marginTop: 8 }} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(outing.meet)}`} target="_blank" rel="noreferrer">
+                    Trailhead · {outing.meet}
+                  </a>
+                )}
+                {outing.depart && (
+                  <a className="cr-map" style={{ marginTop: 8, marginLeft: 8 }} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(outing.depart)}`} target="_blank" rel="noreferrer">
+                    Ride from · {outing.depart}
+                  </a>
+                )}
+                {outing.openToSolo && (
+                  <div className="btn-row" style={{ marginTop: 10 }}>
+                    <button type="button" className="chip" onClick={() => requestRide(c.id)}>Request a ride</button>
+                    <button type="button" className={`chip ${(outing.meeting ?? []).includes('you') ? 'active' : ''}`} onClick={() => meetAtPin(c.id)}>
+                      Meet at the pin
+                    </button>
+                  </div>
+                )}
+                <Talk
+                  kudos={outing.kudos}
+                  comments={outing.comments}
+                  onKudo={() => toggleOutingKudo(c.id)}
+                  onComment={(text) => addOutingComment(c.id, text)}
+                  placeholder="Reply to this plan"
+                />
+              </div>
             )
           })}
         </section>
@@ -199,6 +232,13 @@ export function Lodge() {
                 <button type="button" className="chip" onClick={() => confirmCondition(c.id)}>
                   Still true · {c.confirms}
                 </button>
+                <Talk
+                  kudos={c.kudos}
+                  comments={c.comments}
+                  onKudo={() => toggleConditionKudo(c.id)}
+                  onComment={(text) => addConditionComment(c.id, text)}
+                  placeholder="Reply to this report"
+                />
               </div>
             )
           })}
@@ -207,7 +247,25 @@ export function Lodge() {
         <section className="lodge-block notes">
           <h2 className="chapter">Notes on the trails</h2>
           <p className="survey" style={{ marginTop: 6 }}>Questions and advice stay on the trail they belong to, and show up in the pack list.</p>
-          {notes.map((r) => {
+          {questions.map((q) => {
+            const trail = getTrail(q.trailId)
+            return (
+              <div key={q.id} className="hairline" style={{ padding: '14px 0' }}>
+                <Link to={`/trail/${q.trailId}`}>
+                  <span className="survey">{trail?.name} · {q.userId === 'you' ? 'You' : getHiker(q.userId)?.name}</span>
+                  <span style={{ display: 'block', marginTop: 4, lineHeight: 1.4 }}>{q.text}</span>
+                </Link>
+                <Talk
+                  kudos={q.kudos}
+                  comments={q.comments}
+                  onKudo={() => toggleQuestionKudo(q.id)}
+                  onComment={(text) => addQuestionComment(q.id, text)}
+                  placeholder="Answer"
+                />
+              </div>
+            )
+          })}
+          {reviews.slice().sort((a, b) => b.timestamp - a.timestamp).slice(0, 3).map((r) => {
             const trail = getTrail(r.trailId)
             return (
               <Link key={r.id} to={`/trail/${r.trailId}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>

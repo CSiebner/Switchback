@@ -95,8 +95,20 @@ interface AppState {
   finishRecording: (opts?: { conditions?: ConditionTag[]; note?: string; adjustSec?: number }) => LastResult | undefined
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
-  createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; pace: 'easy' | 'steady' | 'pushing'; driver: string; seats: number; whenIso?: string; openToSolo?: boolean }) => void
+  createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; depart?: string; pace: 'easy' | 'steady' | 'pushing'; driver: string; seats: number; whenIso?: string; openToSolo?: boolean }) => void
   setOutingGoing: (crewId: string, going: boolean) => void
+  toggleOutingKudo: (crewId: string) => void
+  addOutingComment: (crewId: string, text: string) => void
+  requestRide: (crewId: string) => void
+  acceptRide: (crewId: string, userId: string) => void
+  meetAtPin: (crewId: string) => void
+  setCrewAccess: (crewId: string, access: 'public' | 'invite' | 'request') => void
+  requestJoin: (crewId: string) => void
+  acceptJoin: (crewId: string, userId: string) => void
+  toggleConditionKudo: (id: string) => void
+  addConditionComment: (id: string, text: string) => void
+  toggleQuestionKudo: (id: string) => void
+  addQuestionComment: (id: string, text: string) => void
   createCrew: (name: string, region: string, inviteIds: string[]) => void
   addComment: (feedId: string, text: string) => void
   packTrail: (trailId: string) => void
@@ -381,8 +393,159 @@ export const useAppStore = create<AppState>()(
                 ? c.outing.going
                 : [...c.outing.going, CURRENT_USER_ID]
               : c.outing.going.filter((id) => id !== CURRENT_USER_ID)
-            return { ...c, outing: { ...c.outing, going: next } }
+            return {
+              ...c,
+              outing: {
+                ...c.outing,
+                going: next,
+                rideRequests: (c.outing.rideRequests ?? []).filter((id) => id !== CURRENT_USER_ID),
+                meeting: going ? (c.outing.meeting ?? []).filter((id) => id !== CURRENT_USER_ID) : c.outing.meeting,
+              },
+            }
           }),
+        })),
+
+      toggleOutingKudo: (crewId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing) return c
+            const kudos = c.outing.kudos ?? []
+            const has = kudos.includes(CURRENT_USER_ID)
+            return { ...c, outing: { ...c.outing, kudos: has ? kudos.filter((id) => id !== CURRENT_USER_ID) : [...kudos, CURRENT_USER_ID] } }
+          }),
+        })),
+
+      addOutingComment: (crewId, text) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing || !text.trim()) return c
+            return {
+              ...c,
+              outing: {
+                ...c.outing,
+                comments: [...(c.outing.comments ?? []), { id: uid('oc'), userId: CURRENT_USER_ID, text: text.trim(), timestamp: Date.now() }],
+              },
+            }
+          }),
+        })),
+
+      requestRide: (crewId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing) return c
+            const asked = c.outing.rideRequests ?? []
+            if (asked.includes(CURRENT_USER_ID) || c.outing.going.includes(CURRENT_USER_ID)) return c
+            return {
+              ...c,
+              outing: {
+                ...c.outing,
+                rideRequests: [...asked, CURRENT_USER_ID],
+                meeting: (c.outing.meeting ?? []).filter((id) => id !== CURRENT_USER_ID),
+              },
+            }
+          }),
+        })),
+
+      acceptRide: (crewId, userId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing) return c
+            const seats = c.outing.seats
+            if (seats !== undefined && c.outing.going.length >= seats) return c
+            return {
+              ...c,
+              outing: {
+                ...c.outing,
+                going: c.outing.going.includes(userId) ? c.outing.going : [...c.outing.going, userId],
+                rideRequests: (c.outing.rideRequests ?? []).filter((id) => id !== userId),
+                meeting: (c.outing.meeting ?? []).filter((id) => id !== userId),
+              },
+            }
+          }),
+        })),
+
+      meetAtPin: (crewId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId || !c.outing) return c
+            const meeting = c.outing.meeting ?? []
+            const on = meeting.includes(CURRENT_USER_ID)
+            return {
+              ...c,
+              outing: {
+                ...c.outing,
+                meeting: on ? meeting.filter((id) => id !== CURRENT_USER_ID) : [...meeting, CURRENT_USER_ID],
+                rideRequests: (c.outing.rideRequests ?? []).filter((id) => id !== CURRENT_USER_ID),
+                going: on ? c.outing.going : c.outing.going.filter((id) => id !== CURRENT_USER_ID),
+              },
+            }
+          }),
+        })),
+
+      setCrewAccess: (crewId, access) =>
+        set((s) => ({
+          crews: s.crews.map((c) => (c.id === crewId ? { ...c, access } : c)),
+        })),
+
+      requestJoin: (crewId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId) return c
+            const asked = c.joinRequests ?? []
+            if (asked.includes(CURRENT_USER_ID) || c.members.includes(CURRENT_USER_ID)) return c
+            return { ...c, joinRequests: [...asked, CURRENT_USER_ID] }
+          }),
+        })),
+
+      acceptJoin: (crewId, userId) =>
+        set((s) => ({
+          crews: s.crews.map((c) => {
+            if (c.id !== crewId) return c
+            return {
+              ...c,
+              members: c.members.includes(userId) ? c.members : [...c.members, userId],
+              joinRequests: (c.joinRequests ?? []).filter((id) => id !== userId),
+            }
+          }),
+          joinedCrewIds: userId === CURRENT_USER_ID && !s.joinedCrewIds.includes(crewId) ? [...s.joinedCrewIds, crewId] : s.joinedCrewIds,
+        })),
+
+      toggleConditionKudo: (id) =>
+        set((s) => ({
+          conditions: s.conditions.map((c) => {
+            if (c.id !== id) return c
+            const kudos = c.kudos ?? []
+            const has = kudos.includes(CURRENT_USER_ID)
+            return { ...c, kudos: has ? kudos.filter((k) => k !== CURRENT_USER_ID) : [...kudos, CURRENT_USER_ID] }
+          }),
+        })),
+
+      addConditionComment: (id, text) =>
+        set((s) => ({
+          conditions: s.conditions.map((c) =>
+            c.id === id && text.trim()
+              ? { ...c, comments: [...(c.comments ?? []), { id: uid('cc'), userId: CURRENT_USER_ID, text: text.trim(), timestamp: Date.now() }] }
+              : c,
+          ),
+        })),
+
+      toggleQuestionKudo: (id) =>
+        set((s) => ({
+          questions: s.questions.map((q) => {
+            if (q.id !== id) return q
+            const kudos = q.kudos ?? []
+            const has = kudos.includes(CURRENT_USER_ID)
+            return { ...q, kudos: has ? kudos.filter((k) => k !== CURRENT_USER_ID) : [...kudos, CURRENT_USER_ID] }
+          }),
+        })),
+
+      addQuestionComment: (id, text) =>
+        set((s) => ({
+          questions: s.questions.map((q) =>
+            q.id === id && text.trim()
+              ? { ...q, comments: [...(q.comments ?? []), { id: uid('qc'), userId: CURRENT_USER_ID, text: text.trim(), timestamp: Date.now() }] }
+              : q,
+          ),
         })),
 
       createOuting: (crewId, plan) =>

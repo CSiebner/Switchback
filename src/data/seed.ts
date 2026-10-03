@@ -63,6 +63,8 @@ export interface ConditionReport {
   note?: string
   timestamp: number
   confirms: number
+  kudos?: string[]
+  comments?: Comment[]
 }
 
 export interface Crew {
@@ -74,17 +76,28 @@ export interface Crew {
   challengeProgress: number
   challengeGoal: number
   challengeUnit: string
+  /** Who may join the crew itself. Invites and requests stay on this phone until the app is hosted. */
+  access?: 'public' | 'invite' | 'request'
+  joinRequests?: string[]
   outing?: {
     trailId: string
     when: string
     going: string[]
+    /** Trailhead or hike parking lot. */
     meet?: string
+    /** Where the car leaves from, before the trailhead. */
+    depart?: string
     pace?: 'easy' | 'steady' | 'pushing'
     driver?: string
     seats?: number
     whenIso?: string
     /** Solo hikers may join this plan without being in the crew already. */
     openToSolo?: boolean
+    kudos?: string[]
+    comments?: Comment[]
+    rideRequests?: string[]
+    /** People meeting at the trailhead, not taking a seat. */
+    meeting?: string[]
   }
 }
 
@@ -94,6 +107,8 @@ export interface TrailQuestion {
   userId: string
   text: string
   timestamp: number
+  kudos?: string[]
+  comments?: Comment[]
 }
 
 /** A challenge the whole lodge can join, separate from a crew-versus-crew duel. */
@@ -379,7 +394,22 @@ export const seedCrews: Crew[] = [
     challengeProgress: 18420,
     challengeGoal: 25000,
     challengeUnit: 'm',
-    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam', seats: 4, openToSolo: true },
+    access: 'public',
+    outing: {
+      trailId: 'ha-ling',
+      when: 'Sat 7:00 AM',
+      going: ['liam', 'maya', 'you'],
+      meet: 'Canmore Nordic Centre lot',
+      depart: '17th Ave and 14th St SW, Calgary',
+      pace: 'steady',
+      driver: 'liam',
+      seats: 4,
+      openToSolo: true,
+      kudos: ['liam'],
+      comments: [{ id: 'oc1', userId: 'maya', text: 'I can drive if the usual car is full.', timestamp: now - 2 * 60 * 60 * 1000 }],
+      rideRequests: ['sofia'],
+      meeting: ['jordan'],
+    },
   },
   {
     id: 'canmore-dawn',
@@ -390,6 +420,7 @@ export const seedCrews: Crew[] = [
     challengeProgress: 11,
     challengeGoal: 20,
     challengeUnit: 'summits',
+    access: 'request',
   },
 ]
 

@@ -7,6 +7,7 @@ import { getTrail } from '../data/trails'
 import { CrewFeed } from '../components/CrewFeed'
 import { CrewHero } from '../components/CrewHero'
 import { PlanHike } from '../components/PlanHike'
+import { Talk } from '../components/Talk'
 import { StartCrew } from '../components/StartCrew'
 import { CrewWeek } from '../components/CrewWeek'
 import { activeDuel, crewScore, formatMetric, primaryLodge } from '../lib/lodge'
@@ -22,6 +23,14 @@ export function Crews() {
   const runs = useAppStore((s) => s.runs)
   const issueDuel = useAppStore((s) => s.issueDuel)
   const setOutingGoing = useAppStore((s) => s.setOutingGoing)
+  const requestRide = useAppStore((s) => s.requestRide)
+  const acceptRide = useAppStore((s) => s.acceptRide)
+  const meetAtPin = useAppStore((s) => s.meetAtPin)
+  const toggleOutingKudo = useAppStore((s) => s.toggleOutingKudo)
+  const addOutingComment = useAppStore((s) => s.addOutingComment)
+  const setCrewAccess = useAppStore((s) => s.setCrewAccess)
+  const requestJoin = useAppStore((s) => s.requestJoin)
+  const acceptJoin = useAppStore((s) => s.acceptJoin)
   const mine = joinedCrewIds.map((id) => crews.find((c) => c.id === id)).find(Boolean)
   const lodge = primaryLodge(lodges)
   const duel = lodge && mine ? activeDuel(duels, lodge.id) : undefined
@@ -57,6 +66,25 @@ export function Crews() {
         <p style={{ lineHeight: 1.45 }}>
           A crew is the people you actually hike with. The plan, the car, and what you learned on the trail stay here.
         </p>
+        {mine && (
+          <div style={{ marginTop: 14 }}>
+            <p className="survey">Who can join this crew</p>
+            <div className="segmented" style={{ marginTop: 8 }}>
+              {(['public', 'invite', 'request'] as const).map((access) => (
+                <button key={access} type="button" className={(mine.access ?? 'public') === access ? 'active' : ''} onClick={() => setCrewAccess(mine.id, access)}>
+                  {access === 'public' ? 'Public' : access === 'invite' ? 'Invite only' : 'Ask to join'}
+                </button>
+              ))}
+            </div>
+            <p className="survey" style={{ marginTop: 6 }}>Invites and requests stay on this phone until the app is hosted.</p>
+            {(mine.joinRequests ?? []).map((id) => (
+              <div key={id} style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                <span>{getHiker(id)?.name ?? id} asked to join</span>
+                <button type="button" className="chip" onClick={() => acceptJoin(mine.id, id)}>Accept</button>
+              </div>
+            ))}
+          </div>
+        )}
         {lodge && inDuel && duel && mine && (() => {
           const otherId = duel.fromCrewId === mine.id ? duel.toCrewId : duel.fromCrewId
           const other = crews.find((c) => c.id === otherId)
@@ -88,13 +116,21 @@ export function Crews() {
                 <div className="cr-plan-facts">
                   <span>When</span><p>{mine.outing.when}</p>
                   <span>Pace</span><p>{mine.outing.pace ?? 'steady'}</p>
-                  <span>Meet</span>
+                  <span>Trailhead</span>
                   <p>
                     {mine.outing.meet ? (
                       <a className="cr-map" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mine.outing.meet)}`} target="_blank" rel="noreferrer">
                         {mine.outing.meet}
                       </a>
                     ) : 'To be decided'}
+                  </p>
+                  <span>Ride from</span>
+                  <p>
+                    {mine.outing.depart ? (
+                      <a className="cr-map" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mine.outing.depart)}`} target="_blank" rel="noreferrer">
+                        {mine.outing.depart}
+                      </a>
+                    ) : 'No shared ride'}
                   </p>
                   <span>Seats</span>
                   <p>{mine.outing.seats !== undefined ? `${Math.max(0, mine.outing.seats - mine.outing.going.length)} left` : 'Open'}</p>
@@ -113,14 +149,41 @@ export function Crews() {
                   </p>
                 </div>
               )}
+              {mine.outing && (mine.outing.meeting ?? []).length > 0 && (
+                <p className="survey" style={{ marginTop: 10 }}>
+                  Meeting at the trailhead · {(mine.outing.meeting ?? []).map((id) => (id === 'you' ? 'You' : getHiker(id)?.name)).filter(Boolean).join(', ')}
+                </p>
+              )}
+              {mine.outing && (mine.outing.rideRequests ?? []).length > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  <p className="survey">Ride requests</p>
+                  {(mine.outing.rideRequests ?? []).map((id) => (
+                    <div key={id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                      <span>{id === 'you' ? 'You' : getHiker(id)?.name}</span>
+                      {mine.members.includes('you') && id !== 'you' && (
+                        <button type="button" className="chip" onClick={() => acceptRide(mine.id, id)}>Accept</button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="btn-row" style={{ marginTop: 14 }}>
+                {mine.outing && !mine.outing.going.includes('you') && !(mine.outing.rideRequests ?? []).includes('you') && (
+                  <button type="button" className="chip" onClick={() => requestRide(mine.id)}>Request a ride</button>
+                )}
+                {mine.outing && (mine.outing.rideRequests ?? []).includes('you') && (
+                  <span className="chip active">Ride requested</span>
+                )}
+                {mine.outing && mine.outing.going.includes('you') && (
+                  <button type="button" className="chip active" onClick={() => setOutingGoing(mine.id, false)}>In the car</button>
+                )}
                 {mine.outing && (
                   <button
                     type="button"
-                    className={`chip ${mine.outing.going.includes('you') ? 'active' : ''}`}
-                    onClick={() => setOutingGoing(mine.id, !mine.outing!.going.includes('you'))}
+                    className={`chip ${(mine.outing.meeting ?? []).includes('you') ? 'active' : ''}`}
+                    onClick={() => meetAtPin(mine.id)}
                   >
-                    {mine.outing.going.includes('you') ? "You're going" : "I'm in"}
+                    {(mine.outing.meeting ?? []).includes('you') ? 'Meeting at the pin' : 'Meet at the pin'}
                   </button>
                 )}
                 {outingTrail && (
@@ -129,6 +192,15 @@ export function Crews() {
                   </Link>
                 )}
               </div>
+              {mine.outing && (
+                <Talk
+                  kudos={mine.outing.kudos}
+                  comments={mine.outing.comments}
+                  onKudo={() => toggleOutingKudo(mine.id)}
+                  onComment={(text) => addOutingComment(mine.id, text)}
+                  placeholder="Note on this hike"
+                />
+              )}
               <PlanHike crewId={mine.id} />
             </div>
           </section>
@@ -162,8 +234,14 @@ export function Crews() {
                   </div>
                   {joined ? (
                     <span className="chip cr-chip active" style={{ cursor: 'default' }}>Joined</span>
+                  ) : (c.access ?? 'public') === 'invite' ? (
+                    <span className="chip cr-chip">Invite only</span>
+                  ) : (c.joinRequests ?? []).includes('you') ? (
+                    <span className="chip cr-chip active">Requested</span>
                   ) : (
-                    <button className="chip cr-chip" onClick={() => joinCrew(c.id)}>Join</button>
+                    <button className="chip cr-chip" onClick={() => ((c.access ?? 'public') === 'request' ? requestJoin(c.id) : joinCrew(c.id))}>
+                      {(c.access ?? 'public') === 'request' ? 'Ask to join' : 'Join'}
+                    </button>
                   )}
                 </div>
               )
