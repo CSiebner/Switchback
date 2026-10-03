@@ -11,13 +11,18 @@ import {
   seedCrews,
   seedDuels,
   seedFeed,
+  seedLodgeChallenges,
   seedLodges,
+  seedQuestions,
   seedReviews,
   seedRuns,
   type Crew,
   type CrewDuel,
   type Lodge,
+  type LodgeChallenge,
   type LodgeMetric,
+  type PersonalChallenge,
+  type TrailQuestion,
 } from '../data/seed'
 
 export interface ChaseTarget {
@@ -57,6 +62,9 @@ interface AppState {
   joinedLodgeIds: string[]
   duels: CrewDuel[]
   hikeWith: 'solo' | 'crew'
+  questions: TrailQuestion[]
+  lodgeChallenges: LodgeChallenge[]
+  personalChallenge?: PersonalChallenge
   savedTrailIds: string[]
   packedTrailIds: string[]
   onboarded: boolean
@@ -87,7 +95,7 @@ interface AppState {
   finishRecording: (opts?: { conditions?: ConditionTag[]; note?: string; adjustSec?: number }) => LastResult | undefined
   clearResult: () => void
   logManualRun: (trailId: string, timeSec: number, conditions: ConditionTag[]) => void
-  createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; pace: 'easy' | 'steady' | 'pushing'; driver: string; seats: number; whenIso?: string }) => void
+  createOuting: (crewId: string, plan: { trailId: string; when: string; meet: string; pace: 'easy' | 'steady' | 'pushing'; driver: string; seats: number; whenIso?: string; openToSolo?: boolean }) => void
   setOutingGoing: (crewId: string, going: boolean) => void
   createCrew: (name: string, region: string, inviteIds: string[]) => void
   addComment: (feedId: string, text: string) => void
@@ -95,6 +103,10 @@ interface AppState {
   finishOnboarding: (knownTrailIds: string[], hikeWith: 'solo' | 'crew') => void
   acceptDuel: (id: string) => void
   issueDuel: (lodgeId: string, fromCrewId: string, toCrewId: string, metric: LodgeMetric) => void
+  addQuestion: (trailId: string, text: string) => void
+  joinLodgeChallenge: (id: string) => void
+  createLodge: (name: string, region: string) => void
+  setPersonalChallenge: (challenge?: PersonalChallenge) => void
 }
 
 function uid(prefix: string) {
@@ -114,6 +126,8 @@ export const useAppStore = create<AppState>()(
       joinedLodgeIds: ['bow-valley'],
       duels: seedDuels,
       hikeWith: 'crew',
+      questions: seedQuestions,
+      lodgeChallenges: seedLodgeChallenges,
       savedTrailIds: ['ha-ling', 'tunnel-mountain'],
       packedTrailIds: ['ha-ling'],
       onboarded: false,
@@ -351,6 +365,9 @@ export const useAppStore = create<AppState>()(
         set((s) => ({
           crews: [crew, ...s.crews],
           joinedCrewIds: [id, ...s.joinedCrewIds],
+          lodges: s.lodges.map((l) =>
+            s.joinedLodgeIds.includes(l.id) ? { ...l, crewIds: [...l.crewIds, id] } : l,
+          ),
         }))
       },
 
@@ -445,6 +462,45 @@ export const useAppStore = create<AppState>()(
           ],
         })),
 
+      addQuestion: (trailId, text) =>
+        set((s) => ({
+          questions: [
+            { id: uid('q'), trailId, userId: CURRENT_USER_ID, text: text.trim(), timestamp: Date.now() },
+            ...s.questions,
+          ],
+        })),
+
+      joinLodgeChallenge: (id) =>
+        set((s) => ({
+          lodgeChallenges: s.lodgeChallenges.map((c) => {
+            if (c.id !== id) return c
+            const on = c.joinedIds.includes(CURRENT_USER_ID)
+            return {
+              ...c,
+              joinedIds: on ? c.joinedIds.filter((x) => x !== CURRENT_USER_ID) : [...c.joinedIds, CURRENT_USER_ID],
+            }
+          }),
+        })),
+
+      createLodge: (name, region) =>
+        set((s) => {
+          const id = uid('lodge')
+          const lodge: Lodge = {
+            id,
+            name: name.trim(),
+            region: region.trim() || 'Alberta',
+            summary: 'A lodge for everyone who hikes here. Crews can challenge each other. Anyone can join the lodge challenge.',
+            crewIds: s.joinedCrewIds,
+            memberIds: [CURRENT_USER_ID],
+          }
+          return {
+            lodges: [lodge, ...s.lodges],
+            joinedLodgeIds: [...s.joinedLodgeIds, id],
+          }
+        }),
+
+      setPersonalChallenge: (personalChallenge) => set({ personalChallenge }),
+
       logManualRun: (trailId, timeSec, conditions) => {
         const run: Run = {
           id: uid('r'),
@@ -459,7 +515,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'switchback-v1.3',
+      name: 'switchback-v1.4',
       partialize: (s) => ({
         runs: s.runs,
         reviews: s.reviews,
@@ -471,6 +527,9 @@ export const useAppStore = create<AppState>()(
         joinedLodgeIds: s.joinedLodgeIds,
         duels: s.duels,
         hikeWith: s.hikeWith,
+        questions: s.questions,
+        lodgeChallenges: s.lodgeChallenges,
+        personalChallenge: s.personalChallenge,
         savedTrailIds: s.savedTrailIds,
         packedTrailIds: s.packedTrailIds,
         onboarded: s.onboarded,

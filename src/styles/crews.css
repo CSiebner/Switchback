@@ -20,6 +20,38 @@
   background: rgba(255, 255, 255, 0.55);
 }
 
+.cr-plan {
+  margin-top: 18px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--contour-light);
+}
+
+.cr-plan img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.cr-plan-body {
+  padding: 16px 16px 18px;
+}
+
+.cr-plan-facts {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 6px 12px;
+  margin-top: 14px;
+}
+
+.cr-plan-facts span {
+  color: var(--scree-dark);
+  font-size: var(--type-xs);
+  font-weight: 700;
+}
+
 .cr-pin {
   position: sticky;
   top: calc(var(--brand-h) + 8px);

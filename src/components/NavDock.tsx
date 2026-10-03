@@ -21,6 +21,13 @@ const Icon = {
       <path d="M14.5 19c.4-1.8 1.6-3 3.5-3 1.4 0 2.4.7 3 2" />
     </svg>
   ),
+  lodge: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round">
+      <path d="M4 18h16" />
+      <path d="M6 18 12 7l6 11" />
+      <path d="M9 14.5h6" />
+    </svg>
+  ),
   you: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
       <circle cx="12" cy="8" r="3.5" />
@@ -52,6 +59,10 @@ export function NavDock() {
           </svg>
         </span>
         <span className="nav-label">Hike</span>
+      </NavLink>
+      <NavLink to="/lodges" className={() => (pathname.startsWith('/lodge') ? 'active' : undefined)}>
+        {Icon.lodge}
+        <span className="nav-label">Lodges</span>
       </NavLink>
       <NavLink to="/crews" className={({ isActive }) => (isActive ? 'active' : undefined)}>
         {Icon.crews}

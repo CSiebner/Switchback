@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { heroPhoto } from '../data/photos'
 import { getHiker } from '../data/seed'
 import type { LodgeMetric } from '../data/seed'
-import { getTrail } from '../data/trails'
+import { getTrail, trails } from '../data/trails'
 import { crewScore, formatMetric, hikerScores } from '../lib/lodge'
 import { relativeTime } from '../lib/format'
 import { useAppStore } from '../store/useAppStore'
@@ -16,9 +16,16 @@ export function Lodge() {
   const runs = useAppStore((s) => s.runs)
   const conditions = useAppStore((s) => s.conditions)
   const reviews = useAppStore((s) => s.reviews)
+  const questions = useAppStore((s) => s.questions)
+  const lodgeChallenges = useAppStore((s) => s.lodgeChallenges)
   const joinedCrewIds = useAppStore((s) => s.joinedCrewIds)
   const acceptDuel = useAppStore((s) => s.acceptDuel)
   const issueDuel = useAppStore((s) => s.issueDuel)
+  const confirmCondition = useAppStore((s) => s.confirmCondition)
+  const addQuestion = useAppStore((s) => s.addQuestion)
+  const joinLodgeChallenge = useAppStore((s) => s.joinLodgeChallenge)
+  const [askTrail, setAskTrail] = useState('ha-ling')
+  const [askText, setAskText] = useState('')
   const lodge = lodges.find((l) => l.id === id)
   const [metric, setMetric] = useState<LodgeMetric>('elevation')
   const [who, setWho] = useState<'crews' | 'hikers'>('crews')
@@ -62,7 +69,11 @@ export function Lodge() {
     .slice()
     .sort((a, b) => b.timestamp - a.timestamp)
     .slice(0, 5)
-  const notes = reviews.slice().sort((a, b) => b.timestamp - a.timestamp).slice(0, 4)
+  const notes = [
+    ...questions.map((q) => ({ id: q.id, trailId: q.trailId, userId: q.userId, text: q.text, timestamp: q.timestamp })),
+    ...reviews.map((r) => ({ id: r.id, trailId: r.trailId, userId: r.userId, text: r.text, timestamp: r.timestamp })),
+  ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 6)
+  const openChallenge = lodgeChallenges.find((c) => c.lodgeId === id)
   const fromName = crews.find((c) => c.id === duel?.fromCrewId)?.name
   const toName = crews.find((c) => c.id === duel?.toCrewId)?.name
   const canAccept = !!duel && duel.status === 'pending' && joinedCrewIds.includes(duel.toCrewId)
@@ -135,6 +146,25 @@ export function Lodge() {
           </div>
         </section>
 
+        {openChallenge && (
+          <section style={{ marginTop: 28 }}>
+            <h2 className="chapter">Lodge challenge</h2>
+            <p className="survey" style={{ marginTop: 6 }}>{openChallenge.title}. Anyone in the lodge can join. This is separate from a crew challenging another crew.</p>
+            <button className="btn btn-larch" style={{ width: '100%', marginTop: 12 }} onClick={() => joinLodgeChallenge(openChallenge.id)}>
+              {openChallenge.joinedIds.includes('you') ? "You're in" : 'Join the challenge'}
+            </button>
+            <div style={{ marginTop: 8 }}>
+              {hikerScores(openChallenge.joinedIds, runs, openChallenge.metric, openChallenge.startMs, openChallenge.endMs).map((row, i) => (
+                <div key={row.userId} className="hairline" style={{ display: 'grid', gridTemplateColumns: '36px 1fr auto', gap: 10, padding: '12px 0' }}>
+                  <span className="num" style={{ fontWeight: 800 }}>#{i + 1}</span>
+                  <span style={{ fontWeight: 800 }}>{row.userId === 'you' ? 'You' : getHiker(row.userId)?.name}</span>
+                  <span className="num" style={{ fontWeight: 800 }}>{formatMetric(openChallenge.metric, row.total)}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section style={{ marginTop: 28 }}>
           <h2 className="chapter">This weekend</h2>
           {weekend.length === 0 && <p className="survey" style={{ marginTop: 8 }}>No public plans yet.</p>}
@@ -144,7 +174,11 @@ export function Lodge() {
             return (
               <Link key={c.id} to={`/trail/${trail.id}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>
                 <span style={{ fontWeight: 800, display: 'block' }}>{trail.name}</span>
-                <span className="survey">{c.name} · {c.outing.when} · {c.outing.pace} · {c.outing.meet}</span>
+                <span className="survey">
+                  {c.name} · {c.outing.when} · {c.outing.pace} · {c.outing.meet}
+                  {c.outing.seats !== undefined ? ` · ${Math.max(0, c.outing.seats - c.outing.going.length)} seats left` : ''}
+                  {c.outing.openToSolo ? ' · Solo hikers welcome' : ' · Crew only'}
+                </span>
               </Link>
             )
           })}
@@ -156,11 +190,16 @@ export function Lodge() {
           {changed.map((c) => {
             const trail = getTrail(c.trailId)
             return (
-              <Link key={c.id} to={`/trail/${c.trailId}`} className="hairline" style={{ display: 'block', padding: '14px 0' }}>
-                <span style={{ fontWeight: 800, display: 'block' }}>{trail?.name}</span>
-                <span className="survey">{c.tags.join(' · ')} · {getHiker(c.userId)?.name} · {relativeTime(c.timestamp)}</span>
-                {c.note && <span style={{ display: 'block', marginTop: 4 }}>{c.note}</span>}
-              </Link>
+              <div key={c.id} className="hairline" style={{ padding: '14px 0' }}>
+                <Link to={`/trail/${c.trailId}`}>
+                  <span style={{ fontWeight: 800, display: 'block' }}>{trail?.name}</span>
+                  <span className="survey">{c.tags.join(' · ')} · {getHiker(c.userId)?.name} · {relativeTime(c.timestamp)}</span>
+                  {c.note && <span style={{ display: 'block', marginTop: 4 }}>{c.note}</span>}
+                </Link>
+                <button type="button" className="chip" style={{ marginTop: 8 }} onClick={() => confirmCondition(c.id)}>
+                  Still true · {c.confirms}
+                </button>
+              </div>
             )
           })}
         </section>
@@ -177,6 +216,32 @@ export function Lodge() {
               </Link>
             )
           })}
+          <p className="survey" style={{ marginTop: 16 }}>Ask the lodge</p>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', marginTop: 8 }}>
+            {trails.map((t) => (
+              <button key={t.id} type="button" className={`chip ${askTrail === t.id ? 'active' : ''}`} onClick={() => setAskTrail(t.id)}>
+                {t.name}
+              </button>
+            ))}
+          </div>
+          <input
+            value={askText}
+            onChange={(e) => setAskText(e.target.value)}
+            placeholder="Ask about this trail"
+            aria-label="Question"
+            style={{ width: '100%', marginTop: 10, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
+          />
+          <button
+            className="btn btn-larch"
+            style={{ width: '100%', marginTop: 10 }}
+            disabled={askText.trim().length < 3}
+            onClick={() => {
+              addQuestion(askTrail, askText)
+              setAskText('')
+            }}
+          >
+            Post on the trail
+          </button>
         </section>
 
         {canIssue && (

@@ -133,7 +133,7 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
             {withCrew === true && (
               <>
                 <p className="survey" style={{ marginTop: 16 }}>
-                  Calgary Beltline Hikers can be yours — a Saturday plan and a meeting spot. Name another only if you want one.
+                  Calgary Beltliner's can be yours — a Saturday plan and a meeting spot. Name another only if you want one.
                 </p>
                 <input
                   value={crewName}

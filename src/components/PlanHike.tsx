@@ -45,12 +45,13 @@ export function PlanHike({ crewId }: { crewId: string }) {
   const [seats, setSeats] = useState(3)
   const [pace, setPace] = useState<(typeof PACES)[number]>('steady')
   const [driver, setDriver] = useState(members[0] ?? 'you')
+  const [openToSolo, setOpenToSolo] = useState(true)
   const [posted, setPosted] = useState<{ title: string; when: string; meet: string; detail: string } | null>(null)
 
   if (!open) {
     return (
-      <div style={{ marginTop: 18 }}>
-        <button className="btn btn-larch" style={{ width: '100%' }} onClick={() => setOpen(true)}>
+      <div style={{ marginTop: 14 }}>
+        <button className="btn btn-ghost" style={{ width: '100%' }} onClick={() => setOpen(true)}>
           Plan a hike
         </button>
         {posted && (
@@ -114,6 +115,11 @@ export function PlanHike({ crewId }: { crewId: string }) {
         aria-label="Seats"
         style={{ width: 88, marginTop: 8, padding: '12px 14px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
       />
+      <p className="survey" style={{ marginTop: 14 }}>Who can join</p>
+      <div className="segmented" style={{ marginTop: 8 }}>
+        <button type="button" className={openToSolo ? 'active' : ''} onClick={() => setOpenToSolo(true)}>Solo hikers welcome</button>
+        <button type="button" className={!openToSolo ? 'active' : ''} onClick={() => setOpenToSolo(false)}>Crew only</button>
+      </div>
       <p className="survey" style={{ marginTop: 14 }}>Driving</p>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
         {drivers.map((h) => (
@@ -131,7 +137,7 @@ export function PlanHike({ crewId }: { crewId: string }) {
           onClick={() => {
             const label = readableWhen(when)
             const title = `${trails.find((t) => t.id === trailId)?.name ?? 'Hike'} · ${pace}`
-            createOuting(crewId, { trailId, when: label, meet: meet.trim(), pace, driver, seats, whenIso: new Date(when).toISOString() })
+            createOuting(crewId, { trailId, when: label, meet: meet.trim(), pace, driver, seats, whenIso: new Date(when).toISOString(), openToSolo })
             setPosted({ title, when, meet: meet.trim(), detail: `${pace} · ${seats} seats` })
             setOpen(false)
           }}

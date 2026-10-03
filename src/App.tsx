@@ -10,6 +10,7 @@ import { Record } from './pages/Record'
 import { Result } from './pages/Result'
 import { Crews } from './pages/Crews'
 import { Lodge } from './pages/Lodge'
+import { Lodges } from './pages/Lodges'
 import { You } from './pages/You'
 import { Hike } from './pages/Hike'
 import { About } from './pages/About'
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
         <Route path="/result" element={<Result />} />
         <Route path="/crews" element={<Crews />} />
         <Route path="/lodge/:id" element={<Lodge />} />
+        <Route path="/lodges" element={<Lodges />} />
         <Route path="/you" element={<You />} />
         <Route path="/hike/:id" element={<Hike />} />
         <Route path="/about" element={<About />} />

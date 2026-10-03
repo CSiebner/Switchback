@@ -83,7 +83,28 @@ export interface Crew {
     driver?: string
     seats?: number
     whenIso?: string
+    /** Solo hikers may join this plan without being in the crew already. */
+    openToSolo?: boolean
   }
+}
+
+export interface TrailQuestion {
+  id: string
+  trailId: string
+  userId: string
+  text: string
+  timestamp: number
+}
+
+/** A challenge the whole lodge can join, separate from a crew-versus-crew duel. */
+export interface LodgeChallenge {
+  id: string
+  lodgeId: string
+  title: string
+  metric: LodgeMetric
+  startMs: number
+  endMs: number
+  joinedIds: string[]
 }
 
 export interface FeedItem {
@@ -351,14 +372,14 @@ export const seedConditions: ConditionReport[] = [
 export const seedCrews: Crew[] = [
   {
     id: 'beltline',
-    name: 'Calgary Beltline Hikers',
+    name: "Calgary Beltliner's",
     region: 'Calgary → Bow Valley',
     members: ['you', 'liam', 'maya', 'sofia', 'jordan'],
     challenge: 'October elevation push',
     challengeProgress: 18420,
     challengeGoal: 25000,
     challengeUnit: 'm',
-    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam', seats: 4 },
+    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam', seats: 4, openToSolo: true },
   },
   {
     id: 'canmore-dawn',
@@ -373,6 +394,12 @@ export const seedCrews: Crew[] = [
 ]
 
 export type LodgeMetric = 'elevation' | 'distance'
+
+export interface PersonalChallenge {
+  title: string
+  metric: LodgeMetric
+  goal: number
+}
 
 export interface Lodge {
   id: string
@@ -418,6 +445,22 @@ export const seedDuels: CrewDuel[] = [
     status: 'active',
     startMs: now - 30 * day,
     endMs: now + day,
+  },
+]
+
+export const seedQuestions: TrailQuestion[] = [
+  { id: 'q1', trailId: 'ha-ling', userId: 'sofia', text: 'Are poles worth it on the way down if the ridge is dry?', timestamp: now - 2 * day },
+]
+
+export const seedLodgeChallenges: LodgeChallenge[] = [
+  {
+    id: 'lc1',
+    lodgeId: 'bow-valley',
+    title: 'Valley elevation',
+    metric: 'elevation',
+    startMs: now - 30 * day,
+    endMs: now + day,
+    joinedIds: ['liam', 'maya', 'ava'],
   },
 ]
 

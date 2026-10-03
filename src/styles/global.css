@@ -492,10 +492,10 @@ p {
   left: 50%;
   bottom: calc(14px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
-  width: min(400px, calc(100% - 28px));
+  width: min(440px, calc(100% - 16px));
   height: var(--dock-h);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   align-items: center;
   padding: 8px;
   border-radius: var(--r-pill);
@@ -539,7 +539,7 @@ p {
 
 .nav-dock .nav-label {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1;

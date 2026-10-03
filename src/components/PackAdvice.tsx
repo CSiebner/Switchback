@@ -24,6 +24,7 @@ export function PackAdvice({
   const [open, setOpen] = useState(startOpen)
   const conditions = useAppStore((s) => s.conditions)
   const reviews = useAppStore((s) => s.reviews)
+  const questions = useAppStore((s) => s.questions)
   const [sky, setSky] = useState<{ temp: number; code: number; wind: number } | null>(null)
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export function PackAdvice({
   const voices = [
     ...reports.map((c) => c.note).filter((n): n is string => !!n),
     ...reviews.filter((r) => r.trailId === trail.id).map((r) => r.text),
+    ...questions.filter((q) => q.trailId === trail.id).map((q) => q.text),
   ].slice(0, 2)
   const personal = paceFactor(runs) !== null
 

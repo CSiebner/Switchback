@@ -1,4 +1,5 @@
 import '../styles/crews.css'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CrewBoard } from '../components/CrewBoard'
 import { heroPhoto } from '../data/photos'
@@ -9,6 +10,7 @@ import { PlanHike } from '../components/PlanHike'
 import { StartCrew } from '../components/StartCrew'
 import { CrewWeek } from '../components/CrewWeek'
 import { activeDuel, crewScore, formatMetric, primaryLodge } from '../lib/lodge'
+import type { LodgeMetric } from '../data/seed'
 import { useAppStore } from '../store/useAppStore'
 
 export function Crews() {
@@ -18,6 +20,8 @@ export function Crews() {
   const lodges = useAppStore((s) => s.lodges)
   const duels = useAppStore((s) => s.duels)
   const runs = useAppStore((s) => s.runs)
+  const issueDuel = useAppStore((s) => s.issueDuel)
+  const setOutingGoing = useAppStore((s) => s.setOutingGoing)
   const mine = joinedCrewIds.map((id) => crews.find((c) => c.id === id)).find(Boolean)
   const lodge = primaryLodge(lodges)
   const duel = lodge && mine ? activeDuel(duels, lodge.id) : undefined
@@ -70,34 +74,53 @@ export function Crews() {
             </Link>
           )
         })()}
-        {outingTrail && (
-          <Link to={`/trail/${outingTrail.id}#pack`} className="btn btn-ghost" style={{ width: '100%', marginTop: 14 }}>
-            What to bring for {outingTrail.name}
-          </Link>
-        )}
-        {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} showOuting={false} />}
-        <CrewFeed
-          hideOutings={!!mine}
-          pin={
-            mine ? (
-              <div className="cr-pin-card">
-                <p className="chapter">{outingTrail && mine.outing ? 'Planned hike' : 'No hike planned'}</p>
-                {outingTrail && mine.outing && (
-                  <p style={{ fontWeight: 800, fontSize: 'var(--type-lg)', marginTop: 4 }}>{outingTrail.name}</p>
-                )}
+        {mine && (
+          <section className="cr-plan">
+            {outingTrail && heroPhoto(outingTrail.id) && (
+              <img src={heroPhoto(outingTrail.id)!.src} alt="" />
+            )}
+            <div className="cr-plan-body">
+              <p className="survey">{mine.outing ? 'Planned hike' : 'No hike planned'}</p>
+              <h2 className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 4 }}>
+                {outingTrail ? outingTrail.name : 'Choose the next one'}
+              </h2>
+              {mine.outing && (
+                <div className="cr-plan-facts">
+                  <span>When</span><p>{mine.outing.when}</p>
+                  <span>Pace</span><p>{mine.outing.pace ?? 'steady'}</p>
+                  <span>Meet</span><p>{mine.outing.meet ?? 'To be decided'}</p>
+                  <span>Seats</span>
+                  <p>{mine.outing.seats !== undefined ? `${Math.max(0, mine.outing.seats - mine.outing.going.length)} left` : 'Open'}</p>
+                  <span>Join</span>
+                  <p>{mine.outing.openToSolo ? 'Solo hikers welcome' : 'Crew only'}</p>
+                </div>
+              )}
+              <div className="btn-row" style={{ marginTop: 14 }}>
                 {mine.outing && (
-                  <p className="fact-label" style={{ marginTop: 4 }}>
-                    {mine.outing.when} · {mine.outing.pace ?? 'steady'}
-                    {mine.outing.meet ? ` · ${mine.outing.meet}` : ''}
-                  </p>
+                  <button
+                    type="button"
+                    className={`chip ${mine.outing.going.includes('you') ? 'active' : ''}`}
+                    onClick={() => setOutingGoing(mine.id, !mine.outing!.going.includes('you'))}
+                  >
+                    {mine.outing.going.includes('you') ? "You're going" : "I'm in"}
+                  </button>
                 )}
-                <PlanHike crewId={mine.id} />
+                {outingTrail && (
+                  <Link to={`/trail/${outingTrail.id}#pack`} className="btn btn-ghost" style={{ flex: 1 }}>
+                    What to bring
+                  </Link>
+                )}
               </div>
-            ) : (
-              <StartCrew />
-            )
-          }
-        />
+              <PlanHike crewId={mine.id} />
+            </div>
+          </section>
+        )}
+        {mine && lodge && (
+          <CrewChallengeForm lodgeId={lodge.id} fromCrewId={mine.id} others={crews.filter((c) => lodge.crewIds.includes(c.id) && c.id !== mine.id)} onIssue={issueDuel} />
+        )}
+        {!mine && <StartCrew />}
+        {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} showOuting={false} />}
+        <CrewFeed hideOutings={!!mine} />
         {mine && <CrewWeek crew={mine} />}
         {mine && <CrewBoard crew={mine} />}
         {mine && (
@@ -131,5 +154,37 @@ export function Crews() {
         )}
       </div>
     </div>
+  )
+}
+
+function CrewChallengeForm({
+  lodgeId,
+  fromCrewId,
+  others,
+  onIssue,
+}: {
+  lodgeId: string
+  fromCrewId: string
+  others: { id: string; name: string }[]
+  onIssue: (lodgeId: string, fromCrewId: string, toCrewId: string, metric: LodgeMetric) => void
+}) {
+  const [opponent, setOpponent] = useState('')
+  if (!others.length) return null
+  return (
+    <section style={{ marginTop: 22 }}>
+      <h2 className="chapter">Challenge a crew in the lodge</h2>
+      <p className="survey" style={{ marginTop: 6 }}>Average per person, over the next 30 days. They accept in the lodge.</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+        {others.map((c) => (
+          <button key={c.id} type="button" className={`chip ${opponent === c.id ? 'active' : ''}`} onClick={() => setOpponent(c.id)}>
+            {c.name}
+          </button>
+        ))}
+      </div>
+      <div className="btn-row" style={{ marginTop: 12 }}>
+        <button className="btn btn-larch" disabled={!opponent} onClick={() => { onIssue(lodgeId, fromCrewId, opponent, 'elevation'); setOpponent('') }}>Elevation</button>
+        <button className="btn btn-ghost" disabled={!opponent} onClick={() => { onIssue(lodgeId, fromCrewId, opponent, 'distance'); setOpponent('') }}>Distance</button>
+      </div>
+    </section>
   )
 }
