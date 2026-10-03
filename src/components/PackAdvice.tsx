@@ -102,16 +102,16 @@ export function PackAdvice({
             {saved ? `, at ${heightCm ?? 175} cm and ${weightKg} kg` : ', at 175 cm and 70 kg until you set yours'}.
             {' '}The list also uses today's forecast, the kind of hike this is, and notes from people who were just there.
           </p>
-          <ul style={{ margin: '12px 0 0', paddingLeft: 18, lineHeight: 1.5 }}>
+          <ul className="pack-list">
             {items.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
           {voices.length > 0 && (
-            <div style={{ marginTop: 14 }}>
+            <div className="pack-voices">
               <p className="survey">From the trail</p>
               {voices.map((voice) => (
-                <p key={voice} style={{ marginTop: 6, lineHeight: 1.4 }}>{voice}</p>
+                <p key={voice}>{voice}</p>
               ))}
             </div>
           )}

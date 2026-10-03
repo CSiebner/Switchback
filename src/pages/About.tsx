@@ -4,6 +4,7 @@ import { heroPhoto } from '../data/photos'
 import { getTrail } from '../data/trails'
 import { Mark } from '../components/Mark'
 import { RouteGlyph } from '../components/RouteGlyph'
+import { StatMark, type StatKind } from '../components/StatMark'
 
 const ha = getTrail('ha-ling')
 const photo = heroPhoto('ha-ling')
@@ -28,13 +29,13 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         <p style={{ fontSize: 'var(--type-lg)', fontWeight: 650, lineHeight: 1.35 }}>
           Switchback is the map, the recording, and the memory of the day. It packs your next hike from the weather and the people who were just there. Your crew is who is in the car. Your lodge is everyone who hikes that country.
         </p>
-        <div className="pitch-grid">
-          <Pitch kicker="Trails" title="Find the line" body="Map, distance, climb, photos, and what the trail is like right now." />
-          <Pitch kicker="Record" title="Keep the day" body="Time, weather, and conditions, set beside the last time you walked it." />
-          <Pitch kicker="Pack" title="Bring the right things" body="Water, layers, and notes from the lodge. A watch can teach it later." />
-          <Pitch kicker="Crew" title="Go with your people" body="A plan, a meeting pin, who is going, and the seats left in the car." />
-          <Pitch kicker="Lodge" title="The wider room" body="Weekend plans, fresh reports, and crews challenging each other." />
-          <Pitch kicker="You" title="Marks, not noise" body="Accomplishments, a goal you set, and boards for elevation and distance." />
+        <div className="pitch-list">
+          <Pitch kind="distance" title="Find the line" body="Map, distance, climb, photos, and what the trail is like right now." />
+          <Pitch kind="time" title="Keep the day" body="Time, weather, and conditions, set beside the last time you walked it." />
+          <Pitch kind="water" title="Bring the right things" body="Water, layers, and notes from the lodge. A watch can teach it later." />
+          <Pitch kind="crew" title="Go with your people" body="A plan, a meeting pin, who is going, and the seats left in the car." />
+          <Pitch kind="lodge" title="The wider room" body="Weekend plans, fresh reports, and crews challenging each other." />
+          <Pitch kind="hikes" title="Marks, not noise" body="Accomplishments, a goal you set, and boards for elevation and distance." />
         </div>
 
         <Frame
@@ -74,14 +75,39 @@ export function About({ onBegin }: { onBegin?: () => void }) {
   )
 }
 
-function Pitch({ kicker, title, body }: { kicker: string; title: string; body: string }) {
+function Pitch({ kind, title, body }: { kind: StatKind | 'crew' | 'lodge'; title: string; body: string }) {
   return (
-    <article className="pitch-card">
-      <p className="survey">{kicker}</p>
-      <h2 className="display" style={{ fontSize: '1.15rem', fontWeight: 800, marginTop: 4 }}>{title}</h2>
-      <p style={{ marginTop: 6, lineHeight: 1.4, color: 'var(--scree-dark)' }}>{body}</p>
+    <article className="pitch-row">
+      <PitchIcon kind={kind} />
+      <div>
+        <h2 className="display" style={{ fontSize: '1.05rem', fontWeight: 800 }}>{title}</h2>
+        <p style={{ marginTop: 2, lineHeight: 1.35, color: 'var(--scree-dark)' }}>{body}</p>
+      </div>
     </article>
   )
+}
+
+function PitchIcon({ kind }: { kind: StatKind | 'crew' | 'lodge' }) {
+  if (kind === 'crew' || kind === 'lodge') {
+    return (
+      <svg className="pitch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+        {kind === 'crew' ? (
+          <>
+            <circle cx="9" cy="9" r="3" />
+            <circle cx="16.5" cy="10.5" r="2.5" />
+            <path d="M3.5 19c.8-3 2.8-4.5 5.5-4.5s4.7 1.5 5.5 4.5" />
+          </>
+        ) : (
+          <>
+            <path d="M4 18h16" />
+            <path d="M6 18 12 7l6 11" />
+            <path d="M9 14.5h6" />
+          </>
+        )}
+      </svg>
+    )
+  }
+  return <StatMark kind={kind} size={22} />
 }
 
 function Frame({ image, kicker, title, body, mark }: { image?: string; kicker: string; title: string; body: string; mark?: ReactNode }) {

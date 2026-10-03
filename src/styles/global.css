@@ -755,34 +755,72 @@ p {
 }
 
 .mark-card {
-  padding: 14px 14px 12px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
   border-radius: 16px;
-  background: #fff;
-  border: 1px solid var(--contour-light);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.mark-card .stat-mark {
+  width: 26px;
+  height: 26px;
 }
 
 .mark-card strong {
   display: block;
-  margin-top: 4px;
+  margin-top: 2px;
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.45rem;
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
 }
 
-.pitch-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 18px;
+.pack-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 4px 0 4px 12px;
+  border-left: 3px solid var(--glacier);
 }
 
-.pitch-card {
-  padding: 14px;
-  border-radius: 16px;
-  background: #fff;
-  border: 1px solid var(--contour-light);
+.pack-list li + li {
+  margin-top: 8px;
+}
+
+.pack-voices {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.pack-voices p + p {
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.pitch-list {
+  margin-top: 8px;
+}
+
+.pitch-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--contour-light);
+}
+
+.pitch-row .stat-mark,
+.pitch-icon {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  color: var(--glacier-deep);
 }
 
 .mark-card.first { box-shadow: inset 4px 0 0 var(--glacier); }
