@@ -166,6 +166,9 @@ export function TrailDetail() {
       <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
+          <Link to="/lodge/bow-valley" className="survey" style={{ display: 'inline-block', marginTop: 10, color: 'var(--glacier)' }}>
+            Bow Valley lodge on {trail.name}
+          </Link>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 16px', marginTop: 28 }}>
             <Fact
               kind="time"

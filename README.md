@@ -4,9 +4,12 @@ AllTrails finds the trail. Strava keeps the workout. **Switchback is the outdoor
 
 Hike with your people. Remember the day. Pack the next one.
 
-1. **Your crew** — the plan, the car, and the notes you keep together.
-2. **Your last time** — the same trail, with the weather and the conditions that day, set beside the visit before it.
-3. **What to bring** — a pack list from the forecast, the kind of hike, recent notes, and how you move. A watch that sees the water you use can replace that estimate later.
+1. **Your day** — the same trail, with the weather, whether you went alone or not.
+2. **What to bring** — a pack list from the forecast, the hike, lodge notes, and how you move.
+3. **Your crew** — optional. The plan, the car, and a challenge against another crew.
+4. **A lodge** — everyone who hikes that country. Weekend plans, conditions, and boards for elevation and distance, by crew and by hiker.
+
+The current UI before this lodge work is tagged `backup/ui-crew-home-2026-10-03`.
 
 Comparing a time is a detail of remembering the day. It is not the product.
 

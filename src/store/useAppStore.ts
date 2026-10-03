@@ -9,10 +9,15 @@ import {
   type Run,
   seedConditions,
   seedCrews,
+  seedDuels,
   seedFeed,
+  seedLodges,
   seedReviews,
   seedRuns,
   type Crew,
+  type CrewDuel,
+  type Lodge,
+  type LodgeMetric,
 } from '../data/seed'
 
 export interface ChaseTarget {
@@ -48,6 +53,10 @@ interface AppState {
   feed: FeedItem[]
   crews: Crew[]
   joinedCrewIds: string[]
+  lodges: Lodge[]
+  joinedLodgeIds: string[]
+  duels: CrewDuel[]
+  hikeWith: 'solo' | 'crew'
   savedTrailIds: string[]
   packedTrailIds: string[]
   onboarded: boolean
@@ -83,7 +92,9 @@ interface AppState {
   createCrew: (name: string, region: string, inviteIds: string[]) => void
   addComment: (feedId: string, text: string) => void
   packTrail: (trailId: string) => void
-  finishOnboarding: (knownTrailIds: string[]) => void
+  finishOnboarding: (knownTrailIds: string[], hikeWith: 'solo' | 'crew') => void
+  acceptDuel: (id: string) => void
+  issueDuel: (lodgeId: string, fromCrewId: string, toCrewId: string, metric: LodgeMetric) => void
 }
 
 function uid(prefix: string) {
@@ -99,6 +110,10 @@ export const useAppStore = create<AppState>()(
       feed: seedFeed,
       crews: seedCrews,
       joinedCrewIds: ['beltline'],
+      lodges: seedLodges,
+      joinedLodgeIds: ['bow-valley'],
+      duels: seedDuels,
+      hikeWith: 'crew',
       savedTrailIds: ['ha-ling', 'tunnel-mountain'],
       packedTrailIds: ['ha-ling'],
       onboarded: false,
@@ -398,10 +413,36 @@ export const useAppStore = create<AppState>()(
             : [...s.packedTrailIds, trailId],
         })),
 
-      finishOnboarding: (knownTrailIds) =>
+      finishOnboarding: (knownTrailIds, hikeWith) =>
         set((s) => ({
           onboarded: true,
+          hikeWith,
+          joinedCrewIds: hikeWith === 'solo' ? [] : s.joinedCrewIds,
+          joinedLodgeIds: s.joinedLodgeIds.length ? s.joinedLodgeIds : ['bow-valley'],
           savedTrailIds: [...new Set([...s.savedTrailIds, ...knownTrailIds])],
+        })),
+
+      acceptDuel: (id) =>
+        set((s) => ({
+          duels: s.duels.map((d) => (d.id === id ? { ...d, status: 'active' as const } : d)),
+        })),
+
+      issueDuel: (lodgeId, fromCrewId, toCrewId, metric) =>
+        set((s) => ({
+          duels: [
+            {
+              id: uid('d'),
+              lodgeId,
+              title: metric === 'elevation' ? 'Elevation over the next 30 days' : 'Distance over the next 30 days',
+              metric,
+              fromCrewId,
+              toCrewId,
+              status: 'pending' as const,
+              startMs: Date.now(),
+              endMs: Date.now() + 30 * 24 * 60 * 60 * 1000,
+            },
+            ...s.duels,
+          ],
         })),
 
       logManualRun: (trailId, timeSec, conditions) => {
@@ -426,6 +467,10 @@ export const useAppStore = create<AppState>()(
         feed: s.feed,
         crews: s.crews,
         joinedCrewIds: s.joinedCrewIds,
+        lodges: s.lodges,
+        joinedLodgeIds: s.joinedLodgeIds,
+        duels: s.duels,
+        hikeWith: s.hikeWith,
         savedTrailIds: s.savedTrailIds,
         packedTrailIds: s.packedTrailIds,
         onboarded: s.onboarded,

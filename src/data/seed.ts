@@ -372,6 +372,55 @@ export const seedCrews: Crew[] = [
   },
 ]
 
+export type LodgeMetric = 'elevation' | 'distance'
+
+export interface Lodge {
+  id: string
+  name: string
+  region: string
+  summary: string
+  crewIds: string[]
+  memberIds: string[]
+}
+
+/** A crew challenging another crew inside a lodge. Score is the average per person. */
+export interface CrewDuel {
+  id: string
+  lodgeId: string
+  title: string
+  metric: LodgeMetric
+  fromCrewId: string
+  toCrewId: string
+  status: 'pending' | 'active'
+  startMs: number
+  endMs: number
+}
+
+export const seedLodges: Lodge[] = [
+  {
+    id: 'bow-valley',
+    name: 'Bow Valley',
+    region: 'Alberta',
+    summary: 'Everyone who hikes this valley. Your crew is the table you sit at. The lodge is the room. A lodge can be as wide as Hike Alberta.',
+    crewIds: ['beltline', 'canmore-dawn'],
+    memberIds: ['you', 'liam', 'maya', 'chen', 'sofia', 'jordan', 'ava'],
+  },
+]
+
+export const seedDuels: CrewDuel[] = [
+  {
+    id: 'd1',
+    lodgeId: 'bow-valley',
+    title: 'Elevation over the last 30 days',
+    metric: 'elevation',
+    fromCrewId: 'beltline',
+    toCrewId: 'canmore-dawn',
+    status: 'active',
+    startMs: now - 30 * day,
+    endMs: now + day,
+  },
+]
+
 export const seedFeed: FeedItem[] = [
   {
     id: 'f1',

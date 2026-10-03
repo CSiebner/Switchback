@@ -19,38 +19,38 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 28, color: 'var(--rock-flour)' }}>
           <Mark tone="flour" />
           <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 18, lineHeight: 0.95 }}>
-            Hike with your people. Remember the day. Pack the next one.
+            Remember the day. Pack the next one.
           </h1>
         </div>
       </section>
 
       <div className="container page-pad" style={{ marginTop: 22 }}>
         <p style={{ fontSize: 'var(--type-lg)', fontWeight: 650, lineHeight: 1.35 }}>
-          AllTrails finds the trail. Strava keeps the workout. Switchback is the outdoor community those two left in group chats — starting with the people you hike with, and getting smarter every time you go.
+          The map, the trail, and the recording are here, the same jobs you already use a hiking app for. Switchback adds the day you remember, the pack list that learns, and the people: a crew when you want one, and a lodge for everyone who hikes this country.
         </p>
 
         <Frame
-          image={crew?.thumb}
-          kicker="1 · Your crew"
-          title="The people in the car."
-          body="A crew is a plan, a meeting spot, who is driving, and the season you climbed together. The feed is hikes and trail notes, so the knowledge stays with the group instead of disappearing in a chat."
-        />
-        <Frame
           image={photo?.thumb}
-          kicker="2 · Your last time"
+          kicker="1 · Your day"
           title="The same trail, with the weather."
-          body="Your profile keeps this visit next to the one before it: the time, and the sky and the dirt that day. A muddy afternoon and a dry morning are both yours. They are not the same hike."
+          body="Your profile keeps this visit next to the one before it: the time, and the sky and the dirt that day. A muddy afternoon and a dry morning are both yours. Hiking alone is a complete way to use Switchback."
           mark={ha ? <RouteGlyph coords={ha.path} size={72} stroke="#0f201e" strokeWidth={2.4} /> : null}
         />
         <Frame
           image={heroPhoto('prairie-mountain')?.thumb}
-          kicker="3 · What to bring"
+          kicker="2 · What to bring"
           title="A pack list that learns."
-          body="Water, layers, and the small things come from the forecast, the kind of hike, notes from people who were just there, and how long it takes you. When a watch can see the water you actually use, that reading sets the number for the next similar climb."
+          body="Water, layers, and the small things come from the forecast, the kind of hike, notes from the lodge, and how long it takes you. When a watch can see the water you actually use, that reading sets the number for the next similar climb."
+        />
+        <Frame
+          image={crew?.thumb}
+          kicker="3 · Crew and lodge"
+          title="The table, and the room."
+          body="A crew is the people in the car: a plan, a meeting spot, a shared season. A lodge is everyone who hikes that country. Crews in a lodge can challenge each other on elevation or distance. You can stand on the hikers board with no crew at all."
         />
 
         <p className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28, lineHeight: 1.15 }}>
-          Find the trail. Go with your crew. Come back knowing more than last time.
+          Find the trail. Record the day. Bring who you want.
         </p>
         {onBegin ? (
           <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={onBegin}>

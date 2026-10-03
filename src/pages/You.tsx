@@ -1,5 +1,6 @@
 import '../styles/you.css'
 import { useEffect, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
 import { YouChart } from '../components/YouChart'
 import { YouYear } from '../components/YouYear'
@@ -7,9 +8,10 @@ import { YouLines, type YouLine } from '../components/YouLines'
 import { YouLog } from '../components/YouLog'
 import { YouSettings } from '../components/YouSettings'
 import { YouStrip } from '../components/YouStrip'
-import { CURRENT_USER_ID } from '../data/seed'
+import { CURRENT_USER_ID, type CrewDuel, type Lodge, type Run } from '../data/seed'
 import { getTrail, trails } from '../data/trails'
 import { heroPhoto } from '../data/photos'
+import { activeDuel, formatMetric, hikerScores, primaryLodge } from '../lib/lodge'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
 import { StatMark } from '../components/StatMark'
 
@@ -36,6 +38,9 @@ export function You() {
   const chase = useAppStore((s) => s.chase)
   const joinedCrewIds = useAppStore((s) => s.joinedCrewIds)
   const displayName = useAppStore((s) => s.displayName)
+  const lodges = useAppStore((s) => s.lodges)
+  const duels = useAppStore((s) => s.duels)
+  const joinedLodgeIds = useAppStore((s) => s.joinedLodgeIds)
 
   const mine = useMemo(() => runs.filter((r) => r.userId === CURRENT_USER_ID), [runs])
 
@@ -100,6 +105,8 @@ export function You() {
         <p style={{ lineHeight: 1.45 }}>
           Each trail keeps your times beside the weather and the conditions that day. A muddy hike and a dry hike both belong here. They are not the same record.
         </p>
+        <Marks hikes={mine.length} trails={lines.length} faster={pbCount} />
+        <LodgeStanding lodges={lodges} duels={duels} joined={joinedLodgeIds} runs={runs} />
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           {lines.length > 0 && <YouStrip lines={lines.map((l) => ({ trail: l.trail, held: l.rank === 1 }))} />}
         </motion.div>
@@ -113,5 +120,42 @@ export function You() {
         <YouSettings />
       </div>
     </div>
+  )
+}
+
+function Marks({ hikes, trails, faster }: { hikes: number; trails: number; faster: number }) {
+  const marks = [
+    `${trails} ${trails === 1 ? 'trail' : 'trails'} with a first day saved`,
+    faster ? `${faster} ${faster === 1 ? 'trail' : 'trails'} you came back faster on` : 'Come back to a trail and the improvement shows up here',
+    `${hikes} hikes in the record`,
+  ]
+  return (
+    <section className="yo-section">
+      <span className="survey head">Marks</span>
+      {marks.map((mark) => (
+        <p key={mark} className="hairline" style={{ padding: '12px 0' }}>{mark}</p>
+      ))}
+    </section>
+  )
+}
+
+function LodgeStanding({ lodges, duels, joined, runs }: { lodges: Lodge[]; duels: CrewDuel[]; joined: string[]; runs: Run[] }) {
+  const lodge = primaryLodge(lodges.filter((l) => joined.includes(l.id)).concat(lodges))
+  const duel = lodge ? activeDuel(duels, lodge.id) : undefined
+  if (!lodge || !duel) return null
+  const rows = hikerScores(lodge.memberIds, runs, 'elevation', duel.startMs, duel.endMs)
+  const mine = rows.find((r) => r.userId === 'you')
+  const rank = rows.findIndex((r) => r.userId === 'you') + 1
+  return (
+    <section className="yo-section">
+      <span className="survey head">{lodge.name} lodge</span>
+      <p style={{ marginTop: 8, lineHeight: 1.45 }}>
+        {formatMetric('elevation', mine?.total ?? 0)} of elevation over these dates.
+        {rank ? ` You are #${rank} among hikers in the lodge.` : ''}
+      </p>
+      <Link to={`/lodge/${lodge.id}`} className="survey" style={{ display: 'inline-block', marginTop: 8, color: 'var(--glacier)' }}>
+        Open the lodge boards
+      </Link>
+    </section>
   )
 }

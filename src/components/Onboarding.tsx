@@ -20,13 +20,14 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
   const [age, setAgeLocal] = useState<(typeof AGES)[number]>('30-39')
   const [level, setLevelLocal] = useState<(typeof LEVELS)[number]>('Intermediate')
   const [crewName, setCrewName] = useState('')
+  const [withCrew, setWithCrew] = useState<boolean | null>(null)
 
-  const done = () => {
+  const done = (mode: 'solo' | 'crew') => {
     setAge(age)
     setLevel(level)
     if (name.trim()) setDisplayName(name)
-    if (crewName.trim().length > 1) createCrew(crewName.trim(), 'Bow Valley', ['liam', 'maya'])
-    finish(known)
+    if (mode === 'crew' && crewName.trim().length > 1) createCrew(crewName.trim(), 'Bow Valley', ['liam', 'maya'])
+    finish(known, mode)
   }
 
   return (
@@ -116,21 +117,38 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
         {step === 2 && (
           <>
             <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
-              Your crew is who you hike with.
+              On your own, or with a crew.
             </h1>
             <p className="survey" style={{ marginTop: 12 }}>
-              Calgary Beltline Hikers is already yours — a Saturday plan, a meeting spot, and the notes you keep together. Name another only if you want one.
+              Both are a full Switchback. The Bow Valley lodge is open either way. A crew adds a plan and a car.
             </p>
-            <input
-              value={crewName}
-              onChange={(e) => setCrewName(e.target.value)}
-              placeholder="Crew name, optional"
-              aria-label="Crew name"
-              style={{ width: '100%', marginTop: 16, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
-            />
-            <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={done}>
-              {crewName.trim().length > 1 ? 'Create and enter' : 'Enter Switchback'}
-            </button>
+            <div className="btn-row" style={{ marginTop: 16 }}>
+              <button type="button" className={`btn ${withCrew === false ? 'btn-larch' : 'btn-ghost'}`} style={{ flex: 1 }} onClick={() => setWithCrew(false)}>
+                On my own
+              </button>
+              <button type="button" className={`btn ${withCrew === true ? 'btn-larch' : 'btn-ghost'}`} style={{ flex: 1 }} onClick={() => setWithCrew(true)}>
+                With a crew
+              </button>
+            </div>
+            {withCrew === true && (
+              <>
+                <p className="survey" style={{ marginTop: 16 }}>
+                  Calgary Beltline Hikers can be yours — a Saturday plan and a meeting spot. Name another only if you want one.
+                </p>
+                <input
+                  value={crewName}
+                  onChange={(e) => setCrewName(e.target.value)}
+                  placeholder="Crew name, optional"
+                  aria-label="Crew name"
+                  style={{ width: '100%', marginTop: 16, padding: '14px 16px', borderRadius: 12, border: '1px solid var(--contour-light)', background: 'transparent', color: 'inherit' }}
+                />
+              </>
+            )}
+            {withCrew !== null && (
+              <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={() => done(withCrew ? 'crew' : 'solo')}>
+                Enter Switchback
+              </button>
+            )}
           </>
         )}
       </div>

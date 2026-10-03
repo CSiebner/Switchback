@@ -8,14 +8,20 @@ import { CrewHero } from '../components/CrewHero'
 import { PlanHike } from '../components/PlanHike'
 import { StartCrew } from '../components/StartCrew'
 import { CrewWeek } from '../components/CrewWeek'
+import { activeDuel, crewScore, formatMetric, primaryLodge } from '../lib/lodge'
 import { useAppStore } from '../store/useAppStore'
 
 export function Crews() {
   const crews = useAppStore((s) => s.crews)
   const joinedCrewIds = useAppStore((s) => s.joinedCrewIds)
   const joinCrew = useAppStore((s) => s.joinCrew)
-
+  const lodges = useAppStore((s) => s.lodges)
+  const duels = useAppStore((s) => s.duels)
+  const runs = useAppStore((s) => s.runs)
   const mine = joinedCrewIds.map((id) => crews.find((c) => c.id === id)).find(Boolean)
+  const lodge = primaryLodge(lodges)
+  const duel = lodge && mine ? activeDuel(duels, lodge.id) : undefined
+  const inDuel = !!duel && !!mine && (duel.fromCrewId === mine.id || duel.toCrewId === mine.id)
   const heroCrew = mine ?? [...crews].sort((a, b) => b.members.length - a.members.length)[0]
   const others = crews.filter((c) => c.id !== heroCrew?.id)
   const outingTrail = heroCrew?.outing ? getTrail(heroCrew.outing.trailId) : undefined
@@ -45,8 +51,25 @@ export function Crews() {
       )}
       <div className="container page-pad">
         <p style={{ lineHeight: 1.45 }}>
-          A crew is the hiking community you actually belong to. The plan, the car, and what you learned on the trail stay here.
+          A crew is the people you actually hike with. The plan, the car, and what you learned on the trail stay here.
         </p>
+        {lodge && inDuel && duel && mine && (() => {
+          const otherId = duel.fromCrewId === mine.id ? duel.toCrewId : duel.fromCrewId
+          const other = crews.find((c) => c.id === otherId)
+          const ours = crewScore(mine, runs, duel.metric, duel.startMs, duel.endMs)
+          const theirs = other ? crewScore(other, runs, duel.metric, duel.startMs, duel.endMs) : undefined
+          return (
+            <Link to={`/lodge/${lodge.id}`} style={{ display: 'block', marginTop: 16 }}>
+              <p className="survey">{lodge.name} lodge</p>
+              <p style={{ fontWeight: 800, marginTop: 4 }}>{duel.title}</p>
+              {theirs && other && (
+                <p className="survey" style={{ marginTop: 4 }}>
+                  {formatMetric(duel.metric, ours.average)} per person · {other.name} {formatMetric(duel.metric, theirs.average)}
+                </p>
+              )}
+            </Link>
+          )
+        })()}
         {outingTrail && (
           <Link to={`/trail/${outingTrail.id}#pack`} className="btn btn-ghost" style={{ width: '100%', marginTop: 14 }}>
             What to bring for {outingTrail.name}
