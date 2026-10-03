@@ -93,7 +93,7 @@ export function Lodge() {
 
       <div className="container page-pad">
         {duel && from && to && (
-          <section>
+          <section className="lodge-block duel">
             <h2 className="chapter">{duel.status === 'pending' ? 'Challenge waiting' : 'Crew challenge'}</h2>
             <p className="survey" style={{ marginTop: 6 }}>{duel.title}. The score is the average per person. The total sits beside it.</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14 }}>
@@ -108,7 +108,7 @@ export function Lodge() {
           </section>
         )}
 
-        <section style={{ marginTop: 28 }}>
+        <section className="lodge-block boards">
           <h2 className="chapter">Lodge boards</h2>
           <p className="survey" style={{ marginTop: 6 }}>Elevation and distance for the same dates. Hikers includes anyone in the lodge, with or without a crew.</p>
           <div className="segmented" style={{ marginTop: 12 }}>
@@ -147,7 +147,7 @@ export function Lodge() {
         </section>
 
         {openChallenge && (
-          <section style={{ marginTop: 28 }}>
+          <section className="lodge-block open">
             <h2 className="chapter">Lodge challenge</h2>
             <p className="survey" style={{ marginTop: 6 }}>{openChallenge.title}. Anyone in the lodge can join. This is separate from a crew challenging another crew.</p>
             <button className="btn btn-larch" style={{ width: '100%', marginTop: 12 }} onClick={() => joinLodgeChallenge(openChallenge.id)}>
@@ -165,7 +165,7 @@ export function Lodge() {
           </section>
         )}
 
-        <section style={{ marginTop: 28 }}>
+        <section className="lodge-block weekend">
           <h2 className="chapter">This weekend</h2>
           {weekend.length === 0 && <p className="survey" style={{ marginTop: 8 }}>No public plans yet.</p>}
           {weekend.map((c) => {
@@ -184,7 +184,7 @@ export function Lodge() {
           })}
         </section>
 
-        <section style={{ marginTop: 28 }}>
+        <section className="lodge-block changed">
           <h2 className="chapter">What changed</h2>
           <p className="survey" style={{ marginTop: 6 }}>Reports from the lodge, newest first. They fade on the trail after a week.</p>
           {changed.map((c) => {
@@ -204,7 +204,7 @@ export function Lodge() {
           })}
         </section>
 
-        <section style={{ marginTop: 28 }}>
+        <section className="lodge-block notes">
           <h2 className="chapter">Notes on the trails</h2>
           <p className="survey" style={{ marginTop: 6 }}>Questions and advice stay on the trail they belong to, and show up in the pack list.</p>
           {notes.map((r) => {

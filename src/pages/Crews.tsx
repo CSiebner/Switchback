@@ -10,7 +10,7 @@ import { PlanHike } from '../components/PlanHike'
 import { StartCrew } from '../components/StartCrew'
 import { CrewWeek } from '../components/CrewWeek'
 import { activeDuel, crewScore, formatMetric, primaryLodge } from '../lib/lodge'
-import type { LodgeMetric } from '../data/seed'
+import { getHiker, type LodgeMetric } from '../data/seed'
 import { useAppStore } from '../store/useAppStore'
 
 export function Crews() {
@@ -88,11 +88,29 @@ export function Crews() {
                 <div className="cr-plan-facts">
                   <span>When</span><p>{mine.outing.when}</p>
                   <span>Pace</span><p>{mine.outing.pace ?? 'steady'}</p>
-                  <span>Meet</span><p>{mine.outing.meet ?? 'To be decided'}</p>
+                  <span>Meet</span>
+                  <p>
+                    {mine.outing.meet ? (
+                      <a className="cr-map" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mine.outing.meet)}`} target="_blank" rel="noreferrer">
+                        {mine.outing.meet}
+                      </a>
+                    ) : 'To be decided'}
+                  </p>
                   <span>Seats</span>
                   <p>{mine.outing.seats !== undefined ? `${Math.max(0, mine.outing.seats - mine.outing.going.length)} left` : 'Open'}</p>
                   <span>Join</span>
                   <p>{mine.outing.openToSolo ? 'Solo hikers welcome' : 'Crew only'}</p>
+                  <span>Going</span>
+                  <p className="cr-going">
+                    {mine.outing.going.map((id) => (
+                      <span key={id} className={`cr-face ${id === 'you' ? 'me' : ''}`} title={getHiker(id)?.name}>
+                        {id === 'you' ? 'You' : getHiker(id)?.initials ?? '·'}
+                      </span>
+                    ))}
+                    <span className="cr-going-names">
+                      {mine.outing.going.map((id) => (id === 'you' ? 'You' : getHiker(id)?.name)).filter(Boolean).join(', ')}
+                    </span>
+                  </p>
                 </div>
               )}
               <div className="btn-row" style={{ marginTop: 14 }}>

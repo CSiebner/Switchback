@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { heroPhoto } from '../data/photos'
 import { useAppStore } from '../store/useAppStore'
 
 export function Lodges() {
@@ -8,6 +9,14 @@ export function Lodges() {
   const createLodge = useAppStore((s) => s.createLodge)
   const [name, setName] = useState('')
   const [region, setRegion] = useState('Alberta')
+  const ranked = [...lodges].sort((a, b) => {
+    const weight = (lodge: typeof a) =>
+      (joinedLodgeIds.includes(lodge.id) ? 100 : 0) + lodge.memberIds.length + lodge.crewIds.length * 8
+    return weight(b) - weight(a)
+  })
+  const featured = ranked[0]
+  const rest = ranked.slice(1)
+  const featuredPhoto = heroPhoto(featured?.id === 'bow-valley' ? 'bow-valley' : 'ha-ling')
 
   return (
     <div className="page">
@@ -17,19 +26,34 @@ export function Lodges() {
           Lodges
         </h1>
         <p style={{ marginTop: 12, lineHeight: 1.45 }}>
-          A lodge is everyone who hikes a place. Bow Valley is one. Hike Alberta would be another. Your crew is the table inside it.
+          A lodge is everyone who hikes a place. Your crew is the table inside it.
         </p>
-        <div style={{ marginTop: 18 }}>
-          {lodges.map((lodge) => (
-            <Link key={lodge.id} to={`/lodge/${lodge.id}`} className="hairline" style={{ display: 'block', padding: '16px 0' }}>
-              <span className="survey">{lodge.region}{joinedLodgeIds.includes(lodge.id) ? ' · You are in' : ''}</span>
-              <span style={{ display: 'block', fontWeight: 800, fontSize: 'var(--type-lg)', marginTop: 4 }}>{lodge.name}</span>
-              <span className="survey" style={{ display: 'block', marginTop: 4 }}>
-                {lodge.memberIds.length} hikers · {lodge.crewIds.length} {lodge.crewIds.length === 1 ? 'crew' : 'crews'}
+        {featured && (
+          <Link to={`/lodge/${featured.id}`} className="lodge-feature">
+            {featuredPhoto && <img src={featuredPhoto.src} alt="" />}
+            <span className="lodge-feature-copy">
+              <span className="survey">Your lodge · open this one</span>
+              <span className="display lodge-feature-name">{featured.name}</span>
+              <span>
+                {featured.memberIds.length} hikers · {featured.crewIds.length} {featured.crewIds.length === 1 ? 'crew' : 'crews'} · {featured.region}
               </span>
-            </Link>
-          ))}
-        </div>
+            </span>
+          </Link>
+        )}
+        {rest.length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <p className="survey" style={{ marginTop: 18 }}>Other lodges</p>
+            {rest.map((lodge) => (
+              <Link key={lodge.id} to={`/lodge/${lodge.id}`} className="hairline" style={{ display: 'block', padding: '16px 0' }}>
+                <span className="survey">{lodge.region}{joinedLodgeIds.includes(lodge.id) ? ' · You are in' : ''}</span>
+                <span style={{ display: 'block', fontWeight: 800, fontSize: 'var(--type-lg)', marginTop: 4 }}>{lodge.name}</span>
+                <span className="survey" style={{ display: 'block', marginTop: 4 }}>
+                  {lodge.memberIds.length} hikers · {lodge.crewIds.length} {lodge.crewIds.length === 1 ? 'crew' : 'crews'}
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
         <section style={{ marginTop: 28 }}>
           <h2 className="chapter">Start a lodge</h2>
           <p className="survey" style={{ marginTop: 6 }}>Name the place. You can make it as wide as a province.</p>

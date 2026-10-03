@@ -52,6 +52,49 @@
   font-weight: 700;
 }
 
+.cr-map {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(10, 138, 130, 0.14);
+  color: var(--glacier-deep);
+  font-weight: 800;
+}
+
+.cr-going {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.cr-face {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--spruce-900);
+  color: var(--rock-flour);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cr-face.me {
+  background: var(--larch);
+  color: var(--spruce-950);
+}
+
+.cr-going-names {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: var(--type-sm);
+  font-weight: 700;
+}
+
 .cr-pin {
   position: sticky;
   top: calc(var(--brand-h) + 8px);

@@ -137,17 +137,24 @@ function finishedMonth(runs: Run[]) {
 }
 
 function Marks({ hikes, trails, faster, season }: { hikes: number; trails: number; faster: number; season: string }) {
-  const marks = [
-    `${trails} ${trails === 1 ? 'trail' : 'trails'} with a first day saved`,
-    faster ? `${faster} ${faster === 1 ? 'trail' : 'trails'} you came back faster on` : 'Come back to a trail and the improvement shows up here',
-    season || `${hikes} hikes in the record`,
+  const cards = [
+    { kind: 'first', kicker: 'First days', value: String(trails), detail: trails === 1 ? 'trail with a day saved' : 'trails with a day saved' },
+    { kind: 'faster', kicker: 'Came back faster', value: String(faster), detail: faster === 1 ? 'trail improved' : 'trails improved' },
+    { kind: 'season', kicker: 'Season', value: season ? season.replace(/^You finished /, '').split(' with ')[0] : String(hikes), detail: season ? season.replace(/^You finished \w+ with /, '') : 'hikes in the record' },
   ]
   return (
     <section className="yo-section">
       <span className="survey head">Marks</span>
-      {marks.map((mark) => (
-        <p key={mark} className="hairline" style={{ padding: '12px 0' }}>{mark}</p>
-      ))}
+      <p className="survey" style={{ marginTop: 6 }}>Accomplishments. Each one is a thing you have done, not a rank against someone else.</p>
+      <div className="mark-grid">
+        {cards.map((card) => (
+          <article key={card.kind} className={`mark-card ${card.kind}`}>
+            <span className="survey">{card.kicker}</span>
+            <strong>{card.value}</strong>
+            <p style={{ marginTop: 6 }}>{card.detail}</p>
+          </article>
+        ))}
+      </div>
     </section>
   )
 }

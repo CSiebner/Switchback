@@ -19,15 +19,23 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 28, color: 'var(--rock-flour)' }}>
           <Mark tone="flour" />
           <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 18, lineHeight: 0.95 }}>
-            Remember the day. Pack the next one.
+            The hiking app for the people you go with, and the days you go alone.
           </h1>
         </div>
       </section>
 
       <div className="container page-pad" style={{ marginTop: 22 }}>
         <p style={{ fontSize: 'var(--type-lg)', fontWeight: 650, lineHeight: 1.35 }}>
-          The map, the trail, and the recording are here, the same jobs you already use a hiking app for. Switchback adds the day you remember, the pack list that learns, and the people: a crew when you want one, and a lodge for everyone who hikes this country.
+          Switchback is the map, the recording, and the memory of the day. It packs your next hike from the weather and the people who were just there. Your crew is who is in the car. Your lodge is everyone who hikes that country.
         </p>
+        <div className="pitch-grid">
+          <Pitch kicker="Trails" title="Find the line" body="Map, distance, climb, photos, and what the trail is like right now." />
+          <Pitch kicker="Record" title="Keep the day" body="Time, weather, and conditions, set beside the last time you walked it." />
+          <Pitch kicker="Pack" title="Bring the right things" body="Water, layers, and notes from the lodge. A watch can teach it later." />
+          <Pitch kicker="Crew" title="Go with your people" body="A plan, a meeting pin, who is going, and the seats left in the car." />
+          <Pitch kicker="Lodge" title="The wider room" body="Weekend plans, fresh reports, and crews challenging each other." />
+          <Pitch kicker="You" title="Marks, not noise" body="Accomplishments, a goal you set, and boards for elevation and distance." />
+        </div>
 
         <Frame
           image={photo?.thumb}
@@ -63,6 +71,16 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         )}
       </div>
     </div>
+  )
+}
+
+function Pitch({ kicker, title, body }: { kicker: string; title: string; body: string }) {
+  return (
+    <article className="pitch-card">
+      <p className="survey">{kicker}</p>
+      <h2 className="display" style={{ fontSize: '1.15rem', fontWeight: 800, marginTop: 4 }}>{title}</h2>
+      <p style={{ marginTop: 6, lineHeight: 1.4, color: 'var(--scree-dark)' }}>{body}</p>
+    </article>
   )
 }
 
