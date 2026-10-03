@@ -1,4 +1,5 @@
 import '../styles/crews.css'
+import { Link } from 'react-router-dom'
 import { CrewBoard } from '../components/CrewBoard'
 import { heroPhoto } from '../data/photos'
 import { getTrail } from '../data/trails'
@@ -43,6 +44,14 @@ export function Crews() {
         </div>
       )}
       <div className="container page-pad">
+        <p style={{ lineHeight: 1.45 }}>
+          A crew is the hiking community you actually belong to. The plan, the car, and what you learned on the trail stay here.
+        </p>
+        {outingTrail && (
+          <Link to={`/trail/${outingTrail.id}#pack`} className="btn btn-ghost" style={{ width: '100%', marginTop: 14 }}>
+            What to bring for {outingTrail.name}
+          </Link>
+        )}
         {heroCrew && <CrewHero crew={heroCrew} joined={!!mine} showOuting={false} />}
         <CrewFeed
           hideOutings={!!mine}

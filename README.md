@@ -1,12 +1,14 @@
 # Switchback
 
-AllTrails tells you where a trail is. **Switchback is what you do when you go back.**
+AllTrails finds the trail. Strava keeps the workout. **Switchback is the outdoor community those two left in group chats**, starting with hiking.
 
-Go back. Get faster. Go with your crew.
+Hike with your people. Remember the day. Pack the next one.
 
-1. **Your time** — the first person you race is you. A dry day and a muddy day are not the same record.
-2. **Who's ahead** — one person on the same trail. Race their time. Rankings can match age and experience.
-3. **Your crew** — the people you actually hike with. A plan, a meeting point, a pace.
+1. **Your crew** — the plan, the car, and the notes you keep together.
+2. **Your last time** — the same trail, with the weather and the conditions that day, set beside the visit before it.
+3. **What to bring** — a pack list from the forecast, the kind of hike, recent notes, and how you move. A watch that sees the water you use can replace that estimate later.
+
+Comparing a time is a detail of remembering the day. It is not the product.
 
 ## Run
 
@@ -17,12 +19,12 @@ npm run dev
 
 ## Prototype scope
 
-- Progress-first home (active chase, your trails, crew pulse)
+- Home built around the crew's next hike, your last day on that trail, and a pack list
 - Explore map (MapLibre + OpenFreeMap outdoors)
-- Trail detail: elevation scrub, PBs, fair rankings, fading conditions, first-party reviews
-- Record: ghost HUD, pause/resume, finish → result payoff
-- Crews: challenges, partner beacons, local feed + kudos
-- You: totals, per-trail bests, active chase
+- Trail detail: elevation, your history, conditions, reviews, packing
+- Record: pause/resume, finish → result
+- Crews: the plan, the shared season, the feed of hikes
+- You: your days, read with the weather
 
 Data persists in `localStorage`. Bow Valley / Kananaskis seed trails are approximate for demo.
 

@@ -68,7 +68,6 @@ export function You() {
   }, [runs, mine])
 
   const pbCount = lines.filter((l) => l.runCount > 1 && l.pb < l.firstSec).length
-  const heldCount = lines.filter((l) => l.rank === 1).length
 
   const chaseTrail = chase ? getTrail(chase.trailId) : undefined
   const chaseRuns = chase ? mine.filter((r) => r.trailId === chase.trailId) : []
@@ -93,12 +92,14 @@ export function You() {
           <p className="stat-inline light">
             <span><StatMark kind="distance" />{totalKm.toFixed(1)} km</span>
             <span><StatMark kind="hikes" />{mine.length} hikes</span>
-            <span>{pbCount} personal bests</span>
-            <span>{heldCount} trails led</span>
+            <span>{pbCount} times you came back faster</span>
           </p>
         </div>
       </div>
       <div className="container page-pad">
+        <p style={{ lineHeight: 1.45 }}>
+          Each trail keeps your times beside the weather and the conditions that day. A muddy hike and a dry hike both belong here. They are not the same record.
+        </p>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           {lines.length > 0 && <YouStrip lines={lines.map((l) => ({ trail: l.trail, held: l.rank === 1 }))} />}
         </motion.div>

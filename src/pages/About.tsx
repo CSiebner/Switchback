@@ -19,38 +19,38 @@ export function About({ onBegin }: { onBegin?: () => void }) {
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 28, color: 'var(--rock-flour)' }}>
           <Mark tone="flour" />
           <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 18, lineHeight: 0.95 }}>
-            Go back. Get faster. Go with your crew.
+            Hike with your people. Remember the day. Pack the next one.
           </h1>
         </div>
       </section>
 
       <div className="container page-pad" style={{ marginTop: 22 }}>
         <p style={{ fontSize: 'var(--type-lg)', fontWeight: 650, lineHeight: 1.35 }}>
-          AllTrails tells you where a trail is. Switchback is what you do when you go back — your time, the person just ahead, and the people you hike with.
+          AllTrails finds the trail. Strava keeps the workout. Switchback is the outdoor community those two left in group chats — starting with the people you hike with, and getting smarter every time you go.
         </p>
 
         <Frame
+          image={crew?.thumb}
+          kicker="1 · Your crew"
+          title="The people in the car."
+          body="A crew is a plan, a meeting spot, who is driving, and the season you climbed together. The feed is hikes and trail notes, so the knowledge stays with the group instead of disappearing in a chat."
+        />
+        <Frame
           image={photo?.thumb}
-          kicker="1 · Your time"
-          title="The same trail, again."
-          body="A hike here is a route you can repeat. The first person you measure against is your previous self. A dry day and a muddy day are not the same record."
+          kicker="2 · Your last time"
+          title="The same trail, with the weather."
+          body="Your profile keeps this visit next to the one before it: the time, and the sky and the dirt that day. A muddy afternoon and a dry morning are both yours. They are not the same hike."
           mark={ha ? <RouteGlyph coords={ha.path} size={72} stroke="#0f201e" strokeWidth={2.4} /> : null}
         />
         <Frame
           image={heroPhoto('prairie-mountain')?.thumb}
-          kicker="2 · Who's ahead"
-          title="One person to catch."
-          body="On every trail you've hiked, Switchback shows the person just faster than you. Race their time. Rankings can match your age and experience, so the comparison stays fair."
-        />
-        <Frame
-          image={crew?.thumb}
-          kicker="3 · Your crew"
-          title="The people you go with."
-          body="A crew is who you actually hike with. A plan, a meeting point, a pace, and a season of elevation you climbed together. The feed is hikes, not posts."
+          kicker="3 · What to bring"
+          title="A pack list that learns."
+          body="Water, layers, and the small things come from the forecast, the kind of hike, notes from people who were just there, and how long it takes you. When a watch can see the water you actually use, that reading sets the number for the next similar climb."
         />
 
         <p className="display" style={{ fontSize: 'var(--type-lg)', fontWeight: 800, marginTop: 28, lineHeight: 1.15 }}>
-          That's the whole app. Hike, see the gap, tell your crew.
+          Find the trail. Go with your crew. Come back knowing more than last time.
         </p>
         {onBegin ? (
           <button className="btn btn-larch" style={{ width: '100%', marginTop: 18 }} onClick={onBegin}>

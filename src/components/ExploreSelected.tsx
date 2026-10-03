@@ -2,36 +2,22 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouteGlyph } from './RouteGlyph'
 import { formatTime, relativeTime } from '../lib/format'
-import { useAppStore } from '../store/useAppStore'
 import { type Line } from './ExploreModel'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
 function survey(l: Line): string {
-  if (l.pb === undefined) return 'typical time · you have not hiked this yet'
-  const place = `your best · #${l.rank} of ${l.boardSize}`
-  if (l.holds) {
-    return l.below
-      ? `fastest here · ${formatTime(l.below.timeSec - l.pb)} ahead of ${l.below.name}`
-      : 'fastest here'
-  }
-  if (l.above && l.gap !== undefined) return `${place} · ${formatTime(l.gap)} behind ${l.above.name}`
-  return place
+  if (l.pb === undefined) return 'a typical time for this trail'
+  return 'your best on this trail'
 }
 
 export function ExploreSelected({ line }: { line: Line }) {
   const navigate = useNavigate()
-  const setChase = useAppStore((s) => s.setChase)
-  const { trail, pb, holds, above, fresh } = line
+  const { trail, pb, holds, fresh } = line
   const big = pb ?? trail.typicalMin * 60
   const pct = fresh ? Math.round(Math.min(1, fresh.conf) * 100) : 0
 
   const start = () => navigate(`/record?trail=${trail.id}`)
-  const useTheirs = () => {
-    if (!above) return
-    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: above.name })
-    navigate(`/record?trail=${trail.id}&against=1`)
-  }
   return (
     <motion.div
       key={trail.id}
@@ -93,11 +79,6 @@ export function ExploreSelected({ line }: { line: Line }) {
         <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={start}>
           Start hike
         </button>
-        {above && (
-          <button className="btn btn-ghost" style={{ flex: '1 1 0' }} onClick={useTheirs}>
-            Race them
-          </button>
-        )}
       </div>
     </motion.div>
   )

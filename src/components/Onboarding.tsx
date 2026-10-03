@@ -47,7 +47,7 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
               What should we call you?
             </h1>
             <p className="survey" style={{ marginTop: 12 }}>
-              Switchback compares you to yourself, then to one person on the same trail.
+              Switchback is the crew you hike with, a memory of your days, and a pack list that learns.
             </p>
             <input
               value={name}
@@ -60,7 +60,7 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
               Which trails have you already hiked?
             </h2>
             <p className="survey" style={{ marginTop: 8 }}>
-              We'll show your time on these, and who is just ahead. Leave off any you haven't walked.
+              We'll keep your days on these, weather included, and use them the next time you pack. Leave off any you haven't walked.
             </p>
             <div style={{ marginTop: 18 }}>
               {trails.map((t) => {
@@ -91,10 +91,10 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
         {step === 1 && (
           <>
             <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
-              Keep the comparison fair.
+              So the day fits how you hike.
             </h1>
             <p className="survey" style={{ marginTop: 12 }}>
-              Rankings can match your age and experience. A fast day among people like you means more than a raw list of everyone.
+              Age and experience shape how long a hike will take you, and what we suggest you bring. You can change this later.
             </p>
             <p className="survey" style={{ marginTop: 16 }}>Age</p>
             <div className="segmented" style={{ marginTop: 8 }}>
@@ -119,7 +119,7 @@ export function Onboarding({ onBack }: { onBack?: () => void }) {
               Your crew is who you hike with.
             </h1>
             <p className="survey" style={{ marginTop: 12 }}>
-              Calgary Beltline Hikers is already yours — a Saturday plan, a meeting spot, a shared season. Name another only if you want one.
+              Calgary Beltline Hikers is already yours — a Saturday plan, a meeting spot, and the notes you keep together. Name another only if you want one.
             </p>
             <input
               value={crewName}

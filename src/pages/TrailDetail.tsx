@@ -15,7 +15,7 @@ import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
 import { heroPhoto } from '../data/photos'
-import { CURRENT_USER_ID, getHiker } from '../data/seed'
+import { CURRENT_USER_ID } from '../data/seed'
 import { getTrail } from '../data/trails'
 import { formatTime } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
@@ -48,11 +48,11 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   let text: string | null = null
   const amongHikers = percentBucket(rank, field, [5, 10, 15])
   const amongYours = percentBucket(1, attempts, [5, 10])
-  if (holds) text = `You hold ${name}. Amazing work.`
-  else if (amongHikers) text = `You're in the top ${amongHikers}% on ${name}. Amazing work.`
-  else if (amongYours) text = `This is in the top ${amongYours}% of the ${attempts} times you've hiked ${name}.`
-  else if (attempts >= 3) text = `Your fastest of the ${attempts} times you've hiked ${name}.`
-  else if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
+  if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
+  else if (attempts >= 2) text = `${attempts} days on ${name}, each one kept with that day's conditions.`
+  else if (holds) text = `Your best day on ${name} is still the one to remember.`
+  else if (amongYours) text = `This sits among your quicker days on ${name}.`
+  else if (amongHikers) text = `Plenty of hikers know ${name}. Your days on it are the record that matters.`
   if (!text) return null
   return (
     <p style={{ margin: '20px 0 0', paddingLeft: 12, borderLeft: '3px solid var(--larch)', fontWeight: 700, lineHeight: 1.4 }}>
@@ -94,12 +94,15 @@ export function TrailDetail() {
   const runs = useAppStore((s) => s.runs)
   const weightKg = useAppStore((s) => s.weightKg)
   const heightCm = useAppStore((s) => s.heightCm)
-  const setChase = useAppStore((s) => s.setChase)
   const savedTrailIds = useAppStore((s) => s.savedTrailIds)
   const reviews = useAppStore((s) => s.reviews)
   const toggleSaveTrail = useAppStore((s) => s.toggleSaveTrail)
 
   useEffect(() => {
+    if (window.location.hash === '#pack') {
+      document.getElementById('pack')?.scrollIntoView({ block: 'start' })
+      return
+    }
     window.scrollTo(0, 0)
   }, [id])
 
@@ -118,30 +121,25 @@ export function TrailDetail() {
   const myIdx = board.findIndex((r) => r.userId === CURRENT_USER_ID)
   const hasRun = pb !== undefined && myIdx >= 0
   const iAmFirst = hasRun && myIdx === 0
-  const above = hasRun && myIdx > 0 ? board[myIdx - 1] : undefined
-  const below = hasRun && myIdx < board.length - 1 ? board[myIdx + 1] : undefined
-  const nameOf = (uid: string) => getHiker(uid)?.name ?? 'Rival'
   const saved = savedTrailIds.includes(trail.id)
 
+  const mine = runs
+    .filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id)
+    .sort((a, b) => a.timestamp - b.timestamp)
+  const latest = mine.at(-1)
+  const earlier = mine.length > 1 ? mine[mine.length - 2] : undefined
   let bigValue = trail.typicalMin * 60
   let survey = 'A typical time · your first hike is still open'
-  if (hasRun && pb !== undefined) {
-    bigValue = pb
-    if (iAmFirst) {
-      survey = below
-        ? `your best · fastest here · ${formatTime(below.timeSec - pb)} ahead of ${nameOf(below.userId)}`
-        : 'your best · fastest here'
-    } else if (above) {
-      survey = `your best · #${myIdx + 1} of ${board.length} · ${formatTime(pb - above.timeSec)} behind ${nameOf(above.userId)}`
-    }
+  if (hasRun && pb !== undefined && latest) {
+    bigValue = latest.timeSec
+    const day = latest.weather
+      ? `${latest.weather.temp}° ${latest.weather.sky.toLowerCase()}, ${latest.conditions.join(', ').toLowerCase()}`
+      : latest.conditions.join(', ').toLowerCase()
+    survey = earlier
+      ? `last time · ${day} · previous was ${formatTime(earlier.timeSec)} on a ${earlier.conditions.join(', ').toLowerCase()} day`
+      : `last time · ${day}`
   }
-
   const go = () => navigate(`/record?trail=${trail.id}`)
-  const useTheirTime = () => {
-    if (!above) return
-    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: nameOf(above.userId) })
-    navigate(`/record?trail=${trail.id}&against=1`)
-  }
   const photo = heroPhoto(trail.id)
 
   return (
@@ -188,7 +186,7 @@ export function TrailDetail() {
           </div>
           {hasRun && (
             <>
-              <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
+              <CountUp value={bigValue} className="tr-big" />
               <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
             </>
           )}
@@ -231,11 +229,9 @@ export function TrailDetail() {
       <div className="container tr-bar">
         <div className="btn-row">
           <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Start this hike'}</button>
-          {above && (
-            <button className="btn btn-ghost" onClick={useTheirTime}>
-              Race {nameOf(above.userId).replace(/\s+\S\.$/, '').split(' ')[0]}
-            </button>
-          )}
+          <button className="btn btn-ghost" onClick={() => document.getElementById('pack')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+            What to bring
+          </button>
         </div>
       </div>
     </div>
