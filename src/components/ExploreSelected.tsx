@@ -2,36 +2,22 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouteGlyph } from './RouteGlyph'
 import { formatTime, relativeTime } from '../lib/format'
-import { useAppStore } from '../store/useAppStore'
 import { type Line } from './ExploreModel'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
 function survey(l: Line): string {
-  if (l.pb === undefined) return 'typical · not yet on your logbook'
-  const board = `PB · #${l.rank} of ${l.boardSize}`
-  if (l.holds) {
-    return l.below
-      ? `holding the line · ${formatTime(l.below.timeSec - l.pb)} ahead of ${l.below.name}`
-      : 'holding the line · unchallenged'
-  }
-  if (l.above && l.gap !== undefined) return `${board} · ${formatTime(l.gap)} behind ${l.above.name}`
-  return board
+  if (l.pb === undefined) return 'a typical time for this trail'
+  return 'your best on this trail'
 }
 
 export function ExploreSelected({ line }: { line: Line }) {
   const navigate = useNavigate()
-  const setChase = useAppStore((s) => s.setChase)
-  const { trail, pb, holds, above, fresh } = line
+  const { trail, pb, holds, fresh } = line
   const big = pb ?? trail.typicalMin * 60
   const pct = fresh ? Math.round(Math.min(1, fresh.conf) * 100) : 0
 
   const start = () => navigate(`/record?trail=${trail.id}`)
-  const useTheirs = () => {
-    if (!above) return
-    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: above.name })
-    navigate(`/record?trail=${trail.id}&against=1`)
-  }
   return (
     <motion.div
       key={trail.id}
@@ -49,7 +35,7 @@ export function ExploreSelected({ line }: { line: Line }) {
           strokeWidth={2.6}
         />
         <div className="ex-head-text">
-          <p className="survey">{pb === undefined ? 'New to you' : 'A line you know'}</p>
+          <p className="survey">{pb === undefined ? 'New to you' : "You've hiked this"}</p>
           <p className="display ex-name">{trail.name}</p>
           <p className="survey num">
             {trail.region} · {trail.difficulty} · {trail.distKm.toFixed(1)} km · {Math.round(trail.gainM)} m
@@ -82,7 +68,7 @@ export function ExploreSelected({ line }: { line: Line }) {
             </span>
           </>
         ) : (
-          <span className="survey">no recent reports</span>
+          <span className="survey">No recent condition reports</span>
         )}
       </div>
 
@@ -91,13 +77,8 @@ export function ExploreSelected({ line }: { line: Line }) {
           See the trail
         </Link>
         <button className="btn btn-larch" style={{ flex: '1.4 1 0' }} onClick={start}>
-          Hike this line
+          Start hike
         </button>
-        {above && (
-          <button className="btn btn-ghost" style={{ flex: '1 1 0' }} onClick={useTheirs}>
-            Their time
-          </button>
-        )}
       </div>
     </motion.div>
   )

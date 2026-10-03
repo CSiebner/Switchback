@@ -123,7 +123,7 @@ p {
 .page {
   min-height: 100dvh;
   padding-top: var(--brand-h);
-  padding-bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--dock-h) + 72px + env(safe-area-inset-bottom));
 }
 
 .brand-bar {
@@ -492,10 +492,10 @@ p {
   left: 50%;
   bottom: calc(14px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
-  width: min(400px, calc(100% - 28px));
+  width: min(440px, calc(100% - 16px));
   height: var(--dock-h);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 1fr 1fr 1.2fr 1fr 1fr 1fr;
   align-items: center;
   padding: 8px;
   border-radius: var(--r-pill);
@@ -538,26 +538,36 @@ p {
 }
 
 .nav-dock .nav-label {
-  display: none;
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
 }
 
 .nav-dock a.active .nav-label {
-  display: block;
+  color: var(--rock-flour);
 }
 
 .nav-dock .nav-record {
   position: relative;
+  justify-content: flex-end;
+  gap: 2px;
+  padding-bottom: 2px;
 }
 
 .nav-dock .nav-record .disc {
-  width: 56px;
-  height: 56px;
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--spruce-800);
   border: 2px solid var(--larch);
   display: grid;
   place-items: center;
-  transform: translateY(-14px);
+  transform: translateX(-50%);
   box-shadow: 0 14px 30px rgba(217, 119, 6, 0.28);
 }
 
@@ -583,6 +593,251 @@ p {
   width: 100%;
   height: 100%;
 }
+
+.home-lead-title {
+  font-size: clamp(1.85rem, 7.5vw, 2.35rem);
+  font-weight: 800;
+  line-height: 0.98;
+  margin-top: 8px;
+}
+
+.home-lead-body {
+  margin-top: 10px;
+  line-height: 1.45;
+  color: var(--scree-dark);
+}
+
+.home-loop {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-loop li {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--scree-dark);
+}
+
+.home-loop span {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--glacier-deep);
+}
+
+.home-loop strong {
+  display: block;
+  margin: 2px 0 4px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.home-lead-more {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--glacier);
+  font-size: var(--type-xs);
+  font-weight: 700;
+}
+
+.home-last {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.home-last img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.home-last-name {
+  display: block;
+  font-weight: 800;
+}
+
+.lodge-feature {
+  position: relative;
+  display: block;
+  margin-top: 18px;
+  height: 240px;
+  border-radius: 22px;
+  overflow: hidden;
+  color: var(--rock-flour);
+  box-shadow: 0 16px 40px rgba(11, 23, 22, 0.18);
+}
+
+.lodge-feature img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lodge-feature-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+  background: linear-gradient(180deg, transparent, rgba(11, 23, 22, 0.82));
+}
+
+.lodge-feature-name {
+  font-size: var(--type-xl);
+  font-weight: 800;
+  line-height: 0.95;
+}
+
+.lodge-feature .survey {
+  color: rgba(228, 238, 235, 0.85);
+}
+
+.lodge-block {
+  margin-top: 22px;
+  padding: 16px 16px 8px;
+  border-radius: 20px;
+}
+
+.lodge-block.duel {
+  background: var(--spruce-950);
+  color: var(--rock-flour);
+}
+
+.lodge-block.duel .survey,
+.lodge-block.weekend .survey {
+  color: var(--scree);
+}
+
+.lodge-block.duel .chapter,
+.lodge-block.weekend .chapter {
+  color: var(--rock-flour);
+}
+
+.lodge-block.boards {
+  background: #fff;
+  border: 1px solid var(--contour-light);
+}
+
+.lodge-block.open {
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.lodge-block.weekend {
+  background: var(--spruce-900);
+  color: var(--rock-flour);
+}
+
+.lodge-block.changed {
+  background: rgba(10, 138, 130, 0.1);
+}
+
+.lodge-report {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 0;
+}
+
+.lodge-report .chip {
+  margin-top: 2px;
+}
+
+.lodge-block.notes {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--contour-light);
+}
+
+.mark-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mark-card {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.mark-card .stat-mark {
+  width: 26px;
+  height: 26px;
+}
+
+.mark-card strong {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.pack-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 4px 0 4px 12px;
+  border-left: 3px solid var(--glacier);
+}
+
+.pack-list li + li {
+  margin-top: 8px;
+}
+
+.pack-voices {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(217, 119, 6, 0.12);
+}
+
+.pack-voices p + p {
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.pitch-list {
+  margin-top: 8px;
+}
+
+.pitch-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--contour-light);
+}
+
+.pitch-row .stat-mark,
+.pitch-icon {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  color: var(--glacier-deep);
+}
+
+.mark-card.first { box-shadow: inset 4px 0 0 var(--glacier); }
+.mark-card.faster { box-shadow: inset 4px 0 0 var(--larch); }
+.mark-card.season { box-shadow: inset 4px 0 0 var(--spruce-900); }
 
 .map-attrib {
   position: absolute;
@@ -675,11 +930,42 @@ p {
   touch-action: none;
 }
 
+.talk {
+  margin-top: 12px;
+}
+
+.talk-line {
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.talk-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.talk-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--contour-light);
+  background: transparent;
+  color: inherit;
+}
+
+.kudo svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
 .kudo {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: var(--r-pill);
   border: 1px solid var(--contour-light);
   background: transparent;

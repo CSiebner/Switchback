@@ -53,7 +53,7 @@ export function Hike() {
         <p className="survey num" style={{ marginTop: 8 }}>
           moving {formatTime(moving)}
           {stopped > 30 ? ` · stopped ${formatTime(stopped)}` : ''}
-          {' · '}{formatPace(effort.paceSecPerKm)}/km · grade {formatPace(effort.gapSecPerKm)}/km
+          {' · '}{formatPace(effort.paceSecPerKm)}/km · hill-adjusted {formatPace(effort.gapSecPerKm)}/km
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 18 }}>
           <Stat v={`${trail.distKm.toFixed(1)} km`} l="distance" />
@@ -69,7 +69,7 @@ export function Hike() {
 
         {prev && prevDelta !== undefined && (
           <p style={{ marginTop: 18, fontWeight: 700 }}>
-            {prevDelta < 0 ? `${formatTime(-prevDelta)} faster` : prevDelta > 0 ? `${formatTime(prevDelta)} slower` : 'Same time'} than your previous {formatTime(prev.timeSec)} on this line.
+            {prevDelta < 0 ? `${formatTime(-prevDelta)} faster` : prevDelta > 0 ? `${formatTime(prevDelta)} slower` : 'Same time'} than your previous {formatTime(prev.timeSec)} on this trail.
           </p>
         )}
 
@@ -85,7 +85,7 @@ export function Hike() {
 
         <TrailBoard trailId={trail.id} />
         <div className="btn-row" style={{ marginTop: 22 }}>
-          <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>The line</Link>
+          <Link to={`/trail/${trail.id}`} className="btn btn-ghost" style={{ flex: 1 }}>The trail</Link>
           <Link to={`/record?trail=${trail.id}`} className="btn btn-larch" style={{ flex: 1 }}>Go again</Link>
         </div>
       </div>

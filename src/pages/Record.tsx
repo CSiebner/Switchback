@@ -93,7 +93,7 @@ export function Record() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="container">
           <p className="survey">{trail.name} · {formatTime(demoTimeSec)}</p>
           <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 10, lineHeight: 0.95 }}>
-            How was the dirt?
+            What were the conditions?
           </h1>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 24 }}>
             {CONDITIONS.map(({ tag, glyph }) => {
@@ -134,7 +134,7 @@ export function Record() {
               if (result) navigate('/result')
             }}
           >
-            See the split
+            See how you did
           </button>
           <button className="btn btn-ghost" style={{ width: '100%', marginTop: 10 }} onClick={() => setFinishing(false)}>
             Back
@@ -174,7 +174,7 @@ export function Record() {
           ← {trail.name}
         </Link>
         <span className="survey" style={{ color: 'var(--scree)' }}>
-          {recording ? (recording.paused ? 'Paused' : usingGps ? 'GPS' : 'Replay') : 'Ready'}
+          {recording ? (recording.paused ? 'Paused' : usingGps ? 'GPS' : 'Practice') : 'Ready'}
         </span>
       </div>
 
@@ -194,8 +194,8 @@ export function Record() {
               </p>
               <p className="survey num" style={{ marginTop: 4 }}>
                 {usingGps && gps && gps.offM > 35
-                  ? `Off the line · ${Math.round(gps.offM)} m`
-                  : `On the line · ${(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · ${Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit`}
+                  ? `Off the trail · ${Math.round(gps.offM)} m`
+                  : `On the trail · ${(Math.max(0, 1 - youProgress) * trail.distKm).toFixed(1)} km · ${Math.round(Math.max(0, 1 - youProgress) * trail.gainM)} m to the summit`}
                 {usingGps ? ' · GPS' : ''}
                 {packed.includes(trail.id) ? ' · saved on this phone' : ''}
               </p>
@@ -203,7 +203,7 @@ export function Record() {
           ) : (
             <>
               <p className="survey">
-                {activeChase ? `Against ${activeChase.label}'s time` : pb ? 'Against your best' : 'A typical time for this line'}
+                {activeChase ? `Racing ${activeChase.label}` : pb ? 'Against your best time' : 'A typical time for this trail'}
               </p>
               <h1 className="display" style={{ fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 8, lineHeight: 0.95, color: 'var(--rock-flour)' }}>
                 {formatTime(targetSec)}
@@ -214,7 +214,7 @@ export function Record() {
                 <span>{trail.region}</span>
               </p>
               <p className="survey" style={{ marginTop: 8 }}>Teal is you. Gold is the time you are measuring against.</p>
-              <p className="survey" style={{ marginTop: 4 }}>This replays the line. On the trail it follows your GPS.</p>
+              <p className="survey" style={{ marginTop: 4 }}>Practice replays the trail on this phone. On the trail, it follows your GPS.</p>
             </>
           )}
         </motion.div>

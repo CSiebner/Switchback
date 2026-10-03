@@ -21,6 +21,13 @@ const Icon = {
       <path d="M14.5 19c.4-1.8 1.6-3 3.5-3 1.4 0 2.4.7 3 2" />
     </svg>
   ),
+  lodge: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round">
+      <path d="M4 18h16" />
+      <path d="M6 18 12 7l6 11" />
+      <path d="M9 14.5h6" />
+    </svg>
+  ),
   you: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
       <circle cx="12" cy="8" r="3.5" />
@@ -43,14 +50,19 @@ export function NavDock() {
       </NavLink>
       <NavLink to="/explore" className={({ isActive }) => (isActive ? 'active' : undefined)}>
         {Icon.map}
-        <span className="nav-label">Map</span>
+        <span className="nav-label">Trails</span>
       </NavLink>
-      <NavLink to={lastTrailId ? `/record?trail=${lastTrailId}` : '/record'} className="nav-record" aria-label="Record a hike">
+      <NavLink to={lastTrailId ? `/record?trail=${lastTrailId}` : '/record'} className="nav-record" aria-label="Start a hike">
         <span className="disc">
           <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
             <circle cx="12" cy="12" r="6" />
           </svg>
         </span>
+        <span className="nav-label">Hike</span>
+      </NavLink>
+      <NavLink to="/lodges" className={() => (pathname.startsWith('/lodge') ? 'active' : undefined)}>
+        {Icon.lodge}
+        <span className="nav-label">Lodges</span>
       </NavLink>
       <NavLink to="/crews" className={({ isActive }) => (isActive ? 'active' : undefined)}>
         {Icon.crews}

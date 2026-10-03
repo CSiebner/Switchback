@@ -140,7 +140,7 @@ export function Result() {
                   style={{ flex: 1 }}
                   onClick={() => clearResult()}
                 >
-                  Send to {crew?.name ?? 'crew'}
+                  See it with {crew?.name ?? 'your crew'}
                 </Link>
               </div>
               <div className="btn-row" style={{ marginTop: 10 }}>
@@ -155,7 +155,7 @@ export function Result() {
                       label: 'your next target',
                     })
                     clearResult()
-                    navigate(`/record?trail=${trail.id}`)
+                    navigate(`/record?trail=${trail.id}&against=1`)
                   }}
                 >
                   Aim 1% faster
@@ -199,7 +199,7 @@ function EffortLine({ distKm, elevation, timeSec }: { distKm: number; elevation:
   const e = effortFor({ distKm, elevation }, timeSec)
   const cells = [
     { v: formatPace(e.paceSecPerKm), l: '/km', kind: 'distance' as const },
-    { v: formatPace(e.gapSecPerKm), l: 'grade pace', kind: 'climb' as const },
+    { v: formatPace(e.gapSecPerKm), l: 'hill-adjusted', kind: 'climb' as const },
     { v: e.ascentPaceSec ? formatPace(e.ascentPaceSec) : '—', l: '/100m up', kind: 'climb' as const },
     { v: e.descentPaceSec ? formatPace(e.descentPaceSec) : '—', l: '/100m down', kind: 'climb' as const },
     { v: e.steps.toLocaleString(), l: 'steps', kind: 'hikes' as const },

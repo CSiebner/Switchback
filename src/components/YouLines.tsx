@@ -32,9 +32,9 @@ export function YouLines({ lines }: { lines: YouLine[] }) {
   const runs = useAppStore((s) => s.runs)
   return (
     <section className="yo-section">
-      <span className="survey head">Lines you know</span>
+      <span className="survey head">Trails you've hiked</span>
       {lines.length === 0 && (
-        <p className="survey hairline" style={{ padding: '16px 0' }}>No lines yet · log a hike to start your logbook</p>
+        <p className="survey hairline" style={{ padding: '16px 0' }}>No hikes yet. Record one and it shows up here.</p>
       )}
       {lines.map((l, i) => {
         const first = l.rank === 1
@@ -61,7 +61,7 @@ export function YouLines({ lines }: { lines: YouLine[] }) {
                 <span className="yo-name">{l.trail.name}</span>
                 <span className="survey num">
                   #{l.rank} of {l.of}
-                  {ahead && aheadName ? ` · ${formatSplit(l.pb - ahead.timeSec).replace('+', '')} behind ${aheadName}` : first ? ' · holding the line' : ''}
+                  {ahead && aheadName ? ` · ${formatSplit(l.pb - ahead.timeSec).replace('+', '')} behind ${aheadName}` : first ? ' · fastest here' : ''}
                 </span>
                 <span className="survey">{lineTrend(l)}</span>
               </span>

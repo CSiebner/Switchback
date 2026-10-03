@@ -15,7 +15,7 @@ import { TrailStory } from '../components/TrailStory'
 import { TrailReviews } from '../components/TrailReviews'
 import { TrailMap } from '../components/TrailMap'
 import { heroPhoto } from '../data/photos'
-import { CURRENT_USER_ID, getHiker } from '../data/seed'
+import { CURRENT_USER_ID } from '../data/seed'
 import { getTrail } from '../data/trails'
 import { formatTime } from '../lib/format'
 import { bestTime, leaderboard, useAppStore } from '../store/useAppStore'
@@ -48,11 +48,11 @@ function TrailBadges({ name, holds, rank, field, attempts, improvedSec }: { name
   let text: string | null = null
   const amongHikers = percentBucket(rank, field, [5, 10, 15])
   const amongYours = percentBucket(1, attempts, [5, 10])
-  if (holds) text = `You hold ${name}. Amazing work.`
-  else if (amongHikers) text = `You're in the top ${amongHikers}% on ${name}. Amazing work.`
-  else if (amongYours) text = `This is in the top ${amongYours}% of the ${attempts} times you've hiked ${name}.`
-  else if (attempts >= 3) text = `Your fastest of the ${attempts} times you've hiked ${name}.`
-  else if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
+  if (improvedSec >= 60) text = `You've cut ${plainDuration(improvedSec)} off your first time on ${name}.`
+  else if (attempts >= 2) text = `${attempts} days on ${name}, each one kept with that day's conditions.`
+  else if (holds) text = `Your best day on ${name} is still the one to remember.`
+  else if (amongYours) text = `This sits among your quicker days on ${name}.`
+  else if (amongHikers) text = `Plenty of hikers know ${name}. Your days on it are the record that matters.`
   if (!text) return null
   return (
     <p style={{ margin: '20px 0 0', paddingLeft: 12, borderLeft: '3px solid var(--larch)', fontWeight: 700, lineHeight: 1.4 }}>
@@ -65,7 +65,7 @@ function LineRating({ reviews }: { reviews: { rating: number }[] }) {
   const avg = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
   return (
     <div className="fact">
-      <p style={{ margin: 0, minHeight: 18 }} aria-label={reviews.length ? `${avg.toFixed(1)} line rating` : 'No line rating yet'}>
+      <p style={{ margin: 0, minHeight: 18 }} aria-label={reviews.length ? `${avg.toFixed(1)} trail rating` : 'No trail rating yet'}>
         <LineStars value={avg} />
       </p>
       <p className="fact-label">{lineRatingLabel(avg, reviews.length)}</p>
@@ -94,12 +94,15 @@ export function TrailDetail() {
   const runs = useAppStore((s) => s.runs)
   const weightKg = useAppStore((s) => s.weightKg)
   const heightCm = useAppStore((s) => s.heightCm)
-  const setChase = useAppStore((s) => s.setChase)
   const savedTrailIds = useAppStore((s) => s.savedTrailIds)
   const reviews = useAppStore((s) => s.reviews)
   const toggleSaveTrail = useAppStore((s) => s.toggleSaveTrail)
 
   useEffect(() => {
+    if (window.location.hash === '#pack') {
+      document.getElementById('pack')?.scrollIntoView({ block: 'start' })
+      return
+    }
     window.scrollTo(0, 0)
   }, [id])
 
@@ -118,30 +121,25 @@ export function TrailDetail() {
   const myIdx = board.findIndex((r) => r.userId === CURRENT_USER_ID)
   const hasRun = pb !== undefined && myIdx >= 0
   const iAmFirst = hasRun && myIdx === 0
-  const above = hasRun && myIdx > 0 ? board[myIdx - 1] : undefined
-  const below = hasRun && myIdx < board.length - 1 ? board[myIdx + 1] : undefined
-  const nameOf = (uid: string) => getHiker(uid)?.name ?? 'Rival'
   const saved = savedTrailIds.includes(trail.id)
 
+  const mine = runs
+    .filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id)
+    .sort((a, b) => a.timestamp - b.timestamp)
+  const latest = mine.at(-1)
+  const earlier = mine.length > 1 ? mine[mine.length - 2] : undefined
   let bigValue = trail.typicalMin * 60
-  let survey = 'typical · first ascent waiting'
-  if (hasRun && pb !== undefined) {
-    bigValue = pb
-    if (iAmFirst) {
-      survey = below
-        ? `your PB · holding the line · ${formatTime(below.timeSec - pb)} ahead of ${nameOf(below.userId)}`
-        : 'your PB · holding the line'
-    } else if (above) {
-      survey = `your PB · #${myIdx + 1} of ${board.length} · ${formatTime(pb - above.timeSec)} behind ${nameOf(above.userId)}`
-    }
+  let survey = 'A typical time · your first hike is still open'
+  if (hasRun && pb !== undefined && latest) {
+    bigValue = latest.timeSec
+    const day = latest.weather
+      ? `${latest.weather.temp}° ${latest.weather.sky.toLowerCase()}, ${latest.conditions.join(', ').toLowerCase()}`
+      : latest.conditions.join(', ').toLowerCase()
+    survey = earlier
+      ? `last time · ${day} · previous was ${formatTime(earlier.timeSec)} on a ${earlier.conditions.join(', ').toLowerCase()} day`
+      : `last time · ${day}`
   }
-
   const go = () => navigate(`/record?trail=${trail.id}`)
-  const useTheirTime = () => {
-    if (!above) return
-    setChase({ trailId: trail.id, userId: above.userId, timeSec: above.timeSec, label: nameOf(above.userId) })
-    navigate(`/record?trail=${trail.id}&against=1`)
-  }
   const photo = heroPhoto(trail.id)
 
   return (
@@ -155,7 +153,10 @@ export function TrailDetail() {
         </button>
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 64 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
-            {hasRun ? `You've walked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
+            Switchback maps the trail, remembers the day, and packs the next one.
+          </p>
+          <p className="survey" style={{ color: 'rgba(228,238,235,0.8)', marginTop: 6 }}>
+            {hasRun ? `You've hiked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
             {' · '}{trail.region} · {trail.difficulty}
           </p>
           <h1 className="display" style={{ color: 'var(--rock-flour)', fontSize: 'var(--type-xl)', fontWeight: 800, marginTop: 6 }}>{trail.name}</h1>
@@ -168,6 +169,9 @@ export function TrailDetail() {
       <div className="container page-pad" style={{ marginTop: 16 }}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
           <p className="tr-summary">{trail.summary}</p>
+          <Link to="/lodge/bow-valley" className="survey" style={{ display: 'inline-block', marginTop: 10, color: 'var(--glacier)' }}>
+            Bow Valley lodge on {trail.name}
+          </Link>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '22px 16px', marginTop: 28 }}>
             <Fact
               kind="time"
@@ -188,7 +192,7 @@ export function TrailDetail() {
           </div>
           {hasRun && (
             <>
-              <CountUp value={bigValue} className={`tr-big ${iAmFirst ? 'gold' : ''}`} />
+              <CountUp value={bigValue} className="tr-big" />
               <p className="survey num" style={{ marginTop: 8 }}>{survey}</p>
             </>
           )}
@@ -221,7 +225,7 @@ export function TrailDetail() {
         <TrailReviews trailId={trail.id} />
 
         <section className="tr-band photos">
-          <h2 className="chapter">More of this line</h2>
+          <h2 className="chapter">Photos</h2>
           <PhotoRail trailId={trail.id} />
         </section>
         <TrailElevation trail={trail} />
@@ -230,12 +234,10 @@ export function TrailDetail() {
 
       <div className="container tr-bar">
         <div className="btn-row">
-          <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Hike this line'}</button>
-          {above && (
-            <button className="btn btn-ghost" onClick={useTheirTime}>
-              {nameOf(above.userId).replace(/\s+\S\.$/, '')}'s time
-            </button>
-          )}
+          <button className="btn btn-larch" onClick={go}>{hasRun ? 'Hike it again' : 'Start this hike'}</button>
+          <button className="btn btn-ghost" onClick={() => document.getElementById('pack')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+            What to bring
+          </button>
         </div>
       </div>
     </div>

@@ -63,6 +63,8 @@ export interface ConditionReport {
   note?: string
   timestamp: number
   confirms: number
+  kudos?: string[]
+  comments?: Comment[]
 }
 
 export interface Crew {
@@ -74,21 +76,55 @@ export interface Crew {
   challengeProgress: number
   challengeGoal: number
   challengeUnit: string
+  /** Who may join the crew itself. Invites and requests stay on this phone until the app is hosted. */
+  access?: 'public' | 'invite' | 'request'
+  joinRequests?: string[]
   outing?: {
     trailId: string
     when: string
     going: string[]
+    /** Trailhead or hike parking lot. */
     meet?: string
+    /** Where the car leaves from, before the trailhead. */
+    depart?: string
     pace?: 'easy' | 'steady' | 'pushing'
     driver?: string
     seats?: number
     whenIso?: string
+    /** Solo hikers may join this plan without being in the crew already. */
+    openToSolo?: boolean
+    kudos?: string[]
+    comments?: Comment[]
+    rideRequests?: string[]
+    /** People meeting at the trailhead, not taking a seat. */
+    meeting?: string[]
   }
+}
+
+export interface TrailQuestion {
+  id: string
+  trailId: string
+  userId: string
+  text: string
+  timestamp: number
+  kudos?: string[]
+  comments?: Comment[]
+}
+
+/** A challenge the whole lodge can join, separate from a crew-versus-crew duel. */
+export interface LodgeChallenge {
+  id: string
+  lodgeId: string
+  title: string
+  metric: LodgeMetric
+  startMs: number
+  endMs: number
+  joinedIds: string[]
 }
 
 export interface FeedItem {
   id: string
-  type: 'pb' | 'hike' | 'condition' | 'outing'
+  type: 'pb' | 'hike' | 'condition' | 'outing' | 'post'
   userId: string
   trailId?: string
   crewId?: string
@@ -127,7 +163,7 @@ export const trails: Trail[] = [
       [-114.779, 50.894], [-114.778, 50.895],
     ],
     elevation: [0, 80, 180, 290, 420, 540, 630, 700, 726, 700],
-    summary: 'Steep grind with a rewarding ridge view — local favourite for time trials.',
+    summary: 'Steep grind with a rewarding ridge view. A local favourite when you want to see if you can go faster.',
   },
   {
     id: 'ha-ling',
@@ -144,7 +180,7 @@ export const trails: Trail[] = [
       [-115.394, 51.069], [-115.393, 51.07],
     ],
     elevation: [0, 90, 200, 330, 470, 580, 680, 760, 810, 780],
-    summary: 'Iconic Canmore scramble-adjacent hike. Perfect for chase sessions.',
+    summary: 'The Canmore scramble everyone comes back to. Steep, short, and made for a second try.',
   },
   {
     id: 'grotto-canyon',
@@ -176,7 +212,7 @@ export const trails: Trail[] = [
       [-115.168, 51.045], [-115.166, 51.046], [-115.165, 51.047], [-115.164, 51.048],
     ],
     elevation: [0, 30, 70, 120, 170, 220, 270, 300],
-    summary: 'Creek-side climb to a waterfall — great for condition reports.',
+    summary: 'Creek-side climb to a waterfall. Conditions change fast after rain.',
   },
   {
     id: 'tunnel-mountain',
@@ -192,7 +228,7 @@ export const trails: Trail[] = [
       [-115.55, 51.183], [-115.548, 51.184], [-115.547, 51.185], [-115.546, 51.186],
     ],
     elevation: [0, 40, 90, 140, 180, 220, 250, 260],
-    summary: 'Banff classic with town-and-valley views. Ideal first chase trail.',
+    summary: 'Banff classic with town-and-valley views. A good first trail to come back to.',
   },
   {
     id: 'johnston-canyon',
@@ -235,7 +271,7 @@ export const trails: Trail[] = [
     center: [-115.32, 51.1],
     path: [[-115.323, 51.092], [-115.318, 51.114]],
     elevation: [1410, 2268],
-    summary: 'Steep east-slope climb above Canmore. The trail in the map is the recorded line to the high point.',
+    summary: 'Steep east-slope climb above Canmore. The map follows the recorded route to the high point.',
   },
   {
     id: 'rawson-lake',
@@ -248,7 +284,7 @@ export const trails: Trail[] = [
     center: [-115.2, 50.72],
     path: [[-115.2, 50.71], [-115.19, 50.73]],
     elevation: [1716, 1999],
-    summary: 'A shorter climb to a high lake in the Kananaskis. The mapped line is the OSM trail as recorded.',
+    summary: 'A shorter climb to a high lake in the Kananaskis. The map follows the recorded route.',
   },
   {
     id: 'aylmer-lookout',
@@ -261,7 +297,7 @@ export const trails: Trail[] = [
     center: [-115.52, 51.32],
     path: [[-115.53, 51.31], [-115.51, 51.33]],
     elevation: [1876, 2042],
-    summary: 'A short lookout line above Lake Minnewanka. Easy grade, big view.',
+    summary: 'A short lookout above Lake Minnewanka. Easy grade, big view.',
   },
   {
     id: 'plain-of-six-glaciers',
@@ -274,7 +310,7 @@ export const trails: Trail[] = [
     center: [-116.18, 51.41],
     path: [[-116.21, 51.42], [-116.16, 51.4]],
     elevation: [1700, 2100],
-    summary: 'The walk from Lake Louise toward the glaciers. The mapped line is the recorded trail, out and back.',
+    summary: 'The walk from Lake Louise toward the glaciers. The map follows the recorded route, out and back.',
   },
 ]
 
@@ -351,14 +387,29 @@ export const seedConditions: ConditionReport[] = [
 export const seedCrews: Crew[] = [
   {
     id: 'beltline',
-    name: 'Calgary Beltline Hikers',
+    name: "Calgary Beltliner's",
     region: 'Calgary → Bow Valley',
     members: ['you', 'liam', 'maya', 'sofia', 'jordan'],
     challenge: 'October elevation push',
     challengeProgress: 18420,
     challengeGoal: 25000,
     challengeUnit: 'm',
-    outing: { trailId: 'ha-ling', when: 'Sat 7:00 AM', going: ['liam', 'maya', 'you'], meet: 'Canmore Nordic Centre lot', pace: 'steady', driver: 'liam', seats: 4 },
+    access: 'public',
+    outing: {
+      trailId: 'ha-ling',
+      when: 'Sat 7:00 AM',
+      going: ['liam', 'maya', 'you'],
+      meet: 'Canmore Nordic Centre lot',
+      depart: '17th Ave and 14th St SW, Calgary',
+      pace: 'steady',
+      driver: 'liam',
+      seats: 4,
+      openToSolo: true,
+      kudos: ['liam'],
+      comments: [{ id: 'oc1', userId: 'maya', text: 'I can drive if the usual car is full.', timestamp: now - 2 * 60 * 60 * 1000 }],
+      rideRequests: ['sofia'],
+      meeting: ['jordan'],
+    },
   },
   {
     id: 'canmore-dawn',
@@ -369,6 +420,78 @@ export const seedCrews: Crew[] = [
     challengeProgress: 11,
     challengeGoal: 20,
     challengeUnit: 'summits',
+    access: 'request',
+  },
+]
+
+export type LodgeMetric = 'elevation' | 'distance'
+
+export interface PersonalChallenge {
+  title: string
+  metric: LodgeMetric
+  goal: number
+}
+
+export interface Lodge {
+  id: string
+  name: string
+  region: string
+  summary: string
+  crewIds: string[]
+  memberIds: string[]
+}
+
+/** A crew challenging another crew inside a lodge. Score is the average per person. */
+export interface CrewDuel {
+  id: string
+  lodgeId: string
+  title: string
+  metric: LodgeMetric
+  fromCrewId: string
+  toCrewId: string
+  status: 'pending' | 'active'
+  startMs: number
+  endMs: number
+}
+
+export const seedLodges: Lodge[] = [
+  {
+    id: 'bow-valley',
+    name: 'Bow Valley',
+    region: 'Alberta',
+    summary: 'Everyone who hikes this valley. Your crew is the table you sit at. The lodge is the room. A lodge can be as wide as Hike Alberta.',
+    crewIds: ['beltline', 'canmore-dawn'],
+    memberIds: ['you', 'liam', 'maya', 'chen', 'sofia', 'jordan', 'ava'],
+  },
+]
+
+export const seedDuels: CrewDuel[] = [
+  {
+    id: 'd1',
+    lodgeId: 'bow-valley',
+    title: 'Elevation over the last 30 days',
+    metric: 'elevation',
+    fromCrewId: 'beltline',
+    toCrewId: 'canmore-dawn',
+    status: 'active',
+    startMs: now - 30 * day,
+    endMs: now + day,
+  },
+]
+
+export const seedQuestions: TrailQuestion[] = [
+  { id: 'q1', trailId: 'ha-ling', userId: 'sofia', text: 'Are poles worth it on the way down if the ridge is dry?', timestamp: now - 2 * day },
+]
+
+export const seedLodgeChallenges: LodgeChallenge[] = [
+  {
+    id: 'lc1',
+    lodgeId: 'bow-valley',
+    title: 'Valley elevation',
+    metric: 'elevation',
+    startMs: now - 30 * day,
+    endMs: now + day,
+    joinedIds: ['liam', 'maya', 'ava'],
   },
 ]
 

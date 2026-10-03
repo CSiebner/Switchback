@@ -9,6 +9,8 @@ import { TrailDetail } from './pages/TrailDetail'
 import { Record } from './pages/Record'
 import { Result } from './pages/Result'
 import { Crews } from './pages/Crews'
+import { Lodge } from './pages/Lodge'
+import { Lodges } from './pages/Lodges'
 import { You } from './pages/You'
 import { Hike } from './pages/Hike'
 import { About } from './pages/About'
@@ -32,6 +34,8 @@ function AnimatedRoutes() {
         <Route path="/record" element={<Record />} />
         <Route path="/result" element={<Result />} />
         <Route path="/crews" element={<Crews />} />
+        <Route path="/lodge/:id" element={<Lodge />} />
+        <Route path="/lodges" element={<Lodges />} />
         <Route path="/you" element={<You />} />
         <Route path="/hike/:id" element={<Hike />} />
         <Route path="/about" element={<About />} />
@@ -43,8 +47,10 @@ function AnimatedRoutes() {
 
 function Gate() {
   const onboarded = useAppStore((s) => s.onboarded)
+  const { pathname } = useLocation()
+  const sharedTrail = pathname.startsWith('/trail/')
   const [phase, setPhase] = useState<'about' | 'profile'>('about')
-  if (!onboarded) {
+  if (!onboarded && !sharedTrail) {
     if (phase === 'about') return <About onBegin={() => setPhase('profile')} />
     return <Onboarding onBack={() => setPhase('about')} />
   }

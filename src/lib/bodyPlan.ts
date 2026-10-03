@@ -77,6 +77,16 @@ export function packFor(opts: {
   return items
 }
 
+/** Extra items from what hikers reported, kept separate from the forecast. */
+export function packFromReports(tags: string[]): string[] {
+  const items: string[] = []
+  if (tags.includes('Icy') || tags.includes('Snow')) items.push('Traction, from recent trail reports')
+  if (tags.includes('Muddy')) items.push('Waterproof boots or extra socks — reports say mud')
+  if (tags.includes('Bugs')) items.push('Bug spray — reports mention bugs')
+  if (tags.includes('Busy')) items.push('An earlier start — reports say it fills up')
+  return items
+}
+
 export function personalCalories(minutes: number, gainM: number, weightKg: number): number {
   return caloriesFor(minutes * 60, gainM, weightKg)
 }

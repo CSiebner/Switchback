@@ -2,7 +2,7 @@ import { useMemo, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { CURRENT_USER_ID, getHiker, type FeedItem } from '../data/seed'
-import { getTrail } from '../data/trails'
+import { getTrail, trails } from '../data/trails'
 import { relativeTime, formatTime } from '../lib/format'
 import { heroPhoto } from '../data/photos'
 import { RouteGlyph } from './RouteGlyph'
@@ -28,8 +28,9 @@ function outingRows(text: string) {
 const TYPE_LABEL: Record<FeedItem['type'], string> = {
   pb: 'personal best',
   hike: 'hike',
-  condition: 'dirt report',
+  condition: 'conditions',
   outing: 'planned hike',
+  post: 'post',
 }
 
 export function CrewFeed({ pin, hideOutings = false }: { pin?: ReactNode; hideOutings?: boolean }) {
@@ -37,8 +38,12 @@ export function CrewFeed({ pin, hideOutings = false }: { pin?: ReactNode; hideOu
   const runs = useAppStore((s) => s.runs)
   const toggleKudo = useAppStore((s) => s.toggleKudo)
   const addComment = useAppStore((s) => s.addComment)
+  const addCrewPost = useAppStore((s) => s.addCrewPost)
   const [drafts, setDrafts] = useState<Record<string, string>>({})
   const [openId, setOpenId] = useState<string | null>(null)
+  const [posting, setPosting] = useState(false)
+  const [postText, setPostText] = useState('')
+  const [postTrail, setPostTrail] = useState<string | undefined>()
   const items = useMemo(
     () => [...feed].filter((item) => !(hideOutings && item.type === 'outing')).sort((a, b) => b.timestamp - a.timestamp),
     [feed, hideOutings],
@@ -47,6 +52,43 @@ export function CrewFeed({ pin, hideOutings = false }: { pin?: ReactNode; hideOu
   return (
     <section className="cr-feed">
       <h2 className="chapter">From your crew</h2>
+      {posting ? (
+        <form
+          className="cr-composer"
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (!postText.trim()) return
+            addCrewPost(postText, postTrail)
+            setPostText('')
+            setPostTrail(undefined)
+            setPosting(false)
+          }}
+        >
+          <textarea
+            value={postText}
+            onChange={(e) => setPostText(e.target.value)}
+            placeholder="Anyone up for Ha Ling this weekend?"
+            aria-label="Post to the crew"
+            rows={3}
+            autoFocus
+          />
+          <div className="cr-composer-trails">
+            {trails.slice(0, 6).map((t) => (
+              <button key={t.id} type="button" className={`chip ${postTrail === t.id ? 'active' : ''}`} onClick={() => setPostTrail(postTrail === t.id ? undefined : t.id)}>
+                {t.name}
+              </button>
+            ))}
+          </div>
+          <div className="btn-row">
+            <button type="button" className="btn btn-ghost" onClick={() => setPosting(false)}>Cancel</button>
+            <button type="submit" className="btn btn-larch" disabled={postText.trim().length < 2}>Post</button>
+          </div>
+        </form>
+      ) : (
+        <button type="button" className="btn btn-ghost" style={{ width: '100%', marginTop: 12 }} onClick={() => setPosting(true)}>
+          Post to the crew
+        </button>
+      )}
       {pin && <div className="cr-pin">{pin}</div>}
       {items.map((item, i) => {
         const hiker = getHiker(item.userId)
@@ -111,8 +153,8 @@ export function CrewFeed({ pin, hideOutings = false }: { pin?: ReactNode; hideOu
               aria-label={`Kudos, ${item.kudos.length}`}
               onClick={() => toggleKudo(item.id)}
             >
-              <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden>
-                <path d="M6 1 11 10H1z" />
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
+                <path fill="currentColor" d="M8 13.4 2.7 8.4C1.4 7.2 1.5 5.1 3 4a2.7 2.7 0 0 1 3.5.4L8 6.1l1.5-1.7A2.7 2.7 0 0 1 13 4c1.5 1.1 1.6 3.2.3 4.4L8 13.4z" />
               </svg>
               {item.kudos.length > 0 && <span className="num">{item.kudos.length}</span>}
             </button>

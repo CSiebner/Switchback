@@ -96,7 +96,7 @@ export function YouChart({ trail, runs, chase }: { trail: Trail; runs: Run[]; ch
         )}
       </svg>
       <p className="survey num" style={{ marginTop: 8 }}>
-        {series.length} runs · lower is faster{latestIsPb ? ' · latest run is a PB' : ''}
+        {series.length} hikes · lower is faster{latestIsPb ? ' · latest hike is a personal best' : ''}
       </p>
     </section>
   )

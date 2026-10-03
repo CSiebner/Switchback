@@ -56,7 +56,7 @@ export function YouLog() {
         <button className="btn btn-ghost" onClick={() => setOpen(true)}>Log a hike by hand</button>
       ) : (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-          <span className="survey">Which line?</span>
+          <span className="survey">Which trail?</span>
           <div className="yo-picker" role="radiogroup" aria-label="Trail">
             {trails.map((t) => (
               <button
@@ -83,7 +83,7 @@ export function YouLog() {
           />
           {bad && <p className="survey" style={{ marginTop: 6, color: 'var(--larch)' }}>Use 47:32 or 1:08:20</p>}
 
-          <span className="survey" style={{ display: 'block', marginTop: 16 }}>How was the dirt?</span>
+          <span className="survey" style={{ display: 'block', marginTop: 16 }}>What were the conditions?</span>
           <div className="yo-grid">
             {CONDITIONS.map(({ tag, glyph }) => {
               const on = tags.includes(tag)
@@ -102,7 +102,7 @@ export function YouLog() {
           </div>
 
           <div className="btn-row" style={{ marginTop: 16 }}>
-            <button className="btn btn-glacier" onClick={submit}>Add to logbook</button>
+            <button className="btn btn-glacier" onClick={submit}>Add this hike</button>
             <button className="btn btn-ghost" onClick={() => setOpen(false)}>Cancel</button>
           </div>
         </motion.div>

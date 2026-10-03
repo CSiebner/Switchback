@@ -19,6 +19,15 @@ import { useAppStore } from '../store/useAppStore'
 
 const FIT_PADDING = { top: 100, bottom: 460, left: 28, right: 28 }
 
+const FILTER_LABEL: Record<ExploreFilter, string> = {
+  All: 'All',
+  Easy: 'Easy',
+  Moderate: 'Moderate',
+  Hard: 'Hard',
+  Chaseable: 'Someone ahead',
+  'Fresh dirt': 'Recent conditions',
+}
+
 export function Explore() {
   const runs = useAppStore((s) => s.runs)
   const conditions = useAppStore((s) => s.conditions)
@@ -103,8 +112,8 @@ export function Explore() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name"
-            aria-label="Search lines"
+            placeholder="Search trails"
+            aria-label="Search trails"
             enterKeyHint="search"
           />
         </div>
@@ -114,7 +123,7 @@ export function Explore() {
           </button>
         </div>
         {showFilters && <>
-        <div className="ex-chips" role="tablist" aria-label="Filter lines">
+        <div className="ex-chips" role="tablist" aria-label="Filter trails">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -124,7 +133,7 @@ export function Explore() {
               className={`chip ${filter === f ? 'active on' : ''}`}
               onClick={() => setFilter(f)}
             >
-              {f}
+              {FILTER_LABEL[f]}
             </button>
           ))}
         </div>
@@ -147,7 +156,7 @@ export function Explore() {
             <ExploreSelected line={selected} />
           ) : (
             <motion.div className="ex-empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <p className="survey">No lines match. Loosen the filters.</p>
+              <p className="survey">No trails match. Loosen the filters.</p>
               <button type="button" className="chip" onClick={reset}>
                 Reset filters
               </button>

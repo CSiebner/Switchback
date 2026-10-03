@@ -61,12 +61,15 @@ export function TrailBoard({ trailId }: { trailId: string }) {
   const chase = (r: Row) => {
     const name = getHiker(r.userId)?.name ?? 'Rival'
     setChase({ trailId, userId: r.userId, timeSec: r.timeSec, label: name })
-    navigate(`/record?trail=${trailId}`)
+    navigate(`/record?trail=${trailId}&against=1`)
   }
 
   return (
     <section className="tr-section">
-      <span className="survey head">Who has walked it · {rows.length}</span>
+      <span className="survey head">Rankings · {rows.length}</span>
+      <p className="survey" style={{ marginTop: 4 }}>
+        Match your age or experience, or only dry days. A muddy hike is not the same record as a dry one.
+      </p>
       <div className="segmented tr-seg" role="tablist">
         {options.map(([key, label]) => (
           <button key={key} className={filter === key ? 'active' : ''} onClick={() => setFilter(key)}>
@@ -76,7 +79,7 @@ export function TrailBoard({ trailId }: { trailId: string }) {
       </div>
 
       <div style={{ marginTop: 8 }}>
-        {rows.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No one on this board yet</p>}
+        {rows.length === 0 && <p className="survey hairline" style={{ padding: '16px 0' }}>No one in this ranking yet.</p>}
         {rows.map((r, i) => {
           const hiker = getHiker(r.userId)
           const isMe = r.userId === CURRENT_USER_ID
@@ -108,7 +111,7 @@ export function TrailBoard({ trailId }: { trailId: string }) {
               <span className="tr-act">
                 {faster && (
                   <button className="chip tr-chase" onClick={() => chase(r)}>
-                    Chase
+                    Race
                   </button>
                 )}
                 {slower && myTime !== undefined && (
@@ -120,7 +123,7 @@ export function TrailBoard({ trailId }: { trailId: string }) {
         })}
         {myIdx < 0 && rows.length > 0 && (
           <p className="survey hairline" style={{ padding: '14px 0' }}>
-            {runsHaveMine(runs, trailId) ? `You're not on this board` : 'Record once to join the board'}
+            {runsHaveMine(runs, trailId) ? `You're not in this comparison` : 'Hike it once to join the ranking'}
           </p>
         )}
       </div>

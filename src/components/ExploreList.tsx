@@ -22,7 +22,7 @@ export function ExploreList({ lines, selectedId, active, onPick }: Props) {
   return (
     <>
       <p className="survey ex-list-head">
-        {lines.length} {lines.length === 1 ? 'line' : 'lines'} · nearest rival first
+        {lines.length} {lines.length === 1 ? 'trail' : 'trails'}
       </p>
       <div className="ex-rows">
         {lines.map((l, i) => {
