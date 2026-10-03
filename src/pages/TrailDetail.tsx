@@ -153,6 +153,9 @@ export function TrailDetail() {
         </button>
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 64 }}>
           <p className="survey" style={{ color: 'rgba(228,238,235,0.8)' }}>
+            Switchback maps the trail, remembers the day, and packs the next one.
+          </p>
+          <p className="survey" style={{ color: 'rgba(228,238,235,0.8)', marginTop: 6 }}>
             {hasRun ? `You've hiked this ${runs.filter((r) => r.userId === CURRENT_USER_ID && r.trailId === trail.id).length} times` : 'New to you'}
             {' · '}{trail.region} · {trail.difficulty}
           </p>

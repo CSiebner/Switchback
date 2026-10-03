@@ -47,8 +47,10 @@ function AnimatedRoutes() {
 
 function Gate() {
   const onboarded = useAppStore((s) => s.onboarded)
+  const { pathname } = useLocation()
+  const sharedTrail = pathname.startsWith('/trail/')
   const [phase, setPhase] = useState<'about' | 'profile'>('about')
-  if (!onboarded) {
+  if (!onboarded && !sharedTrail) {
     if (phase === 'about') return <About onBegin={() => setPhase('profile')} />
     return <Onboarding onBack={() => setPhase('about')} />
   }

@@ -90,33 +90,6 @@ export function Home() {
 
   return (
     <div className="page">
-      <section className="container page-pad home-lead">
-        <h1 className="display home-lead-title">Remember the day. Pack the next one.</h1>
-        <p className="home-lead-body">
-          Your hikes, the map, and the record are yours whether you go alone or with people. A crew is who you go with. A lodge is everyone who hikes this country.
-        </p>
-        <ol className="home-loop">
-          <li>
-            <span>1</span>
-            <strong>Your day</strong>
-            Same trail, with the weather.
-          </li>
-          <li>
-            <span>2</span>
-            <strong>What to bring</strong>
-            Sky, notes, and how you move.
-          </li>
-          <li>
-            <span>3</span>
-            <strong>Your people</strong>
-            A crew when you want one.
-          </li>
-        </ol>
-        <Link to="/about" className="home-lead-more">
-          How it works
-        </Link>
-      </section>
-
       {last && lastTrail && (
         <section>
           <div style={{ position: 'relative', height: 240 }}>

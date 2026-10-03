@@ -190,13 +190,13 @@ export function Lodge() {
           {changed.map((c) => {
             const trail = getTrail(c.trailId)
             return (
-              <div key={c.id} className="hairline" style={{ padding: '14px 0' }}>
+              <div key={c.id} className="hairline lodge-report">
                 <Link to={`/trail/${c.trailId}`}>
                   <span style={{ fontWeight: 800, display: 'block' }}>{trail?.name}</span>
-                  <span className="survey">{c.tags.join(' · ')} · {getHiker(c.userId)?.name} · {relativeTime(c.timestamp)}</span>
+                  <span className="survey" style={{ display: 'block', marginTop: 4 }}>{c.tags.join(' · ')} · {getHiker(c.userId)?.name} · {relativeTime(c.timestamp)}</span>
                   {c.note && <span style={{ display: 'block', marginTop: 4 }}>{c.note}</span>}
                 </Link>
-                <button type="button" className="chip" style={{ marginTop: 8 }} onClick={() => confirmCondition(c.id)}>
+                <button type="button" className="chip" onClick={() => confirmCondition(c.id)}>
                   Still true · {c.confirms}
                 </button>
               </div>

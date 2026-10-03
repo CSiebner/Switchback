@@ -123,7 +123,7 @@ p {
 .page {
   min-height: 100dvh;
   padding-top: var(--brand-h);
-  padding-bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom));
+  padding-bottom: calc(var(--dock-h) + 72px + env(safe-area-inset-bottom));
 }
 
 .brand-bar {
@@ -495,7 +495,7 @@ p {
   width: min(440px, calc(100% - 16px));
   height: var(--dock-h);
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: 1fr 1fr 1.2fr 1fr 1fr 1fr;
   align-items: center;
   padding: 8px;
   border-radius: var(--r-pill);
@@ -558,10 +558,10 @@ p {
 
 .nav-dock .nav-record .disc {
   position: absolute;
-  top: -18px;
+  top: -8px;
   left: 50%;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--spruce-800);
   border: 2px solid var(--larch);
@@ -740,6 +740,18 @@ p {
 
 .lodge-block.changed {
   background: rgba(10, 138, 130, 0.1);
+}
+
+.lodge-report {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 14px 0;
+}
+
+.lodge-report .chip {
+  margin-top: 2px;
 }
 
 .lodge-block.notes {
